@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Templates | DigitalTemplates</title>
+    <style>
+        /* Base Styles */
+        :root {
+            --royal-black: #0B0C10;
+            --dark-gray: #1A1A1A;
+            --medium-gray: #2D2D2D;
+            --light-gray: #E5E5E5;
+            --accent-blue: #3A7BFF;
+            --accent-purple: #8A2BE2;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--royal-black);
+            color: var(--light-gray);
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--royal-black);
+            padding: 20px 0;
+            border-bottom: 1px solid var(--medium-gray);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .logo span {
+            color: var(--accent-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--light-gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Page Header */
+        .page-header {
+            padding: 80px 0 40px;
+            text-align: center;
+        }
+
+        .page-header h1 {
+            font-size: 42px;
+            margin-bottom: 15px;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .page-header p {
+            color: #999;
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: 18px;
+        }
+
+        /* Filter Controls */
+        .filter-controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 40px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 20px;
+            border-radius: 20px;
+            background-color: var(--medium-gray);
+            color: var(--light-gray);
+            border: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+
+        .filter-btn:hover, .filter-btn.active {
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white;
+        }
+
+        /* Template Grid */
+        .templates-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            padding: 40px 0 80px;
+        }
+
+        .template-card {
+            background-color: var(--dark-gray);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--medium-gray);
+        }
+
+        .template-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-blue);
+        }
+
+        .template-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 2;
+        }
+
+        .template-image {
+            height: 200px;
+            background-color: var(--medium-gray);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .template-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .template-card:hover .template-overlay {
+            opacity: 1;
+        }
+
+        .preview-btn {
+            padding: 10px 20px;
+            background-color: var(--accent-blue);
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+
+        .preview-btn:hover {
+            background-color: #2a6bf0;
+        }
+
+        .template-info {
+            padding: 22px;
+        }
+
+        .template-info h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--white);
+        }
+
+        .template-info p {
+            color: #999;
+            margin-bottom: 22px;
+            font-size: 15px;
+            min-height: 60px;
+        }
+
+        .template-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .template-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .buy-button {
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .buy-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-gray);
+            padding: 50px 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column a {
+            color: #999;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 15px;
+        }
+
+        .footer-column a:hover {
+            color: var(--accent-blue);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--medium-gray);
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .page-header h1 {
+                font-size: 36px;
+            }
+            
+            .filter-controls {
+                gap: 10px;
+            }
+            
+            .templates-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .page-header {
+                padding: 60px 0 30px;
+            }
+            
+            .page-header h1 {
+                font-size: 32px;
+            }
+            
+            .filter-controls {
+                justify-content: flex-start;
+                overflow-x: auto;
+                padding-bottom: 10px;
+                flex-wrap: nowrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">TEMPLI<span>fy</span></div>
+            <nav class="nav-links">
+                <a href="template.html">All Templates</a>
+                <a href="contact.html">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="page-header">
+            <h1>Our Template Collection</h1>
+            <p>Browse our premium website templates designed for every industry and purpose. All templates are fully responsive and easy to customize.</p>
+        </section>
+
+        <div class="filter-controls">
+            <button class="filter-btn active" data-filter="all">All Templates</button>
+            <button class="filter-btn" data-filter="business">Business</button>
+            <button class="filter-btn" data-filter="portfolio">Portfolio</button>
+            <button class="filter-btn" data-filter="ecommerce">E-commerce</button>
+            <button class="filter-btn" data-filter="blog">Blog</button>
+            <button class="filter-btn" data-filter="landing">Landing Pages</button>
+        </div>
+
+        <div class="templates-grid">
+            <!-- Template 1 -->
+            <div class="template-card" data-category="business">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Corporate+Template');">
+                    <span class="template-badge">Popular</span>
+                    
+                </div>
+                <div class="template-info">
+                    <h3>Corporate Pro</h3>
+                    <p>Professional business template with services, team, and testimonial sections.</p>
+                    <div class="template-footer">
+                        <span class="template-price">$59</span>
+                        <button class="buy-button" data-product="1">Get Template</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Template 2 -->
+            <div class="template-card" data-category="portfolio">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Creative+Portfolio');">
+                    <span class="template-badge">New</span>
+                    
+                </div>
+                <div class="template-info">
+                    <h3>Creative Portfolio</h3>
+                    <p>Elegant portfolio template with masonry gallery and project showcase.</p>
+                    <div class="template-footer">
+                        <span class="template-price">$49</span>
+                        <button class="buy-button" data-product="2">Get Template</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Template 3 -->
+            <div class="template-card" data-category="ecommerce">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Online+Store');">
+                    
+                </div>
+                <div class="template-info">
+                    <h3>Online Store</h3>
+                    <p>Complete e-commerce template with product grid, cart, and checkout.</p>
+                    <div class="template-footer">
+                        <span class="template-price">$79</span>
+                        <button class="buy-button" data-product="3">Get Template</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Template 4 -->
+            <div class="template-card" data-category="blog">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Modern+Blog');">
+                    
+                </div>
+                <div class="template-info">
+                    <h3>Modern Blog</h3>
+                    <p>Clean blog template with featured posts, categories, and newsletter.</p>
+                    <div class="template-footer">
+                        <span class="template-price">$45</span>
+                        <button class="buy-button" data-product="4">Get Template</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Template 5 -->
+            <div class="template-card" data-category="landing">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Startup+Landing');">
+                    <span class="template-badge">Featured</span>
+                    
+                </div>
+                <div class="template-info">
+                    <h3>Startup Landing</h3>
+                    <p>High-converting landing page for SaaS products and startups.</p>
+                    <div class="template-footer">
+                        <span class="template-price">$54</span>
+                        <button class="buy-button" data-product="5">Get Template</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Template 6 -->
+            <div class="template-card" data-category="business">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Agency+Template');">
+                    
+                </div>
+                <div class="template-info">
+                    <h3>Agency Pro</h3>
+                    <p>Modern template for creative agencies with case studies and services.</p>
+                    <div class="template-footer">
+                        <span class="template-price">$65</span>
+                        <button class="buy-button" data-product="6">Get Template</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Template 7 -->
+            <div class="template-card" data-category="portfolio">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Photography+Portfolio');">
+                    
+                </div>
+                <div class="template-info">
+                    <h3>Photography Portfolio</h3>
+                    <p>Beautiful template for photographers with full-screen image galleries.</p>
+                    <div class="template-footer">
+                        <span class="template-price">$55</span>
+                        <button class="buy-button" data-product="7">Get Template</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Template 8 -->
+            <div class="template-card" data-category="ecommerce">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Fashion+Store');">
+                    <span class="template-badge">New</span>
+                </div>
+                <div class="template-info">
+                    <h3>Fashion Store</h3>
+                    <p>Stylish e-commerce template for fashion brands and clothing stores.</p>
+                    <div class="template-footer">
+                        <span class="template-price">$69</span>
+                        <button class="buy-button" data-product="8">Get Template</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>DigitalTemplates</h3>
+                    <p>Premium website templates for modern businesses and creatives.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#">All Templates</a></li>
+                        <li><a href="#">License</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Support</h3>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">FAQ</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 TEMPLIfy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Filter functionality
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            const templateCards = document.querySelectorAll('.template-card');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Update active button
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const filter = this.getAttribute('data-filter');
+                    
+                    // Filter templates
+                    templateCards.forEach(card => {
+                        if (filter === 'all' || card.getAttribute('data-category') === filter) {
+                            card.style.display = 'block';
+                        } else {
+                            card.style.display = 'none';
+                        }
+                    });
+                });
+            });
+            
+            // Product data
+            const products = {
+                1: { name: 'Corporate Pro', price: '59' },
+                2: { name: 'Creative Portfolio', price: '49' },
+                3: { name: 'Online Store', price: '79' },
+                4: { name: 'Modern Blog', price: '45' },
+                5: { name: 'Startup Landing', price: '54' },
+                6: { name: 'Agency Pro', price: '65' },
+                7: { name: 'Photography Portfolio', price: '55' },
+                8: { name: 'Fashion Store', price: '69' }
+            };
+            
+            // Buy button functionality
+            const buyButtons = document.querySelectorAll('.buy-button');
+            
+            buyButtons.forEach(button => {
+                button.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const productId = this.getAttribute('data-product');
+                    const product = products[productId];
+                    
+                    if (product) {
+                        alert(`Added ${product.name} ($${product.price}) to cart`);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

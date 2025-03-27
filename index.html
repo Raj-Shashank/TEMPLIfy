@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DigitalTemplates | Premium Website Templates</title>
+    <style>
+        /* Base Styles */
+        :root {
+            --royal-black: #0B0C10;
+            --dark-gray: #1A1A1A;
+            --medium-gray: #2D2D2D;
+            --light-gray: #E5E5E5;
+            --accent-blue: #3A7BFF;
+            --accent-purple: #8A2BE2;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        body {
+            background-color: var(--royal-black);
+            color: var(--light-gray);
+            line-height: 1.6;
+        }
+
+        /* Layout */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* Header */
+        header {
+            background-color: var(--royal-black);
+            padding: 20px 0;
+            border-bottom: 1px solid var(--medium-gray);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .logo span {
+            color: var(--accent-blue);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 30px;
+        }
+
+        .nav-links a {
+            color: var(--light-gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--accent-blue);
+        }
+
+        /* Hero */
+        .hero {
+            padding: 100px 0;
+            text-align: center;
+            background: linear-gradient(135deg, var(--royal-black) 0%, var(--medium-gray) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 20% 50%, rgba(58, 123, 255, 0.15) 0%, transparent 50%);
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at 80% 30%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero h1 {
+            font-size: 52px;
+            margin-bottom: 20px;
+            font-weight: 800;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            line-height: 1.2;
+        }
+
+        .hero p {
+            font-size: 20px;
+            color: var(--light-gray);
+            max-width: 700px;
+            margin: 0 auto 40px;
+            opacity: 0.9;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 14px 36px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.3s;
+            box-shadow: 0 4px 15px rgba(58, 123, 255, 0.3);
+            border: none;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(58, 123, 255, 0.4);
+        }
+
+        .cta-button::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, var(--accent-purple), var(--accent-blue));
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .cta-button:hover::after {
+            opacity: 1;
+        }
+
+        .cta-button span {
+            position: relative;
+            z-index: 1;
+        }
+
+        /* Products Section */
+        .products-section {
+            padding: 80px 0;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 50px;
+        }
+
+        .section-header h2 {
+            font-size: 36px;
+            margin-bottom: 15px;
+            color: var(--white);
+        }
+
+        .section-header p {
+            color: #999;
+            font-size: 18px;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+        }
+
+        .product-card {
+            background-color: var(--dark-gray);
+            border-radius: 12px;
+            overflow: hidden;
+            transition: transform 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--medium-gray);
+        }
+
+        .product-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3);
+            border-color: var(--accent-blue);
+        }
+
+        .product-image {
+            height: 200px;
+            background-color: var(--medium-gray);
+            background-size: cover;
+            background-position: center;
+            position: relative;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .product-info {
+            padding: 22px;
+        }
+
+        .product-info h3 {
+            font-size: 20px;
+            margin-bottom: 12px;
+            color: var(--white);
+        }
+
+        .product-info p {
+            color: #999;
+            margin-bottom: 22px;
+            font-size: 15px;
+            min-height: 60px;
+        }
+
+        .product-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .product-price {
+            font-size: 22px;
+            font-weight: 700;
+            color: var(--accent-blue);
+        }
+
+        .buy-button {
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: transform 0.2s;
+        }
+
+        .buy-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Footer */
+        footer {
+            background-color: var(--dark-gray);
+            padding: 50px 0;
+            margin-top: 60px;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 40px;
+        }
+
+        .footer-column h3 {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: var(--white);
+        }
+
+        .footer-column ul {
+            list-style: none;
+        }
+
+        .footer-column li {
+            margin-bottom: 12px;
+        }
+
+        .footer-column a {
+            color: #999;
+            text-decoration: none;
+            transition: color 0.2s;
+            font-size: 15px;
+        }
+
+        .footer-column a:hover {
+            color: var(--accent-blue);
+        }
+
+        .copyright {
+            text-align: center;
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid var(--medium-gray);
+            color: #999;
+            font-size: 14px;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: var(--dark-gray);
+            border-radius: 12px;
+            width: 100%;
+            max-width: 500px;
+            padding: 30px;
+            position: relative;
+            border: 1px solid var(--medium-gray);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            cursor: pointer;
+            color: #999;
+            transition: color 0.2s;
+        }
+
+        .close-modal:hover {
+            color: var(--accent-blue);
+        }
+
+        .modal h2 {
+            margin-bottom: 25px;
+            text-align: center;
+            color: var(--white);
+        }
+
+        .form-group {
+            margin-bottom: 22px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 500;
+            color: var(--light-gray);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 8px;
+            border: 1px solid var(--medium-gray);
+            background-color: var(--royal-black);
+            color: var(--white);
+            font-size: 15px;
+            transition: border-color 0.2s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--accent-blue);
+        }
+
+        .pay-button {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+            font-size: 16px;
+            margin-top: 10px;
+        }
+
+        .pay-button:hover {
+            transform: translateY(-2px);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 42px;
+            }
+            
+            .hero p {
+                font-size: 18px;
+            }
+            
+            .nav-links {
+                gap: 20px;
+            }
+            
+            .section-header h2 {
+                font-size: 30px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .hero {
+                padding: 80px 0;
+            }
+            
+            .hero h1 {
+                font-size: 36px;
+            }
+            
+            .hero p {
+                font-size: 16px;
+                padding: 0 15px;
+            }
+            
+            .cta-button {
+                padding: 12px 28px;
+            }
+            
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">TEMPLI<span>fy</span></div>
+            <nav class="nav-links">
+                <a href="template.html">Templates</a>
+                <a href="#">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <section class="hero">
+        <div class="container hero-content">
+            <h1>Build Stunning Websites in Minutes</h1>
+            <p>Professional, responsive templates designed to launch your online presence faster than ever. Perfect for developers, designers, and entrepreneurs.</p>
+            <a href="#product" class="cta-button"><span>Explore Templates</span></a>
+        </div>
+    </section>
+
+    <section id="products" class="products-section">
+        <div class="container">
+            <div class="section-header">
+                <h2>Premium Template Collection</h2>
+                <p>Handcrafted designs for every project need</p>
+            </div>
+            
+            <div class="products-grid">
+                <!-- Product 1 -->
+                <div class="product-card">
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Minimal+Template');">
+                        <span class="product-badge">Bestseller</span>
+                    </div>
+                    <div class="product-info">
+                        <h3>Simple Portfolio</h3>
+                        <p>Clean, minimalist design perfect for portfolios and personal websites with elegant typography.</p>
+                        <div class="product-footer">
+                            <span class="product-price">₹199</span>
+                            <button class="buy-button" data-product="1">Get Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 2 -->
+                <div class="product-card">
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Business+Template');">
+                        <span class="product-badge">New</span>
+                    </div>
+                    <div class="product-info">
+                        <h3>Modern Portfolio</h3>
+                        <p>Professional corporate design with sections for services, team, and testimonials.</p>
+                        <div class="product-footer">
+                            <span class="product-price">₹399</span>
+                            <button class="buy-button" data-product="2">Get Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 3 -->
+                <div class="product-card">
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=E-commerce+Template');"></div>
+                    <div class="product-info">
+                        <h3>E-commerce Template</h3>
+                        <p>Complete online store template with product showcase, cart, and checkout flow.</p>
+                        <div class="product-footer">
+                            <span class="product-price">₹899</span>
+                            <button class="buy-button" data-product="3">Get Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 4 -->
+                <div class="product-card">
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Blog+Template');"></div>
+                    <div class="product-info">
+                        <h3>Blog Template</h3>
+                        <p>Elegant design for bloggers with featured posts, categories, and newsletter integration.</p>
+                        <div class="product-footer">
+                            <span class="product-price">₹459</span>
+                            <button class="buy-button" data-product="4">Get Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 5 (New) -->
+                <div class="product-card">
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Portfolio+Template');">
+                        <span class="product-badge">Featured</span>
+                    </div>
+                    <div class="product-info">
+                        <h3>SAAS Product Template</h3>
+                        <p>Showcase your work with this visually stunning portfolio template with gallery layouts.</p>
+                        <div class="product-footer">
+                            <span class="product-price">₹999</span>
+                            <button class="buy-button" data-product="5">Get Template</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Product 6 (New) -->
+                <div class="product-card">
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Landing+Template');"></div>
+                    <div class="product-info">
+                        <h3>Landing Template</h3>
+                        <p>High-converting landing page template with lead capture forms and testimonials section.</p>
+                        <div class="product-footer">
+                            <span class="product-price">₹39</span>
+                            <button class="buy-button" data-product="6">Get Template</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-column">
+                    <h3>DigitalTemplates</h3>
+                    <p>Premium website templates for modern businesses and creatives.</p>
+                </div>
+                <div class="footer-column">
+                    <h3>Quick Links</h3>
+                    <ul>
+                        <li><a href="#products">Templates</a></li>
+                        <li><a href="#">License</a></li>
+                        <li><a href="#">Contact</a></li>
+                    </ul>
+                </div>
+                <div class="footer-column">
+                    <h3>Legal</h3>
+                    <ul>
+                        <li><a href="#">Terms of Service</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                        <li><a href="#">Refund Policy</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">
+                <p>&copy; 2025 TEMPLIfy. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Checkout Modal -->
+    <div id="checkoutModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal">&times;</span>
+            <h2>Complete Your Purchase</h2>
+            <form id="checkoutForm">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" required placeholder="your@email.com">
+                </div>
+                <div class="form-group">
+                    <label for="card">Payment Details</label>
+                    <input type="text" id="card" required placeholder="Card number">
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <input type="text" placeholder="MM/YY" style="flex: 1;">
+                        <input type="text" placeholder="CVC" style="flex: 1;">
+                    </div>
+                </div>
+                <button type="submit" class="pay-button">Pay $<span id="productPrice">49</span></button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Product data
+            const products = {
+                1: { name: 'Minimal Template', price: '49' },
+                2: { name: 'Business Template', price: '59' },
+                3: { name: 'E-commerce Template', price: '79' },
+                4: { name: 'Blog Template', price: '45' },
+                5: { name: 'Portfolio Template', price: '54' },
+                6: { name: 'Landing Template', price: '39' }
+            };
+            
+            // Modal elements
+            const modal = document.getElementById('checkoutModal');
+            const buyButtons = document.querySelectorAll('.buy-button');
+            const closeModal = document.querySelector('.close-modal');
+            const productPrice = document.getElementById('productPrice');
+            
+            // Open modal when buy button is clicked
+            buyButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product');
+                    const product = products[productId];
+                    
+                    if (product) {
+                        productPrice.textContent = product.price;
+                        modal.style.display = 'flex';
+                        document.body.style.overflow = 'hidden';
+                    }
+                });
+            });
+            
+            // Close modal
+            closeModal.addEventListener('click', function() {
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Close when clicking outside modal
+            window.addEventListener('click', function(event) {
+                if (event.target === modal) {
+                    modal.style.display = 'none';
+                    document.body.style.overflow = 'auto';
+                }
+            });
+            
+            // Form submission
+            const checkoutForm = document.getElementById('checkoutForm');
+            
+            checkoutForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                const email = document.getElementById('email').value;
+                const price = productPrice.textContent;
+                
+                // In a real implementation, process payment here
+                alert(`Thank you for your purchase of $${price}! Download link has been sent to ${email}`);
+                
+                // Reset form and close modal
+                checkoutForm.reset();
+                modal.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
+                    
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
