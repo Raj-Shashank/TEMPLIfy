@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DigitalTemplates | Premium Website Templates</title>
+    <title>TEMPLIfy | Premium Website Templates</title>
+    <meta name="description" content="Professional responsive website templates for portfolios, businesses, and e-commerce stores">
     <style>
-        /* Base Styles */
         :root {
             --royal-black: #0B0C10;
             --dark-gray: #1A1A1A;
@@ -29,14 +29,13 @@
             line-height: 1.6;
         }
 
-        /* Layout */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* Header */
+        /* Header Styles */
         header {
             background-color: var(--royal-black);
             padding: 20px 0;
@@ -44,6 +43,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         .header-content {
@@ -53,9 +53,10 @@
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 28px;
+            font-weight: 800;
             color: var(--white);
+            letter-spacing: 1px;
         }
 
         .logo span {
@@ -72,50 +73,54 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s;
+            font-size: 16px;
         }
 
         .nav-links a:hover {
             color: var(--accent-blue);
         }
 
-        /* Hero */
+        /* Hero Section */
         .hero {
-            padding: 100px 0;
+            padding: 120px 0;
             text-align: center;
             background: linear-gradient(135deg, var(--royal-black) 0%, var(--medium-gray) 100%);
             position: relative;
             overflow: hidden;
         }
 
-        .hero::before {
+        .hero::before, .hero::after {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 20% 50%, rgba(58, 123, 255, 0.15) 0%, transparent 50%);
+            width: 300px;
+            height: 300px;
+            border-radius: 50%;
+            filter: blur(100px);
+            opacity: 0.3;
+        }
+
+        .hero::before {
+            background: var(--accent-blue);
+            top: 20%;
+            left: 10%;
         }
 
         .hero::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at 80% 30%, rgba(138, 43, 226, 0.1) 0%, transparent 50%);
+            background: var(--accent-purple);
+            bottom: 20%;
+            right: 10%;
         }
 
         .hero-content {
             position: relative;
             z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
         }
 
         .hero h1 {
-            font-size: 52px;
+            font-size: clamp(2.5rem, 5vw, 3.5rem);
             margin-bottom: 20px;
-            font-weight: 800;
             background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -123,11 +128,11 @@
         }
 
         .hero p {
-            font-size: 20px;
+            font-size: clamp(1rem, 2vw, 1.25rem);
             color: var(--light-gray);
-            max-width: 700px;
             margin: 0 auto 40px;
             opacity: 0.9;
+            max-width: 700px;
         }
 
         .cta-button {
@@ -139,37 +144,17 @@
             text-decoration: none;
             font-weight: 600;
             transition: all 0.3s;
-            box-shadow: 0 4px 15px rgba(58, 123, 255, 0.3);
+            box-shadow: 0 4px 20px rgba(58, 123, 255, 0.3);
             border: none;
             cursor: pointer;
             position: relative;
             overflow: hidden;
+            font-size: 16px;
         }
 
         .cta-button:hover {
             transform: translateY(-3px);
-            box-shadow: 0 6px 20px rgba(58, 123, 255, 0.4);
-        }
-
-        .cta-button::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(to right, var(--accent-purple), var(--accent-blue));
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .cta-button:hover::after {
-            opacity: 1;
-        }
-
-        .cta-button span {
-            position: relative;
-            z-index: 1;
+            box-shadow: 0 6px 25px rgba(58, 123, 255, 0.4);
         }
 
         /* Products Section */
@@ -183,14 +168,16 @@
         }
 
         .section-header h2 {
-            font-size: 36px;
+            font-size: clamp(1.75rem, 4vw, 2.25rem);
             margin-bottom: 15px;
             color: var(--white);
         }
 
         .section-header p {
             color: #999;
-            font-size: 18px;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
+            max-width: 700px;
+            margin: 0 auto;
         }
 
         .products-grid {
@@ -203,7 +190,7 @@
             background-color: var(--dark-gray);
             border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s ease;
             border: 1px solid var(--medium-gray);
         }
 
@@ -227,10 +214,11 @@
             right: 15px;
             background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
             color: white;
-            padding: 5px 12px;
+            padding: 5px 15px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
+            z-index: 2;
         }
 
         .product-info {
@@ -238,7 +226,7 @@
         }
 
         .product-info h3 {
-            font-size: 20px;
+            font-size: 1.25rem;
             margin-bottom: 12px;
             color: var(--white);
         }
@@ -246,7 +234,7 @@
         .product-info p {
             color: #999;
             margin-bottom: 22px;
-            font-size: 15px;
+            font-size: 0.95rem;
             min-height: 60px;
         }
 
@@ -257,7 +245,7 @@
         }
 
         .product-price {
-            font-size: 22px;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--accent-blue);
         }
@@ -270,28 +258,31 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            font-size: 0.95rem;
         }
 
         .buy-button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(58, 123, 255, 0.3);
         }
 
         /* Footer */
         footer {
             background-color: var(--dark-gray);
-            padding: 50px 0;
-            margin-top: 60px;
+            padding: 60px 0 0;
+            margin-top: 80px;
         }
 
         .footer-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 40px;
+            padding-bottom: 40px;
         }
 
         .footer-column h3 {
-            font-size: 20px;
+            font-size: 1.1rem;
             margin-bottom: 20px;
             color: var(--white);
         }
@@ -308,7 +299,7 @@
             color: #999;
             text-decoration: none;
             transition: color 0.2s;
-            font-size: 15px;
+            font-size: 0.9rem;
         }
 
         .footer-column a:hover {
@@ -317,119 +308,24 @@
 
         .copyright {
             text-align: center;
-            margin-top: 50px;
-            padding-top: 30px;
+            padding: 20px 0;
             border-top: 1px solid var(--medium-gray);
             color: #999;
-            font-size: 14px;
+            font-size: 0.85rem;
         }
 
-        /* Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.8);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .modal-content {
-            background-color: var(--dark-gray);
-            border-radius: 12px;
-            width: 100%;
-            max-width: 500px;
-            padding: 30px;
-            position: relative;
-            border: 1px solid var(--medium-gray);
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-        }
-
-        .close-modal {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            font-size: 24px;
-            cursor: pointer;
-            color: #999;
-            transition: color 0.2s;
-        }
-
-        .close-modal:hover {
-            color: var(--accent-blue);
-        }
-
-        .modal h2 {
-            margin-bottom: 25px;
-            text-align: center;
-            color: var(--white);
-        }
-
-        .form-group {
-            margin-bottom: 22px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 10px;
-            font-weight: 500;
-            color: var(--light-gray);
-        }
-
-        .form-group input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 8px;
-            border: 1px solid var(--medium-gray);
-            background-color: var(--royal-black);
-            color: var(--white);
-            font-size: 15px;
-            transition: border-color 0.2s;
-        }
-
-        .form-group input:focus {
-            outline: none;
-            border-color: var(--accent-blue);
-        }
-
-        .pay-button {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: transform 0.2s;
-            font-size: 16px;
-            margin-top: 10px;
-        }
-
-        .pay-button:hover {
-            transform: translateY(-2px);
-        }
-
-        /* Responsive */
+        /* Responsive Styles */
         @media (max-width: 768px) {
-            .hero h1 {
-                font-size: 42px;
-            }
-            
-            .hero p {
-                font-size: 18px;
-            }
-            
             .nav-links {
                 gap: 20px;
             }
             
-            .section-header h2 {
-                font-size: 30px;
+            .hero {
+                padding: 100px 0;
+            }
+            
+            .products-grid {
+                gap: 20px;
             }
         }
 
@@ -439,25 +335,23 @@
                 gap: 15px;
             }
             
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
             .hero {
                 padding: 80px 0;
-            }
-            
-            .hero h1 {
-                font-size: 36px;
-            }
-            
-            .hero p {
-                font-size: 16px;
-                padding: 0 15px;
             }
             
             .cta-button {
                 padding: 12px 28px;
             }
             
-            .products-grid {
+            .footer-content {
                 grid-template-columns: 1fr;
+                text-align: center;
             }
         }
     </style>
@@ -468,7 +362,7 @@
             <div class="logo">TEMPLI<span>fy</span></div>
             <nav class="nav-links">
                 <a href="template.html">Templates</a>
-                <a href="#">Contact</a>
+                <a href="contact.html">Contact</a>
             </nav>
         </div>
     </header>
@@ -476,8 +370,8 @@
     <section class="hero">
         <div class="container hero-content">
             <h1>Build Stunning Websites in Minutes</h1>
-            <p>Professional, responsive templates designed to launch your online presence faster than ever. Perfect for developers, designers, and entrepreneurs.</p>
-            <a href="#product" class="cta-button"><span>Explore Templates</span></a>
+            <p>Professional, responsive templates designed to launch your online presence faster than ever.</p>
+            <a href="template.html" class="cta-button">Explore Templates</a>
         </div>
     </section>
 
@@ -491,84 +385,102 @@
             <div class="products-grid">
                 <!-- Product 1 -->
                 <div class="product-card">
-                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Minimal+Template');">
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Minimal+Template')">
                         <span class="product-badge">Bestseller</span>
                     </div>
                     <div class="product-info">
                         <h3>Simple Portfolio</h3>
-                        <p>Clean, minimalist design perfect for portfolios and personal websites with elegant typography.</p>
+                        <p>Clean, minimalist design perfect for portfolios and personal websites.</p>
                         <div class="product-footer">
                             <span class="product-price">₹199</span>
-                            <button class="buy-button" data-product="1">Get Template</button>
+                            <button class="buy-button" 
+                                    data-product="1"
+                                    data-price="199"
+                                    data-name="Simple Portfolio">Get Template</button>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Product 2 -->
                 <div class="product-card">
-                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Business+Template');">
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Business+Template')">
                         <span class="product-badge">New</span>
                     </div>
                     <div class="product-info">
                         <h3>Modern Portfolio</h3>
-                        <p>Professional corporate design with sections for services, team, and testimonials.</p>
+                        <p>Professional design with sections for services, team, and testimonials.</p>
                         <div class="product-footer">
                             <span class="product-price">₹399</span>
-                            <button class="buy-button" data-product="2">Get Template</button>
+                            <button class="buy-button" 
+                                    data-product="2"
+                                    data-price="399"
+                                    data-name="Modern Portfolio">Get Template</button>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Product 3 -->
                 <div class="product-card">
-                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=E-commerce+Template');"></div>
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=E-commerce+Template')"></div>
                     <div class="product-info">
                         <h3>E-commerce Template</h3>
-                        <p>Complete online store template with product showcase, cart, and checkout flow.</p>
+                        <p>Complete online store with product showcase and checkout flow.</p>
                         <div class="product-footer">
                             <span class="product-price">₹899</span>
-                            <button class="buy-button" data-product="3">Get Template</button>
+                            <button class="buy-button" 
+                                    data-product="3"
+                                    data-price="899"
+                                    data-name="E-commerce Template">Get Template</button>
                         </div>
                     </div>
                 </div>
                 
                 <!-- Product 4 -->
                 <div class="product-card">
-                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Blog+Template');"></div>
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Blog+Template')"></div>
                     <div class="product-info">
                         <h3>Blog Template</h3>
-                        <p>Elegant design for bloggers with featured posts, categories, and newsletter integration.</p>
+                        <p>Elegant design for bloggers with featured posts and categories.</p>
                         <div class="product-footer">
                             <span class="product-price">₹459</span>
-                            <button class="buy-button" data-product="4">Get Template</button>
+                            <button class="buy-button" 
+                                    data-product="4"
+                                    data-price="459"
+                                    data-name="Blog Template">Get Template</button>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Product 5 (New) -->
+                <!-- Product 5 -->
                 <div class="product-card">
-                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Portfolio+Template');">
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=SAAS+Template')">
                         <span class="product-badge">Featured</span>
                     </div>
                     <div class="product-info">
-                        <h3>SAAS Product Template</h3>
-                        <p>Showcase your work with this visually stunning portfolio template with gallery layouts.</p>
+                        <h3>SAAS Template</h3>
+                        <p>Modern template for software products with feature showcases.</p>
                         <div class="product-footer">
                             <span class="product-price">₹999</span>
-                            <button class="buy-button" data-product="5">Get Template</button>
+                            <button class="buy-button" 
+                                    data-product="5"
+                                    data-price="999"
+                                    data-name="SAAS Template">Get Template</button>
                         </div>
                     </div>
                 </div>
                 
-                <!-- Product 6 (New) -->
+                <!-- Product 6 -->
                 <div class="product-card">
-                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Landing+Template');"></div>
+                    <div class="product-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Landing+Template')"></div>
                     <div class="product-info">
                         <h3>Landing Template</h3>
-                        <p>High-converting landing page template with lead capture forms and testimonials section.</p>
+                        <p>High-converting landing page with lead capture forms.</p>
                         <div class="product-footer">
-                            <span class="product-price">₹39</span>
-                            <button class="buy-button" data-product="6">Get Template</button>
+                            <span class="product-price">₹399</span>
+                            <button class="buy-button" 
+                                    data-product="6"
+                                    data-price="399"
+                                    data-name="Landing Template">Get Template</button>
                         </div>
                     </div>
                 </div>
@@ -576,27 +488,26 @@
         </div>
     </section>
 
-    <footer>
+    <footer id="contact">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
-                    <h3>DigitalTemplates</h3>
+                    <h3>TEMPLIfy</h3>
                     <p>Premium website templates for modern businesses and creatives.</p>
                 </div>
                 <div class="footer-column">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#products">Templates</a></li>
+                        <li><a href="#template.html">Templates</a></li>
+                        <li><a href="contact.html">Contact</a></li>
                         <li><a href="#">License</a></li>
-                        <li><a href="#">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Legal</h3>
+                    <h3>Contact</h3>
                     <ul>
-                        <li><a href="#">Terms of Service</a></li>
-                        <li><a href="#">Privacy Policy</a></li>
-                        <li><a href="#">Refund Policy</a></li>
+                        <li>Email: contact@templify.com</li>
+                        <li>Phone: +91 9876543210</li>
                     </ul>
                 </div>
             </div>
@@ -606,98 +517,24 @@
         </div>
     </footer>
 
-    <!-- Checkout Modal -->
-    <div id="checkoutModal" class="modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Complete Your Purchase</h2>
-            <form id="checkoutForm">
-                <div class="form-group">
-                    <label for="email">Email Address</label>
-                    <input type="email" id="email" required placeholder="your@email.com">
-                </div>
-                <div class="form-group">
-                    <label for="card">Payment Details</label>
-                    <input type="text" id="card" required placeholder="Card number">
-                    <div style="display: flex; gap: 10px; margin-top: 10px;">
-                        <input type="text" placeholder="MM/YY" style="flex: 1;">
-                        <input type="text" placeholder="CVC" style="flex: 1;">
-                    </div>
-                </div>
-                <button type="submit" class="pay-button">Pay $<span id="productPrice">49</span></button>
-            </form>
-        </div>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Product data
-            const products = {
-                1: { name: 'Minimal Template', price: '49' },
-                2: { name: 'Business Template', price: '59' },
-                3: { name: 'E-commerce Template', price: '79' },
-                4: { name: 'Blog Template', price: '45' },
-                5: { name: 'Portfolio Template', price: '54' },
-                6: { name: 'Landing Template', price: '39' }
-            };
-            
-            // Modal elements
-            const modal = document.getElementById('checkoutModal');
-            const buyButtons = document.querySelectorAll('.buy-button');
-            const closeModal = document.querySelector('.close-modal');
-            const productPrice = document.getElementById('productPrice');
-            
-            // Open modal when buy button is clicked
-            buyButtons.forEach(button => {
+            // Handle buy button clicks
+            document.querySelectorAll('.buy-button').forEach(button => {
                 button.addEventListener('click', function() {
                     const productId = this.getAttribute('data-product');
-                    const product = products[productId];
+                    const productPrice = this.getAttribute('data-price');
+                    const productName = this.getAttribute('data-name');
                     
-                    if (product) {
-                        productPrice.textContent = product.price;
-                        modal.style.display = 'flex';
-                        document.body.style.overflow = 'hidden';
-                    }
+                    // Redirect to payment page with product details
+                    window.location.href = `payment.html?product=${productId}&price=${productPrice}&name=${encodeURIComponent(productName)}`;
                 });
             });
-            
-            // Close modal
-            closeModal.addEventListener('click', function() {
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-            
-            // Close when clicking outside modal
-            window.addEventListener('click', function(event) {
-                if (event.target === modal) {
-                    modal.style.display = 'none';
-                    document.body.style.overflow = 'auto';
-                }
-            });
-            
-            // Form submission
-            const checkoutForm = document.getElementById('checkoutForm');
-            
-            checkoutForm.addEventListener('submit', function(e) {
-                e.preventDefault();
-                
-                const email = document.getElementById('email').value;
-                const price = productPrice.textContent;
-                
-                // In a real implementation, process payment here
-                alert(`Thank you for your purchase of $${price}! Download link has been sent to ${email}`);
-                
-                // Reset form and close modal
-                checkoutForm.reset();
-                modal.style.display = 'none';
-                document.body.style.overflow = 'auto';
-            });
-            
+
             // Smooth scrolling for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
-                    
                     const targetId = this.getAttribute('href');
                     if (targetId === '#') return;
                     
