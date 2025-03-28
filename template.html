@@ -3,9 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Templates | DigitalTemplates</title>
+    <title>All Templates | TEMPLIfy</title>
+    <meta name="description" content="Browse our complete collection of premium website templates for portfolios, businesses, and e-commerce stores">
     <style>
-        /* Base Styles */
         :root {
             --royal-black: #0B0C10;
             --dark-gray: #1A1A1A;
@@ -29,14 +29,13 @@
             line-height: 1.6;
         }
 
-        /* Layout */
         .container {
             max-width: 1200px;
             margin: 0 auto;
             padding: 0 20px;
         }
 
-        /* Header */
+        /* Header Styles */
         header {
             background-color: var(--royal-black);
             padding: 20px 0;
@@ -44,6 +43,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
+            backdrop-filter: blur(10px);
         }
 
         .header-content {
@@ -53,9 +53,10 @@
         }
 
         .logo {
-            font-size: 24px;
-            font-weight: 700;
+            font-size: 28px;
+            font-weight: 800;
             color: var(--white);
+            letter-spacing: 1px;
         }
 
         .logo span {
@@ -72,6 +73,7 @@
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s;
+            font-size: 16px;
         }
 
         .nav-links a:hover {
@@ -80,12 +82,12 @@
 
         /* Page Header */
         .page-header {
-            padding: 80px 0 40px;
+            padding: 100px 0 40px;
             text-align: center;
         }
 
         .page-header h1 {
-            font-size: 42px;
+            font-size: clamp(2rem, 5vw, 2.5rem);
             margin-bottom: 15px;
             background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
             -webkit-background-clip: text;
@@ -94,9 +96,9 @@
 
         .page-header p {
             color: #999;
+            font-size: clamp(0.9rem, 2vw, 1.1rem);
             max-width: 700px;
             margin: 0 auto;
-            font-size: 18px;
         }
 
         /* Filter Controls */
@@ -117,6 +119,7 @@
             cursor: pointer;
             transition: all 0.2s;
             font-weight: 500;
+            font-size: 14px;
         }
 
         .filter-btn:hover, .filter-btn.active {
@@ -124,7 +127,7 @@
             color: white;
         }
 
-        /* Template Grid */
+        /* Templates Grid */
         .templates-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -136,7 +139,7 @@
             background-color: var(--dark-gray);
             border-radius: 12px;
             overflow: hidden;
-            transition: transform 0.3s, box-shadow 0.3s;
+            transition: all 0.3s ease;
             border: 1px solid var(--medium-gray);
         }
 
@@ -152,7 +155,7 @@
             right: 15px;
             background: linear-gradient(to right, var(--accent-blue), var(--accent-purple));
             color: white;
-            padding: 5px 12px;
+            padding: 5px 15px;
             border-radius: 20px;
             font-size: 12px;
             font-weight: 600;
@@ -193,11 +196,12 @@
             border-radius: 4px;
             cursor: pointer;
             font-weight: 600;
-            transition: background-color 0.2s;
+            transition: all 0.2s;
         }
 
         .preview-btn:hover {
             background-color: #2a6bf0;
+            transform: translateY(-2px);
         }
 
         .template-info {
@@ -205,7 +209,7 @@
         }
 
         .template-info h3 {
-            font-size: 20px;
+            font-size: 1.25rem;
             margin-bottom: 12px;
             color: var(--white);
         }
@@ -213,7 +217,7 @@
         .template-info p {
             color: #999;
             margin-bottom: 22px;
-            font-size: 15px;
+            font-size: 0.95rem;
             min-height: 60px;
         }
 
@@ -224,7 +228,7 @@
         }
 
         .template-price {
-            font-size: 22px;
+            font-size: 1.25rem;
             font-weight: 700;
             color: var(--accent-blue);
         }
@@ -237,27 +241,30 @@
             border-radius: 6px;
             cursor: pointer;
             font-weight: 600;
-            transition: transform 0.2s;
+            transition: all 0.2s;
+            font-size: 0.95rem;
         }
 
         .buy-button:hover {
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(58, 123, 255, 0.3);
         }
 
         /* Footer */
         footer {
             background-color: var(--dark-gray);
-            padding: 50px 0;
+            padding: 60px 0 0;
         }
 
         .footer-content {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 40px;
+            padding-bottom: 40px;
         }
 
         .footer-column h3 {
-            font-size: 20px;
+            font-size: 1.1rem;
             margin-bottom: 20px;
             color: var(--white);
         }
@@ -274,7 +281,7 @@
             color: #999;
             text-decoration: none;
             transition: color 0.2s;
-            font-size: 15px;
+            font-size: 0.9rem;
         }
 
         .footer-column a:hover {
@@ -283,17 +290,16 @@
 
         .copyright {
             text-align: center;
-            margin-top: 50px;
-            padding-top: 30px;
+            padding: 20px 0;
             border-top: 1px solid var(--medium-gray);
             color: #999;
-            font-size: 14px;
+            font-size: 0.85rem;
         }
 
-        /* Responsive */
+        /* Responsive Styles */
         @media (max-width: 768px) {
-            .page-header h1 {
-                font-size: 36px;
+            .nav-links {
+                gap: 20px;
             }
             
             .filter-controls {
@@ -301,7 +307,7 @@
             }
             
             .templates-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
             }
         }
 
@@ -311,12 +317,10 @@
                 gap: 15px;
             }
             
-            .page-header {
-                padding: 60px 0 30px;
-            }
-            
-            .page-header h1 {
-                font-size: 32px;
+            .nav-links {
+                gap: 15px;
+                flex-wrap: wrap;
+                justify-content: center;
             }
             
             .filter-controls {
@@ -324,6 +328,11 @@
                 overflow-x: auto;
                 padding-bottom: 10px;
                 flex-wrap: nowrap;
+            }
+            
+            .footer-content {
+                grid-template-columns: 1fr;
+                text-align: center;
             }
         }
     </style>
@@ -333,173 +342,216 @@
         <div class="container header-content">
             <div class="logo">TEMPLI<span>fy</span></div>
             <nav class="nav-links">
-                <a href="template.html">All Templates</a>
-                <a href="contact.html">Contact</a>
+                <a href="index.html">Home</a>
+                <a href="#all-templates">Templates</a>
+                <a href="#contact">Contact</a>
             </nav>
         </div>
     </header>
 
     <main class="container">
         <section class="page-header">
-            <h1>Our Template Collection</h1>
-            <p>Browse our premium website templates designed for every industry and purpose. All templates are fully responsive and easy to customize.</p>
+            <h1>Our Complete Template Collection</h1>
+            <p>Browse all our premium website templates designed for every industry and purpose</p>
         </section>
 
         <div class="filter-controls">
             <button class="filter-btn active" data-filter="all">All Templates</button>
-            <button class="filter-btn" data-filter="business">Business</button>
             <button class="filter-btn" data-filter="portfolio">Portfolio</button>
+            <button class="filter-btn" data-filter="business">Business</button>
             <button class="filter-btn" data-filter="ecommerce">E-commerce</button>
             <button class="filter-btn" data-filter="blog">Blog</button>
             <button class="filter-btn" data-filter="landing">Landing Pages</button>
         </div>
 
-        <div class="templates-grid">
+        <div id="all-templates" class="templates-grid">
             <!-- Template 1 -->
-            <div class="template-card" data-category="business">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Corporate+Template');">
-                    <span class="template-badge">Popular</span>
-                    
+            <div class="template-card" data-category="portfolio">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Portfolio+1')">
+                    <span class="template-badge">Bestseller</span>
+                    <div class="template-overlay">
+                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
+                    </div>
                 </div>
                 <div class="template-info">
-                    <h3>Corporate Pro</h3>
-                    <p>Professional business template with services, team, and testimonial sections.</p>
+                    <h3>Minimal Portfolio</h3>
+                    <p>Clean, minimalist design perfect for creative professionals and designers.</p>
                     <div class="template-footer">
-                        <span class="template-price">$59</span>
-                        <button class="buy-button" data-product="1">Get Template</button>
+                        <span class="template-price">₹5</span>
+                        <button class="buy-button" 
+                                data-product="1"
+                                data-price="5"
+                                data-name="Minimal Portfolio">Get Template</button>
                     </div>
                 </div>
             </div>
             
             <!-- Template 2 -->
             <div class="template-card" data-category="portfolio">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Creative+Portfolio');">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Portfolio+2')">
                     <span class="template-badge">New</span>
-                    
+                    <div class="template-overlay">
+                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
+                    </div>
                 </div>
                 <div class="template-info">
                     <h3>Creative Portfolio</h3>
-                    <p>Elegant portfolio template with masonry gallery and project showcase.</p>
+                    <p>Modern portfolio with interactive elements and smooth animations.</p>
                     <div class="template-footer">
-                        <span class="template-price">$49</span>
-                        <button class="buy-button" data-product="2">Get Template</button>
+                        <span class="template-price">₹299</span>
+                        <button class="buy-button" 
+                                data-product="2"
+                                data-price="299"
+                                data-name="Creative Portfolio">Get Template</button>
                     </div>
                 </div>
             </div>
             
             <!-- Template 3 -->
-            <div class="template-card" data-category="ecommerce">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Online+Store');">
-                    
+            <div class="template-card" data-category="business">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Business+1')">
+                    <div class="template-overlay">
+                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
+                    </div>
                 </div>
                 <div class="template-info">
-                    <h3>Online Store</h3>
-                    <p>Complete e-commerce template with product grid, cart, and checkout.</p>
+                    <h3>Corporate Pro</h3>
+                    <p>Professional business template with services and team sections.</p>
                     <div class="template-footer">
-                        <span class="template-price">$79</span>
-                        <button class="buy-button" data-product="3">Get Template</button>
+                        <span class="template-price">₹399</span>
+                        <button class="buy-button" 
+                                data-product="3"
+                                data-price="399"
+                                data-name="Corporate Pro">Get Template</button>
                     </div>
                 </div>
             </div>
             
             <!-- Template 4 -->
-            <div class="template-card" data-category="blog">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Modern+Blog');">
-                    
+            <div class="template-card" data-category="ecommerce">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Ecommerce+1')">
+                    <span class="template-badge">Popular</span>
+                    <div class="template-overlay">
+                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
+                    </div>
                 </div>
                 <div class="template-info">
-                    <h3>Modern Blog</h3>
-                    <p>Clean blog template with featured posts, categories, and newsletter.</p>
+                    <h3>Online Store</h3>
+                    <p>Complete e-commerce solution with product showcase and cart.</p>
                     <div class="template-footer">
-                        <span class="template-price">$45</span>
-                        <button class="buy-button" data-product="4">Get Template</button>
+                        <span class="template-price">₹899</span>
+                        <button class="buy-button" 
+                                data-product="4"
+                                data-price="899"
+                                data-name="Online Store">Get Template</button>
                     </div>
                 </div>
             </div>
             
             <!-- Template 5 -->
-            <div class="template-card" data-category="landing">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Startup+Landing');">
-                    <span class="template-badge">Featured</span>
-                    
+            <div class="template-card" data-category="blog">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Blog+1')">
+                    <div class="template-overlay">
+                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
+                    </div>
                 </div>
                 <div class="template-info">
-                    <h3>Startup Landing</h3>
-                    <p>High-converting landing page for SaaS products and startups.</p>
+                    <h3>Modern Blog</h3>
+                    <p>Elegant blog template with featured posts and newsletter integration.</p>
                     <div class="template-footer">
-                        <span class="template-price">$54</span>
-                        <button class="buy-button" data-product="5">Get Template</button>
+                        <span class="template-price">₹349</span>
+                        <button class="buy-button" 
+                                data-product="5"
+                                data-price="349"
+                                data-name="Modern Blog">Get Template</button>
                     </div>
                 </div>
             </div>
             
             <!-- Template 6 -->
-            <div class="template-card" data-category="business">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Agency+Template');">
-                    
+            <div class="template-card" data-category="landing">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Landing+1')">
+                    <span class="template-badge">Featured</span>
+                    <div class="template-overlay">
+                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
+                    </div>
                 </div>
                 <div class="template-info">
-                    <h3>Agency Pro</h3>
-                    <p>Modern template for creative agencies with case studies and services.</p>
+                    <h3>Startup Landing</h3>
+                    <p>High-converting landing page for products and services.</p>
                     <div class="template-footer">
-                        <span class="template-price">$65</span>
-                        <button class="buy-button" data-product="6">Get Template</button>
+                        <span class="template-price">₹499</span>
+                        <button class="buy-button" 
+                                data-product="6"
+                                data-price="499"
+                                data-name="Startup Landing">Get Template</button>
                     </div>
                 </div>
             </div>
             
             <!-- Template 7 -->
-            <div class="template-card" data-category="portfolio">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Photography+Portfolio');">
-                    
+            <div class="template-card" data-category="business">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Business+2')">
+                    <div class="template-overlay">
+                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
+                    </div>
                 </div>
                 <div class="template-info">
-                    <h3>Photography Portfolio</h3>
-                    <p>Beautiful template for photographers with full-screen image galleries.</p>
+                    <h3>Agency Pro</h3>
+                    <p>Modern template for creative agencies with case studies.</p>
                     <div class="template-footer">
-                        <span class="template-price">$55</span>
-                        <button class="buy-button" data-product="7">Get Template</button>
+                        <span class="template-price">₹599</span>
+                        <button class="buy-button" 
+                                data-product="7"
+                                data-price="599"
+                                data-name="Agency Pro">Get Template</button>
                     </div>
                 </div>
             </div>
             
             <!-- Template 8 -->
             <div class="template-card" data-category="ecommerce">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Fashion+Store');">
+                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Ecommerce+2')">
                     <span class="template-badge">New</span>
+                    <div class="template-overlay">
+                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
+                    </div>
                 </div>
                 <div class="template-info">
                     <h3>Fashion Store</h3>
-                    <p>Stylish e-commerce template for fashion brands and clothing stores.</p>
+                    <p>Stylish e-commerce template for fashion brands.</p>
                     <div class="template-footer">
-                        <span class="template-price">$69</span>
-                        <button class="buy-button" data-product="8">Get Template</button>
+                        <span class="template-price">₹799</span>
+                        <button class="buy-button" 
+                                data-product="8"
+                                data-price="799"
+                                data-name="Fashion Store">Get Template</button>
                     </div>
                 </div>
             </div>
         </div>
     </main>
 
-    <footer>
+    <footer id="contact">
         <div class="container">
             <div class="footer-content">
                 <div class="footer-column">
-                    <h3>DigitalTemplates</h3>
+                    <h3>TEMPLIfy</h3>
                     <p>Premium website templates for modern businesses and creatives.</p>
                 </div>
                 <div class="footer-column">
                     <h3>Quick Links</h3>
                     <ul>
-                        <li><a href="#">All Templates</a></li>
-                        <li><a href="#">License</a></li>
-                        <li><a href="#">Contact</a></li>
+                        <li><a href="index.html">Home</a></li>
+                        <li><a href="#all-templates">Templates</a></li>
+                        <li><a href="#contact">Contact</a></li>
                     </ul>
                 </div>
                 <div class="footer-column">
-                    <h3>Support</h3>
+                    <h3>Contact</h3>
                     <ul>
-                        <li><a href="#">Documentation</a></li>
-                        <li><a href="#">FAQ</a></li>
+                        <li>Email: contact@templify.com</li>
+                        <li>Phone: +91 9876543210</li>
                     </ul>
                 </div>
             </div>
@@ -534,29 +586,42 @@
                 });
             });
             
-            // Product data
-            const products = {
-                1: { name: 'Corporate Pro', price: '59' },
-                2: { name: 'Creative Portfolio', price: '49' },
-                3: { name: 'Online Store', price: '79' },
-                4: { name: 'Modern Blog', price: '45' },
-                5: { name: 'Startup Landing', price: '54' },
-                6: { name: 'Agency Pro', price: '65' },
-                7: { name: 'Photography Portfolio', price: '55' },
-                8: { name: 'Fashion Store', price: '69' }
-            };
-            
             // Buy button functionality
-            const buyButtons = document.querySelectorAll('.buy-button');
+            document.querySelectorAll('.buy-button').forEach(button => {
+                button.addEventListener('click', function() {
+                    const productId = this.getAttribute('data-product');
+                    const productPrice = this.getAttribute('data-price');
+                    const productName = this.getAttribute('data-name');
+                    
+                    // Redirect to payment page
+                    window.location.href = `payment.html?product=${productId}&price=${productPrice}&name=${encodeURIComponent(productName)}`;
+                });
+            });
             
-            buyButtons.forEach(button => {
+            // Preview button functionality
+            document.querySelectorAll('.preview-btn').forEach(button => {
                 button.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const productId = this.getAttribute('data-product');
-                    const product = products[productId];
+                    const previewUrl = this.getAttribute('data-preview');
+                    if (previewUrl) {
+                        window.open(previewUrl, '_blank');
+                    }
+                });
+            });
+            
+            // Smooth scrolling for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    if (targetId === '#') return;
                     
-                    if (product) {
-                        alert(`Added ${product.name} ($${product.price}) to cart`);
+                    const targetElement = document.querySelector(targetId);
+                    if (targetElement) {
+                        window.scrollTo({
+                            top: targetElement.offsetTop - 80,
+                            behavior: 'smooth'
+                        });
                     }
                 });
             });
