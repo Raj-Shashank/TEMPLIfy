@@ -35,7 +35,6 @@
             padding: 0 20px;
         }
 
-        /* Header Styles */
         header {
             background-color: var(--royal-black);
             padding: 20px 0;
@@ -80,7 +79,6 @@
             color: var(--accent-blue);
         }
 
-        /* Page Header */
         .page-header {
             padding: 100px 0 40px;
             text-align: center;
@@ -101,7 +99,6 @@
             margin: 0 auto;
         }
 
-        /* Filter Controls */
         .filter-controls {
             display: flex;
             justify-content: center;
@@ -127,7 +124,6 @@
             color: white;
         }
 
-        /* Templates Grid */
         .templates-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
@@ -250,7 +246,6 @@
             box-shadow: 0 5px 15px rgba(58, 123, 255, 0.3);
         }
 
-        /* Footer */
         footer {
             background-color: var(--dark-gray);
             padding: 60px 0 0;
@@ -296,7 +291,6 @@
             font-size: 0.85rem;
         }
 
-        /* Responsive Styles */
         @media (max-width: 768px) {
             .nav-links {
                 gap: 20px;
@@ -365,170 +359,7 @@
         </div>
 
         <div id="all-templates" class="templates-grid">
-            <!-- Template 1 -->
-            <div class="template-card" data-category="portfolio">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Portfolio+1')">
-                    <span class="template-badge">Bestseller</span>
-                    <div class="template-overlay">
-                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
-                    </div>
-                </div>
-                <div class="template-info">
-                    <h3>Minimal Portfolio</h3>
-                    <p>Clean, minimalist design perfect for creative professionals and designers.</p>
-                    <div class="template-footer">
-                        <span class="template-price">₹5</span>
-                        <button class="buy-button" 
-                                data-product="1"
-                                data-price="5"
-                                data-name="Minimal Portfolio">Get Template</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Template 2 -->
-            <div class="template-card" data-category="portfolio">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Portfolio+2')">
-                    <span class="template-badge">New</span>
-                    <div class="template-overlay">
-                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
-                    </div>
-                </div>
-                <div class="template-info">
-                    <h3>Creative Portfolio</h3>
-                    <p>Modern portfolio with interactive elements and smooth animations.</p>
-                    <div class="template-footer">
-                        <span class="template-price">₹299</span>
-                        <button class="buy-button" 
-                                data-product="2"
-                                data-price="299"
-                                data-name="Creative Portfolio">Get Template</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Template 3 -->
-            <div class="template-card" data-category="business">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Business+1')">
-                    <div class="template-overlay">
-                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
-                    </div>
-                </div>
-                <div class="template-info">
-                    <h3>Corporate Pro</h3>
-                    <p>Professional business template with services and team sections.</p>
-                    <div class="template-footer">
-                        <span class="template-price">₹399</span>
-                        <button class="buy-button" 
-                                data-product="3"
-                                data-price="399"
-                                data-name="Corporate Pro">Get Template</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Template 4 -->
-            <div class="template-card" data-category="ecommerce">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Ecommerce+1')">
-                    <span class="template-badge">Popular</span>
-                    <div class="template-overlay">
-                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
-                    </div>
-                </div>
-                <div class="template-info">
-                    <h3>Online Store</h3>
-                    <p>Complete e-commerce solution with product showcase and cart.</p>
-                    <div class="template-footer">
-                        <span class="template-price">₹899</span>
-                        <button class="buy-button" 
-                                data-product="4"
-                                data-price="899"
-                                data-name="Online Store">Get Template</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Template 5 -->
-            <div class="template-card" data-category="blog">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Blog+1')">
-                    <div class="template-overlay">
-                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
-                    </div>
-                </div>
-                <div class="template-info">
-                    <h3>Modern Blog</h3>
-                    <p>Elegant blog template with featured posts and newsletter integration.</p>
-                    <div class="template-footer">
-                        <span class="template-price">₹349</span>
-                        <button class="buy-button" 
-                                data-product="5"
-                                data-price="349"
-                                data-name="Modern Blog">Get Template</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Template 6 -->
-            <div class="template-card" data-category="landing">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Landing+1')">
-                    <span class="template-badge">Featured</span>
-                    <div class="template-overlay">
-                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
-                    </div>
-                </div>
-                <div class="template-info">
-                    <h3>Startup Landing</h3>
-                    <p>High-converting landing page for products and services.</p>
-                    <div class="template-footer">
-                        <span class="template-price">₹499</span>
-                        <button class="buy-button" 
-                                data-product="6"
-                                data-price="499"
-                                data-name="Startup Landing">Get Template</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Template 7 -->
-            <div class="template-card" data-category="business">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Business+2')">
-                    <div class="template-overlay">
-                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
-                    </div>
-                </div>
-                <div class="template-info">
-                    <h3>Agency Pro</h3>
-                    <p>Modern template for creative agencies with case studies.</p>
-                    <div class="template-footer">
-                        <span class="template-price">₹599</span>
-                        <button class="buy-button" 
-                                data-product="7"
-                                data-price="599"
-                                data-name="Agency Pro">Get Template</button>
-                    </div>
-                </div>
-            </div>
-            
-            <!-- Template 8 -->
-            <div class="template-card" data-category="ecommerce">
-                <div class="template-image" style="background-image: url('https://via.placeholder.com/600x400/2D2D2D/999?text=Ecommerce+2')">
-                    <span class="template-badge">New</span>
-                    <div class="template-overlay">
-                        <button class="preview-btn" data-preview="https://www.youtube.com/watch?v=dQw4w9WgXcQ">Live Preview</button>
-                    </div>
-                </div>
-                <div class="template-info">
-                    <h3>Fashion Store</h3>
-                    <p>Stylish e-commerce template for fashion brands.</p>
-                    <div class="template-footer">
-                        <span class="template-price">₹799</span>
-                        <button class="buy-button" 
-                                data-product="8"
-                                data-price="799"
-                                data-name="Fashion Store">Get Template</button>
-                    </div>
-                </div>
-            </div>
+            <!-- Templates will be loaded by JavaScript -->
         </div>
     </main>
 
@@ -562,70 +393,150 @@
     </footer>
 
     <script>
+        // Product Data - Edit this section to add/remove templates
+        const products = [
+            {
+                id: "portfolio-pro",
+                name: "Minimal Portfolio",
+                description: "Clean, minimalist design perfect for creative professionals and designers.",
+                price: "199",
+                category: "portfolio",
+                badge: "Bestseller",
+                image: "images/Portfolio v1.png",
+                previewUrl: "#",
+                folderName: "portfolio-v1"
+            },
+            {
+                id: "creative-portfolio",
+                name: "Creative Portfolio",
+                description: "Modern portfolio with interactive elements and smooth animations.",
+                price: "2499",
+                category: "portfolio",
+                badge: "New",
+                image: "images/portfolio-v2.png",
+                previewUrl: "#",
+                folderName: "portfolio-v2"
+            },
+            {
+                id: "corporate-pro",
+                name: "Corporate Pro",
+                description: "Professional business template with services and team sections.",
+                price: "2999",
+                category: "business",
+                badge: "",
+                image: "images/business-v1.png",
+                previewUrl: "#",
+                folderName: "business-v1"
+            },
+            {
+                id: "online-store",
+                name: "Online Store",
+                description: "Complete e-commerce solution with product showcase and cart.",
+                price: "3999",
+                category: "ecommerce",
+                badge: "Popular",
+                image: "images/ecommerce-v1.png",
+                previewUrl: "#",
+                folderName: "ecommerce-v1"
+            },
+            {
+                id: "modern-blog",
+                name: "Modern Blog",
+                description: "Elegant blog template with featured posts and newsletter integration.",
+                price: "1599",
+                category: "blog",
+                badge: "",
+                image: "images/blog-v1.png",
+                previewUrl: "#",
+                folderName: "blog-v1"
+            },
+            {
+                id: "startup-landing",
+                name: "Startup Landing",
+                description: "High-converting landing page for products and services.",
+                price: "2299",
+                category: "landing",
+                badge: "Featured",
+                image: "images/landing-v1.png",
+                previewUrl: "#",
+                folderName: "landing-v1"
+            }
+        ];
+
+        // Main Functions
         document.addEventListener('DOMContentLoaded', function() {
-            // Filter functionality
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const templateCards = document.querySelectorAll('.template-card');
-            
-            filterBtns.forEach(btn => {
-                btn.addEventListener('click', function() {
-                    // Update active button
-                    filterBtns.forEach(b => b.classList.remove('active'));
-                    this.classList.add('active');
+            renderProducts();
+            initFilters();
+            initEventListeners();
+        });
+
+        function renderProducts() {
+            const grid = document.getElementById('all-templates');
+            grid.innerHTML = products.map(product => `
+                <div class="template-card" data-category="${product.category}">
+                    ${product.badge ? `<span class="template-badge">${product.badge}</span>` : ''}
+                    <div class="template-image" style="background-image: url('${product.image}')">
+                        <div class="template-overlay">
+                            <button class="preview-btn" data-preview="${product.previewUrl}">Live Preview</button>
+                        </div>
+                    </div>
+                    <div class="template-info">
+                        <h3>${product.name}</h3>
+                        <p>${product.description}</p>
+                        <div class="template-footer">
+                            <span class="template-price">₹${product.price}</span>
+                            <button class="buy-button" 
+                                    data-id="${product.id}"
+                                    data-name="${product.name}"
+                                    data-price="${product.price}"
+                                    data-folder="${product.folderName}">
+                                Get Template
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function initEventListeners() {
+            // Handle buy button clicks
+            document.addEventListener('click', function(e) {
+                if (e.target.classList.contains('buy-button')) {
+                    const productData = {
+                        id: e.target.dataset.id,
+                        name: e.target.dataset.name,
+                        price: e.target.dataset.price,
+                        folder: e.target.dataset.folder
+                    };
                     
-                    const filter = this.getAttribute('data-filter');
-                    
-                    // Filter templates
-                    templateCards.forEach(card => {
-                        if (filter === 'all' || card.getAttribute('data-category') === filter) {
-                            card.style.display = 'block';
-                        } else {
-                            card.style.display = 'none';
-                        }
-                    });
-                });
-            });
-            
-            // Buy button functionality
-            document.querySelectorAll('.buy-button').forEach(button => {
-                button.addEventListener('click', function() {
-                    const productId = this.getAttribute('data-product');
-                    const productPrice = this.getAttribute('data-price');
-                    const productName = this.getAttribute('data-name');
+                    // Store ALL data in localStorage
+                    localStorage.setItem('currentProduct', JSON.stringify(productData));
                     
                     // Redirect to payment page
-                    window.location.href = `payment.html?product=${productId}&price=${productPrice}&name=${encodeURIComponent(productName)}`;
-                });
-            });
-            
-            // Preview button functionality
-            document.querySelectorAll('.preview-btn').forEach(button => {
-                button.addEventListener('click', function(e) {
+                    window.location.href = 'payment.html';
+                }
+                
+                // Handle preview buttons
+                if (e.target.classList.contains('preview-btn')) {
                     e.preventDefault();
-                    const previewUrl = this.getAttribute('data-preview');
-                    if (previewUrl) {
-                        window.open(previewUrl, '_blank');
-                    }
-                });
+                    const url = e.target.dataset.preview;
+                    if (url && url !== '#') window.open(url, '_blank');
+                }
             });
-            
             // Smooth scrolling for anchor links
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function(e) {
                     e.preventDefault();
-                    const targetId = this.getAttribute('href');
-                    if (targetId === '#') return;
-                    
-                    const targetElement = document.querySelector(targetId);
-                    if (targetElement) {
+                    const target = document.querySelector(this.getAttribute('href'));
+                    if (target) {
                         window.scrollTo({
-                            top: targetElement.offsetTop - 80,
+                            top: target.offsetTop - 80,
                             behavior: 'smooth'
                         });
                     }
                 });
             });
-        });
+        }
     </script>
 </body>
 </html>
