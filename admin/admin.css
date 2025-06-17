@@ -1,0 +1,39 @@
+:root {
+  --sidebar-bg: #343a40;
+  --primary: #007bff;
+  --success: #28a745;
+  --danger: #dc3545;
+}
+
+.sidebar {
+  min-height: 100vh;
+  background: var(--sidebar-bg);
+}
+.sidebar .nav-link {
+  color: rgba(255, 255, 255, 0.75);
+}
+.sidebar .nav-link.active {
+  background: var(--primary);
+  color: white;
+}
+.template-card {
+  transition: all 0.3s;
+}
+.template-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+.badge-draft {
+  background: #6c757d;
+}
+.badge-active {
+  background: var(--success);
+}
+.badge-archived {
+  background: #ffc107;
+  color: #000;
+}
+#previewImageContainer img {
+  max-height: 200px;
+  object-fit: contain;
+}
