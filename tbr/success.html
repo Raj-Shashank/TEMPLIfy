@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment Successful | DigitalTemplates</title>
+    <style>
+        :root {
+            --royal-black: #0B0C10;
+            --dark-gray: #1A1A1A;
+            --accent-blue: #3A7BFF;
+            --success-green: #4BB543;
+            --light-gray: #E5E5E5;
+        }
+        
+        body {
+            background-color: var(--royal-black);
+            color: var(--light-gray);
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+        
+        .success-container {
+            background: var(--dark-gray);
+            border-radius: 10px;
+            padding: 30px;
+            margin: 20px auto;
+            max-width: 600px;
+            border: 1px solid #333;
+        }
+        
+        .success-icon {
+            color: var(--success-green);
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+        
+        .download-btn {
+            background: linear-gradient(to right, var(--accent-blue), #8A2BE2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: transform 0.3s;
+        }
+        
+        .download-btn:hover {
+            transform: translateY(-3px);
+        }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <div class="success-container">
+        <div class="success-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h2>Payment Successful!</h2>
+        <p id="purchase-details">Thank you for purchasing Corporate Pro</p>
+        <p>Your template is ready to download</p>
+        
+        <button id="download-btn" class="download-btn">
+            <i class="fas fa-download"></i> Download Template
+        </button>
+        
+        <p>A copy has been sent to your email</p>
+    </div>
+
+    <script>
+        // Get product details from URL
+        const params = new URLSearchParams(window.location.search);
+        const productName = params.get('product') || 'Corporate Pro';
+        const productPrice = params.get('price') || '59';
+        
+        // Display purchase info
+        document.getElementById('purchase-details').textContent = 
+            `Thank you for purchasing ${decodeURIComponent(productName)} (₹${productPrice})`;
+        
+        // Download function
+        document.getElementById('download-btn').addEventListener('click', function() {
+            // Replace with your actual file URL
+            const fileUrl = 'https://example.com/templates/corporate-pro-template.zip';
+            
+            // Create temporary link to trigger download
+            const link = document.createElement('a');
+            link.href = fileUrl;
+            link.download = 'corporate-pro-template.zip';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            // Update button to show success
+            this.innerHTML = '<i class="fas fa-check"></i> Download Started!';
+            this.style.background = 'var(--success-green)';
+        });
+        
+        // Auto-start download after 3 seconds
+        setTimeout(() => {
+            document.getElementById('download-btn').click();
+        }, 3000);
+    </script>
+</body>
+</html>
