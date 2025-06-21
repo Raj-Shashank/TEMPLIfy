@@ -25,7 +25,9 @@ async function fetchAndRenderTemplates() {
                     }')">
                         <div class="template-overlay">
                             <button class="preview-btn" data-preview="${
-                              template.previewUrl || "#"
+                              template.livePreviewUrl
+                                ? template.livePreviewUrl
+                                : template.previewUrl || "#"
                             }">Live Preview</button>
                         </div>
                     </div>
@@ -59,7 +61,7 @@ async function fetchAndRenderTemplates() {
 // Main Functions
 document.addEventListener("DOMContentLoaded", function () {
   fetchAndRenderTemplates();
-  initFilters();
+  //initFilters();
   initEventListeners();
 });
 
@@ -102,3 +104,6 @@ function initEventListeners() {
     });
   });
 }
+
+// Auto-refresh templates every 30 seconds
+setInterval(fetchAndRenderTemplates, 30000);

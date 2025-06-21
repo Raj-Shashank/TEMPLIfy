@@ -1,4 +1,4 @@
-require('dotenv').config();
+require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const bodyParser = require("body-parser");
@@ -12,9 +12,9 @@ const MONGO_URI = process.env.MONGO_URI;
 
 // Middleware
 const corsOptions = {
-  origin: 'http://localhost:5500', // Your client's origin
+  origin: "http://localhost:5500", // Your client's origin
   credentials: true, // Allow credentials
-  optionsSuccessStatus: 200
+  optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 app.use(bodyParser.json());
@@ -34,7 +34,7 @@ const upload = multer({ storage });
 
 // MongoDB Connection
 mongoose
-  .connect(MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
+  .connect(MONGO_URI)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.error("MongoDB connection error:", err));
 
@@ -61,6 +61,7 @@ const TemplateSchema = new mongoose.Schema({
   downloads: { type: Number, default: 0 },
   previewUrl: String, // Optional, for future file upload
   fileUrl: String, // Optional, for future file upload
+  livePreviewUrl: String, // Optional, for live preview links
 });
 const Template = mongoose.model("Template", TemplateSchema);
 
@@ -125,7 +126,15 @@ app.post(
   ]),
   async (req, res) => {
     try {
-      const { name, description, category, price, status, tags } = req.body;
+      const {
+        name,
+        description,
+        category,
+        price,
+        status,
+        tags,
+        livePreviewUrl,
+      } = req.body;
       const templateFile = req.files["templateFile"]?.[0];
       const previewFile = req.files["previewFile"]?.[0];
       const template = new Template({
@@ -135,6 +144,7 @@ app.post(
         price: Number(price),
         status,
         tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+        livePreviewUrl: livePreviewUrl || undefined,
         previewUrl: previewFile
           ? `/uploads/${previewFile.filename}`
           : undefined,
@@ -146,6 +156,60 @@ app.post(
       res.status(201).json(template);
     } catch (err) {
       res.status(400).json({ error: "Failed to upload template" });
+    }
+  }
+);
+
+// API: Get a single template by ID
+app.get("/api/templates/:id", async (req, res) => {
+  try {
+    const template = await Template.findById(req.params.id);
+    if (!template) return res.status(404).json({ error: "Template not found" });
+    res.json(template);
+  } catch (err) {
+    res.status(400).json({ error: "Failed to fetch template" });
+  }
+});
+
+// API: Update a template (with optional file uploads)
+app.put(
+  "/api/templates/:id",
+  upload.fields([
+    { name: "templateFile", maxCount: 1 },
+    { name: "previewFile", maxCount: 1 },
+  ]),
+  async (req, res) => {
+    try {
+      const {
+        name,
+        description,
+        category,
+        price,
+        status,
+        tags,
+        livePreviewUrl,
+      } = req.body;
+      const templateFile = req.files["templateFile"]?.[0];
+      const previewFile = req.files["previewFile"]?.[0];
+      const update = {
+        name,
+        description,
+        category,
+        price: Number(price),
+        status,
+        tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+        livePreviewUrl: livePreviewUrl || undefined,
+      };
+      if (templateFile) update.fileUrl = `/uploads/${templateFile.filename}`;
+      if (previewFile) update.previewUrl = `/uploads/${previewFile.filename}`;
+      const template = await Template.findByIdAndUpdate(req.params.id, update, {
+        new: true,
+      });
+      if (!template)
+        return res.status(404).json({ error: "Template not found" });
+      res.json(template);
+    } catch (err) {
+      res.status(400).json({ error: "Failed to update template" });
     }
   }
 );

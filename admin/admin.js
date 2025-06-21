@@ -78,6 +78,9 @@ document
     const tags = document.getElementById("templateTags").value;
     const templateFile = document.getElementById("templateFile").files[0];
     const previewFile = document.getElementById("templatePreview").files[0];
+    const livePreviewUrl = document.getElementById(
+      "templateLivePreviewUrl"
+    ).value;
 
     if (
       !name ||
@@ -101,6 +104,7 @@ document
       formData.append("tags", tags);
       formData.append("templateFile", templateFile);
       formData.append("previewFile", previewFile);
+      formData.append("livePreviewUrl", livePreviewUrl);
 
       const res = await fetch(`${API_BASE_URL}/templates/upload`, {
         method: "POST",
@@ -199,11 +203,186 @@ async function loadTemplates() {
   }
 }
 
-// Edit Template (stub)
-function editTemplate(templateId) {
-  alert(
-    "Edit functionality will be implemented here for template ID: " + templateId
-  );
+// Edit Template
+async function editTemplate(templateId) {
+  // Fetch template data
+  let template;
+  try {
+    template = await apiRequest(`/templates/${templateId}`);
+  } catch (err) {
+    alert("Failed to load template data");
+    return;
+  }
+
+  // Build modal HTML
+  const modal = document.getElementById("editTemplateModal");
+  modal.innerHTML = `
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Edit Template</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="editTemplateForm">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="editTemplateName" class="form-label">Template Name*</label>
+                  <input type="text" class="form-control" id="editTemplateName" value="${
+                    template.name
+                  }" required>
+                </div>
+                <div class="mb-3">
+                  <label for="editTemplateDescription" class="form-label">Description*</label>
+                  <textarea class="form-control" id="editTemplateDescription" rows="3" required>${
+                    template.description
+                  }</textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="editTemplateCategory" class="form-label">Category*</label>
+                  <select class="form-select" id="editTemplateCategory" required>
+                    <option value="">Select...</option>
+                    <option${
+                      template.category === "Portfolio" ? " selected" : ""
+                    }>Portfolio</option>
+                    <option${
+                      template.category === "E-commerce" ? " selected" : ""
+                    }>E-commerce</option>
+                    <option${
+                      template.category === "Blog" ? " selected" : ""
+                    }>Blog</option>
+                    <option${
+                      template.category === "Landing Page" ? " selected" : ""
+                    }>Landing Page</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="editTemplatePrice" class="form-label">Price (₹)*</label>
+                  <input type="number" class="form-control" id="editTemplatePrice" min="0" value="${
+                    template.price
+                  }" required>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="mb-3">
+                  <label for="editTemplateStatus" class="form-label">Status*</label>
+                  <select class="form-select" id="editTemplateStatus" required>
+                    <option value="draft"${
+                      template.status === "draft" ? " selected" : ""
+                    }>Draft</option>
+                    <option value="active"${
+                      template.status === "active" ? " selected" : ""
+                    }>Active</option>
+                    <option value="archived"${
+                      template.status === "archived" ? " selected" : ""
+                    }>Archived</option>
+                  </select>
+                </div>
+                <div class="mb-3">
+                  <label for="editTemplateTags" class="form-label">Tags (comma separated)</label>
+                  <input type="text" class="form-control" id="editTemplateTags" value="${
+                    template.tags ? template.tags.join(", ") : ""
+                  }">
+                </div>
+                <div class="mb-3">
+                  <label for="editTemplateFile" class="form-label">Template File (ZIP)</label>
+                  <input class="form-control" type="file" id="editTemplateFile" accept=".zip">
+                  <small class="form-text text-muted">Leave blank to keep existing file.</small>
+                </div>
+                <div class="mb-3">
+                  <label for="editTemplatePreview" class="form-label">Preview Image</label>
+                  <input class="form-control" type="file" id="editTemplatePreview" accept="image/*">
+                  <div class="mt-2 text-center" id="editPreviewImageContainer">
+                    ${
+                      template.previewUrl
+                        ? `<img src="${template.previewUrl}" class="img-thumbnail" style="max-width:120px;">`
+                        : ""
+                    }
+                  </div>
+                  <small class="form-text text-muted">Leave blank to keep existing image.</small>
+                </div>
+                <div class="mb-3">
+                  <label for="editTemplateLivePreviewUrl" class="form-label">Live Preview URL</label>
+                  <input type="url" class="form-control" id="editTemplateLivePreviewUrl" value="${
+                    template.livePreviewUrl || ""
+                  }" placeholder="https://your-demo-link.com">
+                  <small class="form-text text-muted">Optional. If provided, the Live Preview button will open this link.</small>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="updateTemplateBtn">Update Template</button>
+        </div>
+      </div>
+    </div>
+  `;
+  // Show modal
+  const bsModal = new bootstrap.Modal(modal);
+  bsModal.show();
+
+  // Preview image update
+  document
+    .getElementById("editTemplatePreview")
+    .addEventListener("change", function (e) {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          document.getElementById(
+            "editPreviewImageContainer"
+          ).innerHTML = `<img src="${event.target.result}" class="img-thumbnail" style="max-width:120px;">`;
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
+  // Update button logic
+  document.getElementById("updateTemplateBtn").onclick = async function () {
+    const name = document.getElementById("editTemplateName").value;
+    const description = document.getElementById(
+      "editTemplateDescription"
+    ).value;
+    const category = document.getElementById("editTemplateCategory").value;
+    const price = document.getElementById("editTemplatePrice").value;
+    const status = document.getElementById("editTemplateStatus").value;
+    const tags = document.getElementById("editTemplateTags").value;
+    const templateFile = document.getElementById("editTemplateFile").files[0];
+    const previewFile = document.getElementById("editTemplatePreview").files[0];
+    const livePreviewUrl = document.getElementById(
+      "editTemplateLivePreviewUrl"
+    ).value;
+    if (!name || !description || !category || !price) {
+      alert("Please fill all required fields!");
+      return;
+    }
+    try {
+      const formData = new FormData();
+      formData.append("name", name);
+      formData.append("description", description);
+      formData.append("category", category);
+      formData.append("price", price);
+      formData.append("status", status);
+      formData.append("tags", tags);
+      if (templateFile) formData.append("templateFile", templateFile);
+      if (previewFile) formData.append("previewFile", previewFile);
+      formData.append("livePreviewUrl", livePreviewUrl);
+      const res = await fetch(`${API_BASE_URL}/templates/${templateId}`, {
+        method: "PUT",
+        body: formData,
+      });
+      if (!res.ok) throw new Error(await res.text());
+      alert("Template updated successfully!");
+      bsModal.hide();
+      loadTemplates();
+    } catch (error) {
+      console.error("Error updating template:", error);
+      alert("Error updating template. Check console for details.");
+    }
+  };
 }
 
 // Delete Template (using backend API)
@@ -314,4 +493,7 @@ document.addEventListener("DOMContentLoaded", () => {
   document
     .getElementById("statusFilter")
     .addEventListener("change", loadTemplates);
+
+  // Auto-refresh templates every 30 seconds in admin panel
+  setInterval(loadTemplates, 30000);
 });
