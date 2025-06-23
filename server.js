@@ -5,6 +5,7 @@ const bodyParser = require("body-parser");
 const path = require("path");
 const multer = require("multer");
 const cors = require("cors");
+const Razorpay = require("razorpay");
 
 const app = express();
 const PORT = 3000;
@@ -64,6 +65,11 @@ const TemplateSchema = new mongoose.Schema({
   livePreviewUrl: String, // Optional, for live preview links
 });
 const Template = mongoose.model("Template", TemplateSchema);
+
+const razorpay = new Razorpay({
+  key_id: process.env.RAZORPAY_KEY_ID,
+  key_secret: process.env.RAZORPAY_SECRET_KEY,
+});
 
 // Example API Routes
 app.get("/api/items", async (req, res) => {
@@ -213,6 +219,24 @@ app.put(
     }
   }
 );
+
+// API: Create Razorpay order
+app.post("/api/create-razorpay-order", async (req, res) => {
+  try {
+    let { amount, currency, receipt } = req.body;
+    // Ensure receipt is no more than 40 characters
+    if (receipt && receipt.length > 40) {
+      receipt = receipt.substring(0, 40);
+    }
+    console.log("Creating order with:", { amount, currency, receipt });
+    const options = { amount, currency, receipt };
+    const order = await razorpay.orders.create(options);
+    res.json({ orderId: order.id });
+  } catch (err) {
+    console.error("Razorpay order error:", err);
+    res.status(500).json({ error: "Failed to create Razorpay order" });
+  }
+});
 
 // Start Server
 app.listen(PORT, () => {

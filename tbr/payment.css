@@ -1,0 +1,96 @@
+:root {
+  --royal-black: #0b0c10;
+  --dark-gray: #1a1a1a;
+  --accent-blue: #3a7bff;
+  --success-green: #4bb543;
+  --error-red: #ff3333;
+  --light-gray: #e5e5e5;
+}
+
+body {
+  background-color: var(--royal-black);
+  color: var(--light-gray);
+  font-family: "Inter", sans-serif;
+  margin: 0;
+  padding: 20px;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.section {
+  background: var(--dark-gray);
+  border-radius: 10px;
+  padding: 25px;
+  margin: 20px 0;
+  border: 1px solid #333;
+}
+
+.status-icon {
+  font-size: 60px;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.success {
+  color: var(--success-green);
+}
+.error {
+  color: var(--error-red);
+}
+
+.btn {
+  display: block;
+  padding: 12px;
+  border-radius: 8px;
+  width: 100%;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 10px;
+  text-align: center;
+  transition: all 0.3s;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(to right, var(--accent-blue), #8a2be2);
+  color: white;
+}
+
+.btn-success {
+  background: var(--success-green);
+  color: white;
+}
+
+.btn-secondary {
+  background: transparent;
+  border: 1px solid var(--accent-blue);
+  color: var(--accent-blue);
+}
+
+#paymentSection {
+  display: block;
+}
+#successSection,
+#errorSection {
+  display: none;
+}
+
+.loading {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  border-radius: 50%;
+  border-top-color: white;
+  animation: spin 1s ease-in-out infinite;
+  margin-right: 8px;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}

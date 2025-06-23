@@ -1,3 +1,6 @@
+// Razorpay key (replace with your real key)
+const RAZORPAY_KEY_ID = 'rzp_test_kI4DrMAEQUKfyT';
+
 // Fetch templates from backend and render dynamically
 async function fetchAndRenderTemplates() {
   const grid = document.getElementById("all-templates");
@@ -69,18 +72,14 @@ function initEventListeners() {
   // Handle buy button clicks
   document.addEventListener("click", function (e) {
     if (e.target.classList.contains("buy-button")) {
-      const productData = {
-        id: e.target.dataset.id,
-        name: e.target.dataset.name,
-        price: e.target.dataset.price,
-        folder: e.target.dataset.folder,
-      };
-
-      // Store ALL data in localStorage
-      localStorage.setItem("currentProduct", JSON.stringify(productData));
-
-      // Redirect to payment page
-      window.location.href = "payment.html";
+      const templateId = e.target.dataset.id;
+      const templateName = e.target.dataset.name;
+      const templatePrice = e.target.dataset.price;
+      // Redirect to payment page with templateId, name, price
+      window.location.href = `payment.html?id=${templateId}&name=${encodeURIComponent(
+        templateName
+      )}&price=${templatePrice}`;
+      return;
     }
 
     // Handle preview buttons
