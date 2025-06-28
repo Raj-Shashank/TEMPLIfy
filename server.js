@@ -6,6 +6,7 @@ const path = require("path");
 const multer = require("multer");
 const cors = require("cors");
 const Razorpay = require("razorpay");
+const { MongoClient, GridFSBucket, ObjectId } = require("mongodb");
 
 const app = express();
 const PORT = 3000;
@@ -21,17 +22,17 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
-// File upload setup
-const storage = multer.diskStorage({
-  destination: function (req, file, cb) {
-    cb(null, path.join(__dirname, "uploads"));
-  },
-  filename: function (req, file, cb) {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(null, uniqueSuffix + "-" + file.originalname);
-  },
+// Setup GridFS
+let gfsBucket;
+mongoose.connection.once("open", () => {
+  gfsBucket = new GridFSBucket(mongoose.connection.db, {
+    bucketName: "uploads",
+  });
 });
-const upload = multer({ storage });
+
+// Use multer memory storage for file uploads
+const memoryStorage = multer.memoryStorage();
+const uploadMemory = multer({ storage: memoryStorage });
 
 // MongoDB Connection
 mongoose
@@ -71,6 +72,16 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
 
+// Set BASE_URL for file links
+const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
+
+// Helper function to make URLs absolute
+function makeAbsoluteUrl(url) {
+  if (!url) return url;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${BASE_URL}${url}`;
+}
+
 // Example API Routes
 app.get("/api/items", async (req, res) => {
   const items = await Item.find();
@@ -95,7 +106,14 @@ app.get("/api/templates", async (req, res) => {
         { description: { $regex: search, $options: "i" } },
       ];
     }
-    const templates = await Template.find(query).sort({ createdAt: -1 });
+    let templates = await Template.find(query).sort({ createdAt: -1 });
+    // Ensure previewUrl and fileUrl are absolute
+    templates = templates.map((t) => {
+      t = t.toObject();
+      t.previewUrl = makeAbsoluteUrl(t.previewUrl);
+      t.fileUrl = makeAbsoluteUrl(t.fileUrl);
+      return t;
+    });
     res.json(templates);
   } catch (err) {
     res.status(500).json({ error: "Failed to fetch templates" });
@@ -123,10 +141,10 @@ app.delete("/api/templates/:id", async (req, res) => {
   }
 });
 
-// API: Upload template with files (templateFile, previewFile)
+// API: Upload template with files (store in GridFS)
 app.post(
   "/api/templates/upload",
-  upload.fields([
+  uploadMemory.fields([
     { name: "templateFile", maxCount: 1 },
     { name: "previewFile", maxCount: 1 },
   ]),
@@ -141,8 +159,39 @@ app.post(
         tags,
         livePreviewUrl,
       } = req.body;
-      const templateFile = req.files["templateFile"]?.[0];
-      const previewFile = req.files["previewFile"]?.[0];
+      let templateFileId, previewFileId;
+      let templateFileUrl, previewFileUrl;
+      // Save files to GridFS and get their IDs
+      if (req.files["templateFile"]) {
+        const file = req.files["templateFile"][0];
+        const uploadStream = gfsBucket.openUploadStream(file.originalname, {
+          contentType: file.mimetype,
+        });
+        uploadStream.end(file.buffer);
+        await new Promise((resolve, reject) => {
+          uploadStream.on("finish", () => {
+            templateFileId = uploadStream.id;
+            templateFileUrl = `${BASE_URL}/api/files/${templateFileId}`;
+            resolve();
+          });
+          uploadStream.on("error", reject);
+        });
+      }
+      if (req.files["previewFile"]) {
+        const file = req.files["previewFile"][0];
+        const uploadStream = gfsBucket.openUploadStream(file.originalname, {
+          contentType: file.mimetype,
+        });
+        uploadStream.end(file.buffer);
+        await new Promise((resolve, reject) => {
+          uploadStream.on("finish", () => {
+            previewFileId = uploadStream.id;
+            previewFileUrl = `${BASE_URL}/api/files/${previewFileId}`;
+            resolve();
+          });
+          uploadStream.on("error", reject);
+        });
+      }
       const template = new Template({
         name,
         description,
@@ -151,10 +200,8 @@ app.post(
         status,
         tags: tags ? tags.split(",").map((t) => t.trim()) : [],
         livePreviewUrl: livePreviewUrl || undefined,
-        previewUrl: previewFile
-          ? `/uploads/${previewFile.filename}`
-          : undefined,
-        fileUrl: templateFile ? `/uploads/${templateFile.filename}` : undefined,
+        previewUrl: previewFileUrl,
+        fileUrl: templateFileUrl,
         createdAt: new Date(),
         downloads: 0,
       });
@@ -166,21 +213,37 @@ app.post(
   }
 );
 
-// API: Get a single template by ID
-app.get("/api/templates/:id", async (req, res) => {
+// API: Serve files from GridFS (with inline or attachment option)
+app.get("/api/files/:id", async (req, res) => {
   try {
-    const template = await Template.findById(req.params.id);
-    if (!template) return res.status(404).json({ error: "Template not found" });
-    res.json(template);
+    const fileId = new ObjectId(req.params.id);
+    const files = await mongoose.connection.db
+      .collection("uploads.files")
+      .find({ _id: fileId })
+      .toArray();
+    if (!files || files.length === 0) {
+      return res.status(404).json({ error: "File not found" });
+    }
+    const file = files[0];
+    // If image, display inline; if zip or other, force download
+    const isImage = (file.contentType || "").startsWith("image/");
+    if (isImage) {
+      res.set("Content-Type", file.contentType);
+      res.set("Content-Disposition", `inline; filename=\"${file.filename}\"`);
+    } else {
+      res.set("Content-Type", file.contentType || "application/octet-stream");
+      res.set("Content-Disposition", `attachment; filename=\"${file.filename}\"`);
+    }
+    gfsBucket.openDownloadStream(fileId).pipe(res);
   } catch (err) {
-    res.status(400).json({ error: "Failed to fetch template" });
+    res.status(404).json({ error: "File not found" });
   }
 });
 
-// API: Update a template (with optional file uploads)
+// API: Update a template (with optional file uploads, store in GridFS)
 app.put(
   "/api/templates/:id",
-  upload.fields([
+  uploadMemory.fields([
     { name: "templateFile", maxCount: 1 },
     { name: "previewFile", maxCount: 1 },
   ]),
@@ -195,9 +258,7 @@ app.put(
         tags,
         livePreviewUrl,
       } = req.body;
-      const templateFile = req.files["templateFile"]?.[0];
-      const previewFile = req.files["previewFile"]?.[0];
-      const update = {
+      let update = {
         name,
         description,
         category,
@@ -206,8 +267,34 @@ app.put(
         tags: tags ? tags.split(",").map((t) => t.trim()) : [],
         livePreviewUrl: livePreviewUrl || undefined,
       };
-      if (templateFile) update.fileUrl = `/uploads/${templateFile.filename}`;
-      if (previewFile) update.previewUrl = `/uploads/${previewFile.filename}`;
+      if (req.files["templateFile"]) {
+        const file = req.files["templateFile"][0];
+        const uploadStream = gfsBucket.openUploadStream(file.originalname, {
+          contentType: file.mimetype,
+        });
+        uploadStream.end(file.buffer);
+        await new Promise((resolve, reject) => {
+          uploadStream.on("finish", () => {
+            update.fileUrl = `${BASE_URL}/api/files/${uploadStream.id}`;
+            resolve();
+          });
+          uploadStream.on("error", reject);
+        });
+      }
+      if (req.files["previewFile"]) {
+        const file = req.files["previewFile"][0];
+        const uploadStream = gfsBucket.openUploadStream(file.originalname, {
+          contentType: file.mimetype,
+        });
+        uploadStream.end(file.buffer);
+        await new Promise((resolve, reject) => {
+          uploadStream.on("finish", () => {
+            update.previewUrl = `${BASE_URL}/api/files/${uploadStream.id}`;
+            resolve();
+          });
+          uploadStream.on("error", reject);
+        });
+      }
       const template = await Template.findByIdAndUpdate(req.params.id, update, {
         new: true,
       });
@@ -235,6 +322,29 @@ app.post("/api/create-razorpay-order", async (req, res) => {
   } catch (err) {
     console.error("Razorpay order error:", err);
     res.status(500).json({ error: "Failed to create Razorpay order" });
+  }
+});
+
+// API: Get a single template by ID (with error logging)
+app.get("/api/templates/:id", async (req, res) => {
+  try {
+    const id = req.params.id;
+    console.log("Fetching template with id:", id);
+    if (!id || id.length !== 24) {
+      return res.status(400).json({ error: "Invalid template ID format" });
+    }
+    let template = await Template.findById(id);
+    if (!template) {
+      console.log("Template not found for id:", id);
+      return res.status(404).json({ error: "Template not found" });
+    }
+    template = template.toObject();
+    template.previewUrl = makeAbsoluteUrl(template.previewUrl);
+    template.fileUrl = makeAbsoluteUrl(template.fileUrl);
+    res.json(template);
+  } catch (err) {
+    console.error("Error fetching template by id:", err);
+    res.status(400).json({ error: "Failed to fetch template" });
   }
 });
 
