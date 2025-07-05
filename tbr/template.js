@@ -1,5 +1,5 @@
 // Razorpay key (replace with your real key)
-const RAZORPAY_KEY_ID = 'rzp_test_kI4DrMAEQUKfyT';
+const RAZORPAY_KEY_ID = "rzp_test_kI4DrMAEQUKfyT";
 
 // Fetch templates from backend and render dynamically
 async function fetchAndRenderTemplates() {
@@ -7,7 +7,7 @@ async function fetchAndRenderTemplates() {
   grid.innerHTML =
     '<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
   try {
-    const res = await fetch("http://localhost:3000/api/templates");
+    const res = await fetch("https://templ.onrender.com/api/templates");
     const templates = await res.json();
     if (templates.length === 0) {
       grid.innerHTML =
