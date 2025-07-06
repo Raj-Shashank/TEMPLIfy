@@ -72,9 +72,9 @@ function initEventListeners() {
   // Handle buy button clicks
   document.addEventListener("click", function (e) {
     if (e.target.classList.contains("buy-button")) {
-      const templateId = e.target.dataset.id;
-      const templateName = e.target.dataset.name;
-      const templatePrice = e.target.dataset.price;
+      const templateId = e.target.getAttribute("data-id");
+      const templateName = e.target.getAttribute("data-name");
+      const templatePrice = e.target.getAttribute("data-price");
       // Redirect to payment page with templateId, name, price
       window.location.href = `payment.html?id=${templateId}&name=${encodeURIComponent(
         templateName

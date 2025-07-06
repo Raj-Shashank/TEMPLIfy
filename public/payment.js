@@ -1,8 +1,9 @@
 // Get product details from URL
 const params = new URLSearchParams(window.location.search);
 const templateId = params.get("id"); // We'll use this to fetch the template
-let productName = params.get("name") || "Corporate Pro";
-let productPrice = params.get("price") || "59";
+
+let productName = params.get("name") || "Name not found";
+let productPrice = params.get("price") || "1";
 productName = decodeURIComponent(productName);
 
 // Set product info
@@ -18,6 +19,7 @@ if (document.getElementById("purchaseDetails"))
 // Razorpay configuration
 const RAZORPAY_KEY_ID = "rzp_test_kI4DrMAEQUKfyT"; // <-- Set your real key here
 let templateFileUrl = null;
+let template = null;
 
 // Fetch template details (including fileUrl) before payment
 async function fetchTemplateDetails() {
@@ -26,7 +28,7 @@ async function fetchTemplateDetails() {
     const res = await fetch(
       `https://templ.onrender.com/api/templates/${templateId}`
     );
-    const template = await res.json();
+    template = await res.json();
     templateFileUrl = template.fileUrl;
     // Optionally update productName/productPrice from DB
     // productName = template.name;
