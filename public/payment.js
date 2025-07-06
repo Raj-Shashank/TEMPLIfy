@@ -1,10 +1,9 @@
 // Get product details from URL
 const params = new URLSearchParams(window.location.search);
 const templateId = params.get("id"); // We'll use this to fetch the template
-console.log("Template ID:", templateId);
 
-let productName = params.get("name") || "Corporate Pro";
-let productPrice = params.get("price") || "59";
+let productName = params.get("name") || "Name not found";
+let productPrice = params.get("price") || "1";
 productName = decodeURIComponent(productName);
 
 // Set product info
@@ -153,12 +152,8 @@ function showPaymentSection() {
   document.getElementById("successSection").style.display = "none";
 }
 
-async function startDownload() {
-  console.log("Temp details 1:", template);
-  await fetchTemplateDetails();
-  console.log("Temp details 2:", template);
+function startDownload() {
   if (!templateFileUrl) {
-    console.log("Temp details 3:", template);
     alert("No file available for download.");
     return;
   }
