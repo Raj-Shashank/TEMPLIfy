@@ -32,7 +32,7 @@ document.addEventListener("DOMContentLoaded", async function () {
               <div class="product-footer">
                 <span class="product-price">₹${template.price}</span>
                 <button class="buy-button" 
-                  data-product="${template._id}"
+                  data-id="${template._id}"
                   data-price="${template.price}"
                   data-name="${template.name}">Get Template</button>
               </div>
@@ -52,11 +52,11 @@ document.addEventListener("DOMContentLoaded", async function () {
   document.querySelectorAll(".products-grid").forEach((grid) => {
     grid.addEventListener("click", function (e) {
       if (e.target.classList.contains("buy-button")) {
-        const productId = e.target.getAttribute("data-product");
-        const productPrice = e.target.getAttribute("data-price");
-        const productName = e.target.getAttribute("data-name");
-        window.location.href = `payment.html?product=${productId}&price=${productPrice}&name=${encodeURIComponent(
-          productName
+        const templateId = e.target.getAttribute("data-id");
+        const templatePrice = e.target.getAttribute("data-price");
+        const templateName = e.target.getAttribute("data-name");
+        window.location.href = `payment.html?id=${templateId}&price=${templatePrice}&name=${encodeURIComponent(
+          templateName
         )}`;
       }
     });
