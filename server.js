@@ -7,6 +7,7 @@ const multer = require("multer");
 const cors = require("cors");
 const Razorpay = require("razorpay");
 const { MongoClient, GridFSBucket, ObjectId } = require("mongodb");
+const crypto = require("crypto");
 
 const app = express();
 const PORT = 3000;
@@ -345,6 +346,25 @@ app.get("/api/templates/:id", async (req, res) => {
   } catch (err) {
     console.error("Error fetching template by id:", err);
     res.status(400).json({ error: "Failed to fetch template" });
+  }
+});
+
+// API: Verify Razorpay payment signature
+app.post("/api/verify-payment", async (req, res) => {
+  try {
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const generated_signature = crypto
+      .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
+      .update(razorpay_order_id + "|" + razorpay_payment_id)
+      .digest("hex");
+    if (generated_signature === razorpay_signature) {
+      // Optionally, you can mark the order as paid in your DB here
+      return res.json({ success: true });
+    } else {
+      return res.json({ success: false, error: "Signature mismatch" });
+    }
+  } catch (err) {
+    return res.status(400).json({ success: false, error: "Verification failed" });
   }
 });
 

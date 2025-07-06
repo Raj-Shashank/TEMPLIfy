@@ -1,5 +1,5 @@
 // Razorpay key (replace with your real key)
-const RAZORPAY_KEY_ID = "rzp_test_kI4DrMAEQUKfyT";
+const RAZORPAY_KEY_ID = "rzp_live_sx5YOFYvieWsEx";
 
 // Fetch templates from backend and render dynamically
 async function fetchAndRenderTemplates() {

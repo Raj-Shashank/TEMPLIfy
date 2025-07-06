@@ -17,7 +17,7 @@ if (document.getElementById("purchaseDetails"))
   ).textContent = `Thank you for purchasing ${productName} (₹${productPrice})`;
 
 // Razorpay configuration
-const RAZORPAY_KEY_ID = "rzp_test_kI4DrMAEQUKfyT"; // <-- Set your real key here
+const RAZORPAY_KEY_ID = "rzp_live_sx5YOFYvieWsEx"; // <-- Set your real key here
 let templateFileUrl = null;
 let template = null;
 
@@ -120,16 +120,22 @@ async function createRazorpayOrder() {
 // Simulate payment verification (replace with actual API call)
 async function verifyPayment(paymentResponse) {
   // In production, call your backend to verify
-  // Example:
-  // const response = await fetch('https://templify-zhhw.onrender.com/api/verify-payment', {
-  //   method: 'POST',
-  //   headers: { 'Content-Type': 'application/json' },
-  //   body: JSON.stringify(paymentResponse)
-  // });
-  // const data = await response.json();
-  // return data.success;
-  // For demo, assume verification succeeds
-  return true;
+  // Razorpay sends: razorpay_payment_id, razorpay_order_id, razorpay_signature
+  try {
+    const response = await fetch('https://templify-zhhw.onrender.com/api/verify-payment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        razorpay_payment_id: paymentResponse.razorpay_payment_id,
+        razorpay_order_id: paymentResponse.razorpay_order_id,
+        razorpay_signature: paymentResponse.razorpay_signature,
+      })
+    });
+    const data = await response.json();
+    return data.success === true;
+  } catch (err) {
+    return false;
+  }
 }
 
 function showSuccess() {
