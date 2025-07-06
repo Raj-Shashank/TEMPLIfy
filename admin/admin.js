@@ -7,7 +7,7 @@
 }
 
 // Example API base URL
-const API_BASE_URL = "https://templ.onrender.com/api";
+const API_BASE_URL = "https://templify-zhhw.onrender.com/api";
 
 // Helper: Fetch wrapper
 async function apiRequest(endpoint, options = {}) {

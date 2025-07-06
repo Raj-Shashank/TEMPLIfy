@@ -7,7 +7,7 @@ async function fetchAndRenderTemplates() {
   grid.innerHTML =
     '<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
   try {
-    const res = await fetch("https://templ.onrender.com/api/templates");
+    const res = await fetch("https://templify-zhhw.onrender.com/api/templates");
     const templates = await res.json();
     if (templates.length === 0) {
       grid.innerHTML =

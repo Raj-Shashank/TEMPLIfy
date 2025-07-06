@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const API_BASE_URL = "https://templ.onrender.com";
+  const API_BASE_URL = "https://templify-zhhw.onrender.com";
   // Fetch templates from backend and render dynamically
   const productsGrid = document.querySelector(".products-grid");
   if (productsGrid) {
