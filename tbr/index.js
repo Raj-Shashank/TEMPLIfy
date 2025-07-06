@@ -1,11 +1,12 @@
 document.addEventListener("DOMContentLoaded", async function () {
+  const API_BASE_URL = "https://templ.onrender.com";
   // Fetch templates from backend and render dynamically
   const productsGrid = document.querySelector(".products-grid");
   if (productsGrid) {
     productsGrid.innerHTML =
       '<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
     try {
-      const res = await fetch("http://localhost:3000/api/templates");
+      const res = await fetch(`${API_BASE_URL}/api/templates`);
       const templates = await res.json();
       if (templates.length === 0) {
         productsGrid.innerHTML =

@@ -24,7 +24,7 @@ async function fetchTemplateDetails() {
   if (!templateId) return;
   try {
     const res = await fetch(
-      `http://localhost:3000/api/templates/${templateId}`
+      `https://templ.onrender.com/api/templates/${templateId}`
     );
     const template = await res.json();
     templateFileUrl = template.fileUrl;
@@ -100,7 +100,7 @@ if (document.getElementById("rzp-button")) {
 async function createRazorpayOrder() {
   // Call backend to create real Razorpay order
   const response = await fetch(
-    "http://localhost:3000/api/create-razorpay-order",
+    "https://templ.onrender.com/api/create-razorpay-order",
     {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -119,7 +119,7 @@ async function createRazorpayOrder() {
 async function verifyPayment(paymentResponse) {
   // In production, call your backend to verify
   // Example:
-  // const response = await fetch('http://localhost:3000/api/verify-payment', {
+  // const response = await fetch('https://templ.onrender.com/api/verify-payment', {
   //   method: 'POST',
   //   headers: { 'Content-Type': 'application/json' },
   //   body: JSON.stringify(paymentResponse)
