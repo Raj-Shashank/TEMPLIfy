@@ -77,8 +77,34 @@ const razorpayConfig = {
 if (document.getElementById("rzp-button")) {
   document.getElementById("rzp-button").onclick = async function (e) {
     e.preventDefault();
+    // Validate customer details
+    const nameInput = document.getElementById("customerName");
+    const emailInput = document.getElementById("customerEmail");
+    const contactInput = document.getElementById("customerContact");
+    if (
+      !nameInput.value.trim() ||
+      !emailInput.value.trim() ||
+      !contactInput.value.trim()
+    ) {
+      showError("Please fill in all customer details.");
+      return;
+    }
+    // Basic email and contact validation
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const contactPattern = /^[0-9]{10,15}$/;
+    if (!emailPattern.test(emailInput.value.trim())) {
+      showError("Please enter a valid email address.");
+      return;
+    }
+    if (!contactPattern.test(contactInput.value.trim())) {
+      showError("Please enter a valid contact number (10-15 digits).");
+      return;
+    }
     this.innerHTML = '<span class="loading"></span> Processing...';
     try {
+      razorpayConfig.prefill.name = nameInput.value.trim();
+      razorpayConfig.prefill.email = emailInput.value.trim();
+      razorpayConfig.prefill.contact = contactInput.value.trim();
       const orderId = await createRazorpayOrder();
       if (!orderId) {
         showError("Could not create payment order");
@@ -122,15 +148,18 @@ async function verifyPayment(paymentResponse) {
   // In production, call your backend to verify
   // Razorpay sends: razorpay_payment_id, razorpay_order_id, razorpay_signature
   try {
-    const response = await fetch('https://templify-zhhw.onrender.com/api/verify-payment', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        razorpay_payment_id: paymentResponse.razorpay_payment_id,
-        razorpay_order_id: paymentResponse.razorpay_order_id,
-        razorpay_signature: paymentResponse.razorpay_signature,
-      })
-    });
+    const response = await fetch(
+      "https://templify-zhhw.onrender.com/api/verify-payment",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          razorpay_payment_id: paymentResponse.razorpay_payment_id,
+          razorpay_order_id: paymentResponse.razorpay_order_id,
+          razorpay_signature: paymentResponse.razorpay_signature,
+        }),
+      }
+    );
     const data = await response.json();
     return data.success === true;
   } catch (err) {
