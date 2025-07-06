@@ -103,6 +103,3 @@ function initEventListeners() {
     });
   });
 }
-
-// Auto-refresh templates every 30 seconds
-setInterval(fetchAndRenderTemplates, 30000);
