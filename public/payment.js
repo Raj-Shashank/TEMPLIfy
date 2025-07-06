@@ -33,7 +33,6 @@ async function fetchTemplateDetails() {
     // Optionally update productName/productPrice from DB
     // productName = template.name;
     // productPrice = template.price;
-    console.log("Template details fetched:", template);
   } catch (err) {
     templateFileUrl = null;
   }
