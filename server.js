@@ -15,7 +15,7 @@ const MONGO_URI = process.env.MONGO_URI;
 
 // Middleware
 const corsOptions = {
-  origin: ["https://templifyy.netlify.app","http://localhost:5500"], // Your client's origin
+  origin: ["https://templifyy.netlify.app","http://localhost:5500", "http://127.0.0.1:5500"], // Your client's origin
   credentials: true, // Allow credentials
   optionsSuccessStatus: 200,
 };

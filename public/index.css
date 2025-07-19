@@ -213,6 +213,26 @@ header {
   position: relative;
 }
 
+/* Center the Live Preview button overlay */
+.product-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s;
+  z-index: 1;
+}
+
+.product-card:hover .product-overlay {
+  opacity: 1;
+}
+
 .product-badge {
   position: absolute;
   top: 15px;
@@ -275,9 +295,27 @@ header {
   font-size: 0.95rem;
 }
 
+
 .buy-button:hover {
   transform: translateY(-2px);
   box-shadow: 0 5px 15px rgba(58, 123, 255, 0.3);
+}
+
+/* Live Preview Button (copied from template.css) */
+.preview-btn {
+  padding: 10px 20px;
+  background-color: var(--accent-blue);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+}
+
+.preview-btn:hover {
+  background-color: #2a6bf0;
+  transform: translateY(-2px);
 }
 
 /* Footer */
@@ -367,3 +405,4 @@ footer {
     text-align: center;
   }
 }
+

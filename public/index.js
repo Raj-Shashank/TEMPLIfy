@@ -12,7 +12,9 @@ document.addEventListener("DOMContentLoaded", async function () {
         productsGrid.innerHTML =
           '<div class="alert alert-info">No templates available.</div>';
       } else {
-        productsGrid.innerHTML = templates
+        // Show only the newest 6 templates
+        const newestTemplates = templates.slice(0, 6);
+        productsGrid.innerHTML = newestTemplates
           .map(
             (template, idx) => `
           <div class="product-card">
@@ -25,6 +27,13 @@ document.addEventListener("DOMContentLoaded", async function () {
                   ? '<span class="product-badge">Active</span>'
                   : ""
               }
+              <div class="product-overlay">
+                <button class="preview-btn" data-preview="${
+                  template.livePreviewUrl
+                    ? template.livePreviewUrl
+                    : template.previewUrl || "#"
+                }">Live Preview</button>
+              </div>
             </div>
             <div class="product-info">
               <h3>${template.name}</h3>
@@ -58,6 +67,12 @@ document.addEventListener("DOMContentLoaded", async function () {
         window.location.href = `payment.html?id=${templateId}&price=${templatePrice}&name=${encodeURIComponent(
           templateName
         )}`;
+      }
+      // Handle preview button click
+      if (e.target.classList.contains("preview-btn")) {
+        e.preventDefault();
+        const url = e.target.dataset.preview;
+        if (url && url !== "#") window.open(url, "_blank");
       }
     });
   });
