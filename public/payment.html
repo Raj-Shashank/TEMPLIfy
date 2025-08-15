@@ -4,71 +4,100 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Complete Payment | DigitalTemplates</title>
-    <link rel="stylesheet" href="payment.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="payment.css">
 </head>
 <body>
+    <div class="header">
+        <div class="logo">TEMPLIfy</div>
+        <p class="tagline">Premium Digital Templates Marketplace</p>
+    </div>
+
     <div class="container">
         <!-- Payment Section -->
-        <div class="section" id="paymentSection">
+        <div class="card" id="paymentSection">
             <h2>Complete Payment</h2>
-            <p id="productInfo">Purchasing: Corporate Pro (₹59)</p>
             
-            <form id="customerDetailsForm" style="margin-bottom: 20px;">
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label for="customerName">Your Name*</label>
+            <div class="product-info">
+                <i class="fas fa-shopping-cart"></i>
+                <div>
+                    <p id="productInfo">Purchasing: Corporate Pro (₹59)</p>
+                    <p style="font-size: 14px; color: #aaa;">Secure payment powered by Razorpay</p>
+                </div>
+            </div>
+            
+            <form id="customerDetailsForm">
+                <div class="form-group">
+                    <label for="customerName" class="form-label">Your Name*</label>
                     <input type="text" id="customerName" class="form-control" placeholder="Enter your name" required>
                 </div>
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label for="customerEmail">Email*</label>
+                <div class="form-group">
+                    <label for="customerEmail" class="form-label">Email*</label>
                     <input type="email" id="customerEmail" class="form-control" placeholder="Enter your email" required>
                 </div>
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label for="customerContact">Contact Number*</label>
+                <div class="form-group">
+                    <label for="customerContact" class="form-label">Contact Number*</label>
                     <input type="tel" id="customerContact" class="form-control" placeholder="Enter your contact number" required pattern="[0-9]{10,15}">
                 </div>
-            </form>
-            
-            <button id="rzp-button" class="btn btn-primary">
-                <i class="fas fa-credit-card"></i> Pay with Razorpay
-            </button>
-            
-            <div class="upi-option" style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #333;">
-                <h3>UPI Payment</h3>
-                <p>Coming soon - currently please use Razorpay</p>
-                <button class="btn btn-secondary" disabled>
-                    <i class="fas fa-mobile-alt"></i> UPI Payment (Disabled)
+                
+                <!-- <div class="payment-methods">
+                    <h3>Payment Method</h3>
+                    <div class="payment-options">
+                        <div class="payment-option active" id="razorpayOption">
+                            <i class="fas fa-credit-card"></i>
+                            <h4>Credit/Debit Card</h4>
+                            <p>Visa, Mastercard, Amex</p>
+                        </div>
+                        <div class="payment-option" id="upiOption">
+                            <i class="fas fa-mobile-alt"></i>
+                            <h4>UPI Payment</h4>
+                            <p>Google Pay, PhonePe, etc.</p>
+                        </div>
+                    </div>
+                </div> -->
+                
+                <button id="rzp-button" class="btn btn-primary">
+                    <i class="fas fa-lock"></i> Secure Payment
                 </button>
-            </div>
+            </form>
         </div>
         
         <!-- Success Section -->
-        <div class="section" id="successSection">
+        <div class="card" id="successSection">
             <div class="status-icon success">
                 <i class="fas fa-check-circle"></i>
             </div>
             <h2>Payment Successful!</h2>
-            <p id="purchaseDetails"></p>
+            
+            <div class="purchase-details">
+                <p id="purchaseDetails"></p>
+                <p style="margin-top: 10px;"><i class="fas fa-envelope"></i> Your receipt has been emailed to you</p>
+            </div>
             
             <button id="downloadBtn" class="btn btn-success">
                 <i class="fas fa-download"></i> Download Template
             </button>
             
-            <p style="font-size: 0.8em; margin-top: 10px;">If download doesn't start automatically, click above</p>
+            <p class="download-note">If download doesn't start automatically, click the button above</p>
         </div>
         
         <!-- Error Section -->
-        <div class="section" id="errorSection">
+        <div class="card" id="errorSection">
             <div class="status-icon error">
                 <i class="fas fa-times-circle"></i>
             </div>
             <h2>Payment Failed</h2>
-            <p id="errorMessage">Payment could not be processed</p>
+            <p id="errorMessage" style="text-align: center; margin: 20px 0;">Payment could not be processed</p>
             
             <button onclick="showPaymentSection()" class="btn btn-secondary">
                 <i class="fas fa-arrow-left"></i> Try Again
             </button>
         </div>
+    </div>
+
+    <div class="footer">
+        <p>© 2023 TEMPLIfy. All rights reserved.</p>
+        <p>Need help? <a href="#">Contact Support</a> | <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a></p>
     </div>
 
     <!-- Razorpay Integration -->

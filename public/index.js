@@ -3,36 +3,29 @@ document.addEventListener("DOMContentLoaded", async function () {
   // Fetch templates from backend and render dynamically
   const productsGrid = document.querySelector(".products-grid");
   if (productsGrid) {
-    productsGrid.innerHTML =
-      '<div class="text-center py-5"><div class="spinner-border" role="status"><span class="visually-hidden">Loading...</span></div></div>';
+    // Show loading spinner while fetching
+    productsGrid.innerHTML = `
+      <div class="loading-spinner">
+        <div class="spinner"></div>
+        <p>Loading premium templates...</p>
+      </div>
+    `;
     try {
       const res = await fetch(`${API_BASE_URL}/api/templates`);
       const templates = await res.json();
       if (templates.length === 0) {
-        productsGrid.innerHTML =
-          '<div class="alert alert-info">No templates available.</div>';
+        productsGrid.innerHTML = '<div class="text-center py-5">No templates available at the moment.</div>';
       } else {
         // Show only the newest 6 templates
         const newestTemplates = templates.slice(0, 6);
-        productsGrid.innerHTML = newestTemplates
-          .map(
-            (template, idx) => `
+        productsGrid.innerHTML = newestTemplates.map((template, idx) => `
           <div class="product-card">
-            <div class="product-image" style="background-image: url('${
-              template.previewUrl ||
-              "https://via.placeholder.com/600x400/2D2D2D/999?text=No+Preview"
-            }')">
-              ${
-                template.status === "active"
-                  ? '<span class="product-badge">Active</span>'
-                  : ""
-              }
+            <div class="product-image" style="background-image: url('${template.previewUrl || "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1674&q=80"}')">
+              ${template.status === "active" ? '<span class="product-badge">Active</span>' : ""}
               <div class="product-overlay">
-                <button class="preview-btn" data-preview="${
-                  template.livePreviewUrl
-                    ? template.livePreviewUrl
-                    : template.previewUrl || "#"
-                }">Live Preview</button>
+                <button class="preview-btn" data-preview="${template.livePreviewUrl ? template.livePreviewUrl : template.previewUrl || "#"}">
+                  <i class="fas fa-eye"></i> Live Preview
+                </button>
               </div>
             </div>
             <div class="product-info">
@@ -43,17 +36,17 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <button class="buy-button" 
                   data-id="${template._id}"
                   data-price="${template.price}"
-                  data-name="${template.name}">Get Template</button>
+                  data-name="${template.name}">
+                  <i class="fas fa-shopping-cart"></i> Get Template
+                </button>
               </div>
             </div>
           </div>
-        `
-          )
-          .join("");
+        `).join("");
       }
     } catch (err) {
-      productsGrid.innerHTML =
-        '<div class="alert alert-danger">Failed to load templates.</div>';
+      productsGrid.innerHTML = '<div class="text-center py-5">Failed to load templates. Please try again later.</div>';
+      console.error("Error loading templates:", err);
     }
   }
 
@@ -64,9 +57,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         const templateId = e.target.getAttribute("data-id");
         const templatePrice = e.target.getAttribute("data-price");
         const templateName = e.target.getAttribute("data-name");
-        window.location.href = `payment.html?id=${templateId}&price=${templatePrice}&name=${encodeURIComponent(
-          templateName
-        )}`;
+        window.location.href = `payment.html?id=${templateId}&price=${templatePrice}&name=${encodeURIComponent(templateName)}`;
       }
       // Handle preview button click
       if (e.target.classList.contains("preview-btn")) {
@@ -90,6 +81,16 @@ document.addEventListener("DOMContentLoaded", async function () {
           behavior: "smooth",
         });
       }
+    });
+  });
+  
+  // Filter buttons functionality
+  document.querySelectorAll('.filter-btn').forEach(button => {
+    button.addEventListener('click', function() {
+      document.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      this.classList.add('active');
     });
   });
 });
