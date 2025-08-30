@@ -254,6 +254,7 @@ async function editTemplate(templateId) {
                                         <option${template.category === "E-commerce" ? " selected" : ""}>E-commerce</option>
                                         <option${template.category === "Blog" ? " selected" : ""}>Blog</option>
                                         <option${template.category === "Landing Page" ? " selected" : ""}>Landing Page</option>
+                                        <option${template.category === "Business" ? " selected" : ""}>Business</option>
                                     </select>
                                 </div>
                                 <div class="mb-3">
@@ -449,7 +450,7 @@ function loadAnalytics() {
     new Chart(popularCtx, {
         type: "doughnut",
         data: {
-            labels: ["Portfolio", "E-commerce", "Blog", "Landing"],
+            labels: ["Portfolio", "E-commerce", "Blog", "Landing", "Business"],
             datasets: [
                 {
                     data: [12, 19, 3, 5],
@@ -598,7 +599,7 @@ function initCharts() {
     new Chart(categoryCtx, {
         type: 'doughnut',
         data: {
-            labels: ['Portfolio', 'E-commerce', 'Blog', 'Landing Page', 'Other'],
+            labels: ['Portfolio', 'E-commerce', 'Blog', 'Landing Page', 'Business', 'Other'],
             datasets: [{
                 data: [35, 25, 20, 15, 5],
                 backgroundColor: [

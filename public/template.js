@@ -48,7 +48,7 @@ async function fetchAndRenderTemplates() {
   grid.innerHTML = `
     <div class="loading-spinner">
       <div class="spinner"></div>
-      <p>Loading premium templates...</p>
+      <p>Loading Templates... Please wait for a while!</p>
     </div>
   `;
   
@@ -72,7 +72,7 @@ function filterTemplates(category) {
     renderTemplates(allTemplates);
     return;
   }
-  
+
   const filtered = allTemplates.filter(t => 
     t.category && t.category.toLowerCase() === category.toLowerCase()
   );
