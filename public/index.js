@@ -7,7 +7,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     productsGrid.innerHTML = `
       <div class="loading-spinner">
         <div class="spinner"></div>
-        <p>Loading premium templates...</p>
+        <p>Loading Templates... Please wait for a while!</p>
       </div>
     `;
     try {
