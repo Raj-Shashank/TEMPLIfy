@@ -39,28 +39,21 @@ document.addEventListener("DOMContentLoaded", async function () {
       } else {
         // Show only the newest 6 templates
         const newestTemplates = templates.slice(0, 6);
-        
-        // Mark some templates as free (for demonstration)
-        // In a real scenario, this would come from the backend
-        const templatesWithFree = newestTemplates.map((template, index) => {
-          // Make first and third templates free for demonstration
-          if (index === 0 || index === 2) {
-            return {
-              ...template,
-              isFree: true,
-              originalPrice: template.price,
-              price: 0,
-              rating: 4.5 // Add rating for demonstration
-            };
+        productsGrid.innerHTML = newestTemplates.map((template) => {
+          let priceHtml = "";
+          if (template.isFree) {
+            priceHtml = `<span class="original-price">₹${template.originalPrice || template.price || '999'}</span> <span class="product-price free-price">FREE</span>`;
+          } else if (
+            template.discountedPrice !== undefined &&
+            template.discountedPrice !== null &&
+            template.discountedPrice !== "" &&
+            Number(template.discountedPrice) < Number(template.price)
+          ) {
+            priceHtml = `<span class="original-price">₹${template.price}</span> <span class="product-price discounted">₹${template.discountedPrice}</span>`;
+          } else {
+            priceHtml = `<span class="product-price">₹${template.price}</span>`;
           }
-          return {
-            ...template,
-            isFree: false,
-            rating: 4.2 + Math.random() * 0.8 // Random rating between 4.2 and 5.0
-          };
-        });
-        
-        productsGrid.innerHTML = templatesWithFree.map((template, idx) => `
+          return `
           <div class="product-card">
             <div class="product-image" style="background-image: url('${template.previewUrl || "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1674&q=80"}')">
               ${template.status === "active" ? `<span class="product-badge ${template.isFree ? 'free-badge' : ''}">${template.isFree ? 'Free' : 'Active'}</span>` : ""}
@@ -73,21 +66,15 @@ document.addEventListener("DOMContentLoaded", async function () {
             <div class="product-info">
               <h3>${template.name}</h3>
               <p>${template.description}</p>
-              
               <div class="product-rating">
                 <div class="stars">
                   ${generateStarRating(template.rating || 4.5)}
                 </div>
                 <span class="rating-count">${(template.rating || 4.5).toFixed(1)}</span>
               </div>
-              
               <div class="product-footer">
                 <div class="price-container">
-                  ${template.isFree ? 
-                    `<span class="original-price">₹${template.originalPrice || '999'}</span>
-                      <span class="product-price free-price">FREE</span>` : 
-                    `<span class="product-price">₹${template.price}</span>`
-                  }
+                  ${priceHtml}
                 </div>
                 <div class="product-actions">
                   <button class="view-details-btn" data-id="${template._id}">
@@ -104,7 +91,8 @@ document.addEventListener("DOMContentLoaded", async function () {
               </div>
             </div>
           </div>
-        `).join("");
+          `;
+        }).join("");
       }
     } catch (err) {
       productsGrid.innerHTML = '<div class="text-center py-5">Failed to load templates. Please try again later.</div>';
