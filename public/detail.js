@@ -1,5 +1,4 @@
-// detail.js - Dynamically renders template details in detail.html
-// Assumes API endpoint: /api/templates/:id
+const API_BASE_URL = "https://templify-zhhw.onrender.com";
 
 document.addEventListener("DOMContentLoaded", async function () {
   const container = document.getElementById("template-detail-container");
@@ -15,7 +14,7 @@ document.addEventListener("DOMContentLoaded", async function () {
     '<div class="loading-spinner"><div class="spinner"></div><p>Loading Template Details...</p></div>';
 
   try {
-    const res = await fetch(`http://localhost:3000/api/templates/${id}`);
+    const res = await fetch(`${API_BASE_URL}/api/templates/${id}`);
     if (!res.ok) throw new Error("Not found");
     const template = await res.json();
     renderTemplateDetail(template, container);

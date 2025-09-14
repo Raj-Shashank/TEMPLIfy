@@ -1,7 +1,6 @@
 // Razorpay key (replace with your real key)
 const RAZORPAY_KEY_ID = "rzp_live_sx5YOFYvieWsEx";
-//const API_URL = "https://templify-zhhw.onrender.com/api/templates";
-const API_URL = "http://localhost:3000/api/templates";
+const API_URL = "https://templify-zhhw.onrender.com/api/templates";
 
 // Store templates globally for filtering
 let allTemplates = [];

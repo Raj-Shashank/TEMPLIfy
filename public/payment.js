@@ -1,7 +1,7 @@
 // Get product details from URL
 const params = new URLSearchParams(window.location.search);
 const templateId = params.get("id");
-const BASE_URL = "http://localhost:3000";
+const API_BASE_URL = "https://templify-zhhw.onrender.com";
 
 let isFree = false;
 let productName = "Name not found";
@@ -42,7 +42,7 @@ const RAZORPAY_KEY_ID = "rzp_live_sx5YOFYvieWsEx";
 async function fetchTemplateDetails() {
   if (!templateId) return;
   try {
-    const res = await fetch(`${BASE_URL}/api/templates/${templateId}`);
+    const res = await fetch(`${API_BASE_URL}/api/templates/${templateId}`);
     template = await res.json();
     templateFileUrl = template.fileUrl;
     productName = template.name || "Name not found";
@@ -80,7 +80,7 @@ const razorpayConfig = {
       // If coupon was applied, increment its usage in backend
       if (appliedCoupon && appliedCoupon.code) {
         try {
-          await fetch(`${BASE_URL}/api/coupons/increment`, {
+          await fetch(`${API_BASE_URL}/api/coupons/increment`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ code: appliedCoupon.code }),
@@ -286,7 +286,7 @@ async function applyCoupon() {
     '<span class="loading"></span>';
   document.getElementById("applyCouponBtn").disabled = true;
   try {
-    const response = await fetch(`${BASE_URL}/api/coupons/validate`, {
+    const response = await fetch(`${API_BASE_URL}/api/coupons/validate`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ code: couponCode }),

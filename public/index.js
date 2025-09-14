@@ -1,6 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  //const API_BASE_URL = "https://templify-zhhw.onrender.com";
-  const API_BASE_URL = "http://localhost:3000";
+  const API_BASE_URL = "https://templify-zhhw.onrender.com";
 
   // Function to generate star rating HTML
   function generateStarRating(rating) {
