@@ -21,9 +21,24 @@
             <div class="product-info">
                 <i class="fas fa-shopping-cart"></i>
                 <div>
-                    <p id="productInfo">Purchasing: Corporate Pro (₹59)</p>
-                    <p style="font-size: 14px; color: #aaa;">Secure payment powered by Razorpay</p>
+                    <p>Purchasing: <span id="productName">Corporate Pro</span></p>
+                    <div id="priceContainer">
+                        <span class="original-price" id="originalPrice">₹59</span>
+                        <span class="price-large" id="finalPrice">₹59</span>
+                        <span class="discount-badge" id="discountBadge" style="display: none;">0% OFF</span>
+                    </div>
+                    <p style="font-size: 14px; color: #aaa; margin-top: 5px;">Secure payment powered by Razorpay</p>
                 </div>
+            </div>
+            
+            <!-- Coupon Section -->
+            <div class="coupon-section">
+                <h3 style="font-size: 18px; margin-bottom: 12px;">Apply Coupon</h3>
+                <div class="coupon-input-group">
+                    <input type="text" id="couponCode" class="coupon-input" placeholder="Enter coupon code">
+                    <button id="applyCouponBtn" class="apply-coupon-btn">Apply</button>
+                </div>
+                <div id="couponMessage" class="coupon-message"></div>
             </div>
             
             <form id="customerDetailsForm">
@@ -39,22 +54,6 @@
                     <label for="customerContact" class="form-label">Contact Number*</label>
                     <input type="tel" id="customerContact" class="form-control" placeholder="Enter your contact number" required pattern="[0-9]{10,15}">
                 </div>
-                
-                <!-- <div class="payment-methods">
-                    <h3>Payment Method</h3>
-                    <div class="payment-options">
-                        <div class="payment-option active" id="razorpayOption">
-                            <i class="fas fa-credit-card"></i>
-                            <h4>Credit/Debit Card</h4>
-                            <p>Visa, Mastercard, Amex</p>
-                        </div>
-                        <div class="payment-option" id="upiOption">
-                            <i class="fas fa-mobile-alt"></i>
-                            <h4>UPI Payment</h4>
-                            <p>Google Pay, PhonePe, etc.</p>
-                        </div>
-                    </div>
-                </div> -->
                 
                 <button id="rzp-button" class="btn btn-primary">
                     <i class="fas fa-lock"></i> Secure Payment

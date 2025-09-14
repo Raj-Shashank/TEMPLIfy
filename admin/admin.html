@@ -31,6 +31,11 @@
                             </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="#" id="couponsTab">
+                                <i class="fas fa-ticket-alt"></i>Coupons
+                            </a>
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link" href="#" id="analyticsTab">
                                 <i class="fas fa-chart-bar"></i>Analytics
                             </a>
@@ -155,6 +160,11 @@
                                     <option value="draft">Draft</option>
                                     <option value="archived">Archived</option>
                                 </select>
+                                <select class="form-select d-inline-block w-auto ms-2" id="pricingFilter">
+                                    <option value="all">All Pricing</option>
+                                    <option value="free">Free</option>
+                                    <option value="paid">Paid</option>
+                                </select>
                                 <button class="btn btn-outline-secondary ms-2">
                                     <i class="fas fa-filter"></i>
                                 </button>
@@ -171,6 +181,69 @@
                             </div>
                             <p class="mt-3">Loading templates from backend...</p>
                         </div>
+                    </div>
+                </div>
+
+                <!-- Coupons Section -->
+                <div id="couponsSection" style="display: none">
+                    <div class="page-header d-flex justify-content-between align-items-center">
+                        <h1>Coupon Management</h1>
+                        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCouponModal">
+                            <i class="fas fa-plus me-1"></i> Add Coupon
+                        </button>
+                    </div>
+
+                    <!-- Search and Filter -->
+                    <div class="search-filter-container">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="input-group">
+                                    <input type="text" id="couponSearch" class="form-control" placeholder="Search coupons...">
+                                    <button class="btn btn-primary" type="button" id="couponSearchButton">
+                                        <i class="fas fa-search"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="col-md-6 text-md-end mt-3 mt-md-0">
+                                <select class="form-select d-inline-block w-auto" id="couponStatusFilter">
+                                    <option value="all">All Statuses</option>
+                                    <option value="active">Active</option>
+                                    <option value="inactive">Inactive</option>
+                                    <option value="expired">Expired</option>
+                                </select>
+                                <button class="btn btn-outline-secondary ms-2">
+                                    <i class="fas fa-filter"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Coupons Table -->
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Code</th>
+                                    <th>Discount</th>
+                                    <th>Type</th>
+                                    <th>Usage Limit</th>
+                                    <th>Used</th>
+                                    <th>Valid Until</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="couponsTable">
+                                <tr>
+                                    <td colspan="8" class="text-center py-4">
+                                        <div class="spinner-border text-primary" role="status">
+                                            <span class="visually-hidden">Loading coupons...</span>
+                                        </div>
+                                        <p class="mt-3">Loading coupon records...</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
                 </div>
 
@@ -311,8 +384,18 @@
                                     </select>
                                 </div>
                                 <div class="mb-3">
+                                    <label class="form-label">Pricing Type</label>
+                                    <div class="d-flex align-items-center">
+                                        <label class="toggle-switch">
+                                            <input type="checkbox" id="templateIsFree">
+                                            <span class="toggle-slider"></span>
+                                        </label>
+                                        <span class="form-check-label" id="pricingLabel">Paid</span>
+                                    </div>
+                                </div>
+                                <div class="mb-3 price-control" id="priceControl">
                                     <label for="templatePrice" class="form-label">Price (₹)*</label>
-                                    <input type="number" class="form-control" id="templatePrice" min="0" required>
+                                    <input type="number" class="form-control" id="templatePrice" min="0" value="0" required>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -348,6 +431,29 @@
                                 </div>
                             </div>
                         </div>
+                        
+                        <!-- Detailed Information Section -->
+                        <div class="detail-section">
+                            <h6>Detailed Information</h6>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="templateFeatures" class="form-label">Key Features (one per line)</label>
+                                        <textarea class="form-control" id="templateFeatures" rows="3" placeholder="Responsive design&#10;Clean code&#10;Easy to customize"></textarea>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="mb-3">
+                                        <label for="templateRequirements" class="form-label">Requirements (one per line)</label>
+                                        <textarea class="form-control" id="templateRequirements" rows="3" placeholder="WordPress 5.0+&#10;PHP 7.4+&#10;MySQL 5.6+"></textarea>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="templateInstructions" class="form-label">Usage Instructions</label>
+                                <textarea class="form-control" id="templateInstructions" rows="3" placeholder="Step-by-step instructions for using this template..."></textarea>
+                            </div>
+                        </div>
                     </form>
                 </div>
                 <div class="modal-footer">
@@ -358,10 +464,66 @@
         </div>
     </div>
 
+    <!-- Add Coupon Modal -->
+    <div class="modal fade" id="addCouponModal" tabindex="-1" aria-labelledby="addCouponModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addCouponModalLabel">Add New Coupon</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="couponForm">
+                        <div class="mb-3">
+                            <label for="couponCode" class="form-label">Coupon Code*</label>
+                            <input type="text" class="form-control" id="couponCode" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="couponDiscount" class="form-label">Discount Value*</label>
+                            <input type="number" class="form-control" id="couponDiscount" min="0" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="couponType" class="form-label">Discount Type*</label>
+                            <select class="form-select" id="couponType" required>
+                                <option value="percentage">Percentage</option>
+                                <option value="fixed">Fixed Amount</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="couponMaxUsage" class="form-label">Maximum Usage*</label>
+                            <input type="number" class="form-control" id="couponMaxUsage" min="1" value="100" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="couponValidUntil" class="form-label">Valid Until*</label>
+                            <input type="date" class="form-control" id="couponValidUntil" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="couponStatus" class="form-label">Status*</label>
+                            <select class="form-select" id="couponStatus" required>
+                                <option value="active">Active</option>
+                                <option value="inactive">Inactive</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" id="saveCouponBtn">Save Coupon</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Edit Template Modal -->
     <div class="modal fade" id="editTemplateModal" tabindex="-1" aria-hidden="true">
         <!-- Will be populated dynamically via JavaScript -->
     </div>
+
+    <!-- Edit Coupon Modal -->
+    <div class="modal fade" id="editCouponModal" tabindex="-1" aria-hidden="true">
+        <!-- Will be populated dynamically via JavaScript -->
+    </div>
 <script src="admin.js"></script>
+
 </body>
 </html>
