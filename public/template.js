@@ -124,6 +124,43 @@ async function fetchAndRenderTemplates() {
     </div>
   `;
 
+  const CACHE_KEY = "templify_templates_cache";
+  const CACHE_TIME_KEY = "templify_templates_cache_time";
+  const CACHE_DURATION = 5 * 60 * 1000; // 5 minutes
+
+  // Try to use cache first
+  let useCache = false;
+  let cachedTemplates = null;
+  try {
+    const cacheTime = localStorage.getItem(CACHE_TIME_KEY);
+    if (cacheTime && Date.now() - Number(cacheTime) < CACHE_DURATION) {
+      const cacheData = localStorage.getItem(CACHE_KEY);
+      if (cacheData) {
+        cachedTemplates = JSON.parse(cacheData);
+        useCache = true;
+      }
+    }
+  } catch (e) {
+    // Ignore cache errors
+  }
+
+  if (useCache && Array.isArray(cachedTemplates)) {
+    allTemplates = cachedTemplates.filter(
+      (t) => (t.status || "").toLowerCase() === "active"
+    );
+    renderTemplates(allTemplates);
+    // Also fetch in background to update cache for next time
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((templates) => {
+        localStorage.setItem(CACHE_KEY, JSON.stringify(templates));
+        localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+      })
+      .catch(() => {});
+    return;
+  }
+
+  // No valid cache, fetch from API
   try {
     const res = await fetch(API_URL);
     let templates = await res.json();
@@ -132,6 +169,11 @@ async function fetchAndRenderTemplates() {
       (t) => (t.status || "").toLowerCase() === "active"
     );
     renderTemplates(allTemplates);
+    // Save to cache
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(templates));
+      localStorage.setItem(CACHE_TIME_KEY, Date.now().toString());
+    } catch (e) {}
   } catch (err) {
     grid.innerHTML = `
       <div class="text-center py-5">
