@@ -136,8 +136,8 @@ if (document.getElementById("rzp-button")) {
       showError("Please enter a valid contact number (10-15 digits).");
       return;
     }
-    if (isFree) {
-      // For free templates, just start download
+    if (isFree || finalPrice === 0) {
+      // For free templates or 100% discount, just start download
       this.innerHTML = '<span class="loading"></span> Preparing Download...';
       setTimeout(() => {
         showSuccess();
