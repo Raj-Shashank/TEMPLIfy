@@ -2,40 +2,41 @@
 const params = new URLSearchParams(window.location.search);
 const templateId = params.get("id");
 const BASE_URL = "http://localhost:3000";
-const isFree = params.get("free") === "true" || params.get("price") === "0";
 
-let productName = params.get("name") || "Name not found";
-let productPrice = params.get("price") || "1";
-productName = decodeURIComponent(productName);
-
-// Set product info
-if (document.getElementById("productName"))
-  document.getElementById("productName").textContent = productName;
-if (document.getElementById("originalPrice"))
-  document.getElementById("originalPrice").textContent = isFree
-    ? ""
-    : `₹${productPrice}`;
-if (document.getElementById("finalPrice"))
-  document.getElementById("finalPrice").textContent = isFree
-    ? "FREE"
-    : `₹${productPrice}`;
-if (document.getElementById("purchaseDetails"))
-  document.getElementById("purchaseDetails").textContent = isFree
-    ? `Thank you for downloading ${productName} (FREE)`
-    : `Thank you for purchasing ${productName} (₹${productPrice})`;
-if (isFree && document.getElementById("discountBadge")) {
-  document.getElementById("discountBadge").style.display = "none";
-}
-
-// Coupon system variables
-let originalPrice = parseInt(productPrice);
-let finalPrice = originalPrice;
+let isFree = false;
+let productName = "Name not found";
+let originalPrice = 0;
+let discountedPrice = 0;
+let finalPrice = 0;
+let templateFileUrl = null;
+let template = null;
 let appliedCoupon = null;
+
+// Set product info (will be updated after fetching template details)
+function updatePriceDisplay() {
+  if (document.getElementById("productName"))
+    document.getElementById("productName").textContent = productName;
+  if (document.getElementById("originalPrice"))
+    document.getElementById("originalPrice").textContent =
+      isFree || originalPrice === discountedPrice ? "" : `₹${originalPrice}`;
+  if (document.getElementById("finalPrice"))
+    document.getElementById("finalPrice").textContent = isFree
+      ? "FREE"
+      : `₹${finalPrice}`;
+  if (document.getElementById("purchaseDetails"))
+    document.getElementById("purchaseDetails").textContent = isFree
+      ? `Thank you for downloading ${productName} (FREE)`
+      : `Thank you for purchasing ${productName} (₹${finalPrice})`;
+  if (
+    (isFree || originalPrice === discountedPrice) &&
+    document.getElementById("discountBadge")
+  ) {
+    document.getElementById("discountBadge").style.display = "none";
+  }
+}
 
 // Razorpay configuration
 const RAZORPAY_KEY_ID = "rzp_live_sx5YOFYvieWsEx";
-let templateFileUrl = null;
-let template = null;
 
 // Fetch template details (including fileUrl) before payment
 async function fetchTemplateDetails() {
@@ -44,6 +45,18 @@ async function fetchTemplateDetails() {
     const res = await fetch(`${BASE_URL}/api/templates/${templateId}`);
     template = await res.json();
     templateFileUrl = template.fileUrl;
+    productName = template.name || "Name not found";
+    isFree = !!template.isFree;
+    originalPrice = Number(template.price) || 0;
+    discountedPrice =
+      typeof template.discountedPrice !== "undefined" &&
+      template.discountedPrice !== null &&
+      template.discountedPrice !== "" &&
+      Number(template.discountedPrice) < Number(template.price)
+        ? Number(template.discountedPrice)
+        : Number(template.price);
+    finalPrice = discountedPrice;
+    updatePriceDisplay();
   } catch (err) {
     templateFileUrl = null;
   }
@@ -53,7 +66,7 @@ fetchTemplateDetails();
 
 const razorpayConfig = {
   key: RAZORPAY_KEY_ID,
-  amount: parseInt(productPrice) * 100,
+  amount: 0, // will be set before payment
   currency: "INR",
   name: "TEMPLIfy",
   description: `Purchase: ${productName}`,
@@ -89,7 +102,7 @@ const razorpayConfig = {
   },
   notes: {
     product: productName,
-    price: productPrice,
+    price: originalPrice,
   },
   theme: {
     color: "#3A7BFF",
@@ -142,6 +155,8 @@ if (document.getElementById("rzp-button")) {
       // Update amount with coupon discount if applied
       razorpayConfig.amount = finalPrice * 100;
       razorpayConfig.notes.finalPrice = finalPrice;
+      razorpayConfig.notes.product = productName;
+      razorpayConfig.notes.price = originalPrice;
       if (appliedCoupon) {
         razorpayConfig.notes.couponCode = appliedCoupon.code;
         razorpayConfig.notes.discount = appliedCoupon.discount;
@@ -281,8 +296,8 @@ async function applyCoupon() {
       couponMessage.textContent = data.error || "Invalid coupon code.";
       couponMessage.className = "coupon-message coupon-error";
       appliedCoupon = null;
-      finalPrice = originalPrice;
-      document.getElementById("finalPrice").textContent = `₹${finalPrice}`;
+      finalPrice = discountedPrice;
+      updatePriceDisplay();
       document.getElementById("discountBadge").style.display = "none";
     } else {
       appliedCoupon = {
@@ -292,11 +307,11 @@ async function applyCoupon() {
       };
       // Calculate discounted price
       if (data.type === "percentage") {
-        finalPrice = originalPrice - (originalPrice * data.discount) / 100;
+        finalPrice = discountedPrice - (discountedPrice * data.discount) / 100;
       } else if (data.type === "fixed") {
-        finalPrice = Math.max(originalPrice - data.discount, 0);
+        finalPrice = Math.max(discountedPrice - data.discount, 0);
       }
-      document.getElementById("finalPrice").textContent = `₹${finalPrice}`;
+      updatePriceDisplay();
       document.getElementById("discountBadge").textContent = `${data.discount}${
         data.type === "percentage" ? "%" : "₹"
       } OFF`;

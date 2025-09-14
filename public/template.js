@@ -37,29 +37,25 @@ function renderTemplates(templates) {
     return;
   }
 
-  // Mark some templates as free (for demonstration)
-  // In a real scenario, this would come from the backend
-  const templatesWithFree = templates.map((template, index) => {
-    // Make first and third templates free for demonstration
-    if (index === 0 || index === 2) {
-      return {
-        ...template,
-        isFree: true,
-        originalPrice: template.price,
-        price: 0,
-        rating: 4.5, // Add rating for demonstration
-      };
-    }
-    return {
-      ...template,
-      isFree: false,
-      rating: 4.2 + Math.random() * 0.8, // Random rating between 4.2 and 5.0
-    };
-  });
-
-  grid.innerHTML = templatesWithFree
-    .map(
-      (template) => `
+  // Use templates as received from backend (isFree is real)
+  grid.innerHTML = templates
+    .map((template) => {
+      let priceHtml = "";
+      if (template.isFree) {
+        priceHtml = `<span class="original-price">₹${
+          template.originalPrice || template.price || "999"
+        }</span> <span class="product-price free-price">FREE</span>`;
+      } else if (
+        template.discountedPrice !== undefined &&
+        template.discountedPrice !== null &&
+        template.discountedPrice !== "" &&
+        Number(template.discountedPrice) < Number(template.price)
+      ) {
+        priceHtml = `<span class="original-price">₹${template.price}</span> <span class="product-price discounted">₹${template.discountedPrice}</span>`;
+      } else {
+        priceHtml = `<span class="product-price">₹${template.price}</span>`;
+      }
+      return `
     <div class="product-card" data-category="${template.category}">
       <div class="product-image" style="background-image: url('${
         template.previewUrl ||
@@ -85,7 +81,6 @@ function renderTemplates(templates) {
       <div class="product-info">
         <h3>${template.name}</h3>
         <p>${template.description}</p>
-        
         <div class="product-rating">
           <div class="stars">
             ${generateStarRating(template.rating || 4.5)}
@@ -94,17 +89,9 @@ function renderTemplates(templates) {
             1
           )}</span>
         </div>
-        
         <div class="product-footer">
           <div class="price-container">
-            ${
-              template.isFree
-                ? `<span class="original-price">₹${
-                    template.originalPrice || "999"
-                  }</span>
-                <span class="product-price free-price">FREE</span>`
-                : `<span class="product-price">₹${template.price}</span>`
-            }
+            ${priceHtml}
           </div>
           <div class="product-actions">
             <button class="view-details-btn" data-id="${template._id}">
@@ -123,8 +110,8 @@ function renderTemplates(templates) {
         </div>
       </div>
     </div>
-  `
-    )
+  `;
+    })
     .join("");
 }
 
@@ -140,7 +127,11 @@ async function fetchAndRenderTemplates() {
 
   try {
     const res = await fetch(API_URL);
-    allTemplates = await res.json();
+    let templates = await res.json();
+    // Only show templates with status 'active' (case-insensitive)
+    allTemplates = templates.filter(
+      (t) => (t.status || "").toLowerCase() === "active"
+    );
     renderTemplates(allTemplates);
   } catch (err) {
     grid.innerHTML = `

@@ -59,12 +59,21 @@ const TemplateSchema = new mongoose.Schema({
   description: { type: String, required: true },
   category: { type: String, required: true },
   price: { type: Number, required: true },
+  isFree: { type: Boolean, default: false },
+  discountedPrice: { type: Number },
   status: {
     type: String,
     enum: ["active", "draft", "archived"],
     default: "draft",
   },
   tags: [String],
+  layout: { type: String },
+  framework: { type: String },
+  filesIncluded: { type: String },
+  support: { type: String },
+  features: [String],
+  requirements: [String],
+  instructions: { type: String },
   createdAt: { type: Date, default: Date.now },
   downloads: { type: Number, default: 0 },
   previewUrl: String, // Optional, for future file upload
@@ -257,8 +266,16 @@ app.post(
         description,
         category,
         price,
+        isFree,
         status,
         tags,
+        layout,
+        framework,
+        filesIncluded,
+        support,
+        features,
+        requirements,
+        instructions,
         livePreviewUrl,
       } = req.body;
       let templateFileId, previewFileId;
@@ -299,8 +316,31 @@ app.post(
         description,
         category,
         price: Number(price),
+        discountedPrice:
+          req.body.discountedPrice !== undefined &&
+          req.body.discountedPrice !== ""
+            ? Number(req.body.discountedPrice)
+            : undefined,
+        isFree: isFree === "true" || isFree === true,
         status,
         tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+        layout,
+        framework,
+        filesIncluded,
+        support,
+        features: features
+          ? features
+              .split(/,|\n/)
+              .map((f) => f.trim())
+              .filter(Boolean)
+          : [],
+        requirements: requirements
+          ? requirements
+              .split(/,|\n/)
+              .map((r) => r.trim())
+              .filter(Boolean)
+          : [],
+        instructions,
         livePreviewUrl: livePreviewUrl || undefined,
         previewUrl: previewFileUrl,
         fileUrl: templateFileUrl,
@@ -359,8 +399,16 @@ app.put(
         description,
         category,
         price,
+        isFree,
         status,
         tags,
+        layout,
+        framework,
+        filesIncluded,
+        support,
+        features,
+        requirements,
+        instructions,
         livePreviewUrl,
       } = req.body;
       let update = {
@@ -368,8 +416,31 @@ app.put(
         description,
         category,
         price: Number(price),
+        discountedPrice:
+          req.body.discountedPrice !== undefined &&
+          req.body.discountedPrice !== ""
+            ? Number(req.body.discountedPrice)
+            : undefined,
+        isFree: isFree === "true" || isFree === true,
         status,
         tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+        layout,
+        framework,
+        filesIncluded,
+        support,
+        features: features
+          ? features
+              .split(/,|\n/)
+              .map((f) => f.trim())
+              .filter(Boolean)
+          : [],
+        requirements: requirements
+          ? requirements
+              .split(/,|\n/)
+              .map((r) => r.trim())
+              .filter(Boolean)
+          : [],
+        instructions,
         livePreviewUrl: livePreviewUrl || undefined,
       };
       if (req.files["templateFile"]) {
