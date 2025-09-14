@@ -3,10 +3,10 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Function to generate star rating HTML
   function generateStarRating(rating) {
-    let starsHtml = '';
+    let starsHtml = "";
     const fullStars = Math.floor(rating);
     const hasHalfStar = rating % 1 >= 0.5;
-    
+
     for (let i = 0; i < fullStars; i++) {
       starsHtml += '<i class="fas fa-star"></i>';
     }
@@ -17,10 +17,10 @@ document.addEventListener("DOMContentLoaded", async function () {
     for (let i = 0; i < emptyStars; i++) {
       starsHtml += '<i class="far fa-star"></i>';
     }
-    
+
     return starsHtml;
   }
-  
+
   // Fetch templates from backend and render dynamically
   const productsGrid = document.querySelector(".products-grid");
   if (productsGrid) {
@@ -35,30 +35,47 @@ document.addEventListener("DOMContentLoaded", async function () {
       const res = await fetch(`${API_BASE_URL}/api/templates`);
       const templates = await res.json();
       if (templates.length === 0) {
-        productsGrid.innerHTML = '<div class="text-center py-5">No templates available at the moment.</div>';
+        productsGrid.innerHTML =
+          '<div class="text-center py-5">No templates available at the moment.</div>';
       } else {
         // Show only the newest 6 templates
         const newestTemplates = templates.slice(0, 6);
-        productsGrid.innerHTML = newestTemplates.map((template) => {
-          let priceHtml = "";
-          if (template.isFree) {
-            priceHtml = `<span class="original-price">₹${template.originalPrice || template.price || '999'}</span> <span class="product-price free-price">FREE</span>`;
-          } else if (
-            template.discountedPrice !== undefined &&
-            template.discountedPrice !== null &&
-            template.discountedPrice !== "" &&
-            Number(template.discountedPrice) < Number(template.price)
-          ) {
-            priceHtml = `<span class="original-price">₹${template.price}</span> <span class="product-price discounted">₹${template.discountedPrice}</span>`;
-          } else {
-            priceHtml = `<span class="product-price">₹${template.price}</span>`;
-          }
-          return `
+        productsGrid.innerHTML = newestTemplates
+          .map((template) => {
+            let priceHtml = "";
+            if (template.isFree) {
+              priceHtml = `<span class="original-price">₹${
+                template.originalPrice || template.price || "999"
+              }</span> <span class="product-price free-price">FREE</span>`;
+            } else if (
+              template.discountedPrice !== undefined &&
+              template.discountedPrice !== null &&
+              template.discountedPrice !== "" &&
+              Number(template.discountedPrice) < Number(template.price)
+            ) {
+              priceHtml = `<span class="original-price">₹${template.price}</span> <span class="product-price discounted">₹${template.discountedPrice}</span>`;
+            } else {
+              priceHtml = `<span class="product-price">₹${template.price}</span>`;
+            }
+            return `
           <div class="product-card">
-            <div class="product-image" style="background-image: url('${template.previewUrl || "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1674&q=80"}')">
-              ${template.status === "active" ? `<span class="product-badge ${template.isFree ? 'free-badge' : ''}">${template.isFree ? 'Free' : 'Active'}</span>` : ""}
+            <div class="product-image" style="background-image: url('${
+              template.previewUrl ||
+              "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1674&q=80"
+            }')">
+              ${
+                template.status === "active"
+                  ? `<span class="product-badge ${
+                      template.isFree ? "free-badge" : ""
+                    }">${template.isFree ? "Free" : "Active"}</span>`
+                  : ""
+              }
               <div class="product-overlay">
-                <button class="preview-btn" data-preview="${template.livePreviewUrl ? template.livePreviewUrl : template.previewUrl || "#"}">
+                <button class="preview-btn" data-preview="${
+                  template.livePreviewUrl
+                    ? template.livePreviewUrl
+                    : template.previewUrl || "#"
+                }">
                   <i class="fas fa-eye"></i> Live Preview
                 </button>
               </div>
@@ -70,7 +87,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="stars">
                   ${generateStarRating(template.rating || 4.5)}
                 </div>
-                <span class="rating-count">${(template.rating || 4.5).toFixed(1)}</span>
+                <span class="rating-count">${(template.rating || 4.5).toFixed(
+                  1
+                )}</span>
               </div>
               <div class="product-footer">
                 <div class="price-container">
@@ -80,22 +99,28 @@ document.addEventListener("DOMContentLoaded", async function () {
                   <button class="view-details-btn" data-id="${template._id}">
                     <i class="fas fa-info-circle"></i> Details
                   </button>
-                  <button class="buy-button ${template.isFree ? 'free-button' : ''}" 
+                  <button class="buy-button ${
+                    template.isFree ? "free-button" : ""
+                  }" 
                     data-id="${template._id}"
                     data-price="${template.price}"
                     data-name="${template.name}">
-                    <i class="fas ${template.isFree ? 'fa-download' : 'fa-shopping-cart'}"></i> 
-                    ${template.isFree ? 'Download' : 'Get Template'}
+                    <i class="fas ${
+                      template.isFree ? "fa-download" : "fa-shopping-cart"
+                    }"></i> 
+                    ${template.isFree ? "Download" : "Get Template"}
                   </button>
                 </div>
               </div>
             </div>
           </div>
           `;
-        }).join("");
+          })
+          .join("");
       }
     } catch (err) {
-      productsGrid.innerHTML = '<div class="text-center py-5">Failed to load templates. Please try again later.</div>';
+      productsGrid.innerHTML =
+        '<div class="text-center py-5">Failed to load templates. Please try again later.</div>';
       console.error("Error loading templates:", err);
     }
   }
@@ -107,22 +132,24 @@ document.addEventListener("DOMContentLoaded", async function () {
         const templateId = e.target.getAttribute("data-id");
         const templatePrice = e.target.getAttribute("data-price");
         const templateName = e.target.getAttribute("data-name");
-        
+
         // If free template, handle differently
         if (templatePrice == 0) {
           // For free templates, redirect to detail page or handle download
           window.location.href = `detail.html?id=${templateId}&free=true`;
         } else {
-          window.location.href = `payment.html?id=${templateId}&price=${templatePrice}&name=${encodeURIComponent(templateName)}`;
+          window.location.href = `payment.html?id=${templateId}&price=${templatePrice}&name=${encodeURIComponent(
+            templateName
+          )}`;
         }
       }
-      
+
       // Handle view details button click
       if (e.target.classList.contains("view-details-btn")) {
         const templateId = e.target.getAttribute("data-id");
         window.location.href = `detail.html?id=${templateId}`;
       }
-      
+
       // Handle preview button click
       if (e.target.classList.contains("preview-btn")) {
         e.preventDefault();
@@ -147,14 +174,14 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
     });
   });
-  
+
   // Filter buttons functionality
-  document.querySelectorAll('.filter-btn').forEach(button => {
-    button.addEventListener('click', function() {
-      document.querySelectorAll('.filter-btn').forEach(btn => {
-        btn.classList.remove('active');
+  document.querySelectorAll(".filter-btn").forEach((button) => {
+    button.addEventListener("click", function () {
+      document.querySelectorAll(".filter-btn").forEach((btn) => {
+        btn.classList.remove("active");
       });
-      this.classList.add('active');
+      this.classList.add("active");
     });
   });
 });
