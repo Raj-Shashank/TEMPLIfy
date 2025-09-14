@@ -15,7 +15,12 @@ const MONGO_URI = process.env.MONGO_URI;
 
 // Middleware
 const corsOptions = {
-  origin: ["https://templifyy.netlify.app","http://localhost:5500", "http://127.0.0.1:5500", "http://127.0.0.1:5501"], // Your client's origin
+  origin: [
+    "https://templifyy.netlify.app",
+    "http://localhost:5500",
+    "http://127.0.0.1:5500",
+    "http://127.0.0.1:5501",
+  ], // Your client's origin
   credentials: true, // Allow credentials
   optionsSuccessStatus: 200,
 };
@@ -54,12 +59,21 @@ const TemplateSchema = new mongoose.Schema({
   description: { type: String, required: true },
   category: { type: String, required: true },
   price: { type: Number, required: true },
+  isFree: { type: Boolean, default: false },
+  discountedPrice: { type: Number },
   status: {
     type: String,
     enum: ["active", "draft", "archived"],
     default: "draft",
   },
   tags: [String],
+  layout: { type: String },
+  framework: { type: String },
+  filesIncluded: { type: String },
+  support: { type: String },
+  features: [String],
+  requirements: [String],
+  instructions: { type: String },
   createdAt: { type: Date, default: Date.now },
   downloads: { type: Number, default: 0 },
   previewUrl: String, // Optional, for future file upload
@@ -67,6 +81,102 @@ const TemplateSchema = new mongoose.Schema({
   livePreviewUrl: String, // Optional, for live preview links
 });
 const Template = mongoose.model("Template", TemplateSchema);
+
+// Coupon Schema and Model
+const CouponSchema = new mongoose.Schema({
+  code: { type: String, required: true, unique: true },
+  discount: { type: Number, required: true },
+  type: { type: String, enum: ["percentage", "fixed"], required: true },
+  maxUsage: { type: Number, required: true },
+  usedCount: { type: Number, default: 0 },
+  validUntil: { type: Date, required: true },
+  status: {
+    type: String,
+    enum: ["active", "inactive", "expired"],
+    default: "active",
+  },
+  createdAt: { type: Date, default: Date.now },
+});
+const Coupon = mongoose.model("Coupon", CouponSchema);
+// Coupon API Endpoints
+
+// Create a new coupon
+app.post("/api/coupons", async (req, res) => {
+  try {
+    const { code, discount, type, maxUsage, validUntil, status } = req.body;
+    if (!code || !discount || !type || !maxUsage || !validUntil || !status) {
+      return res.status(400).json({ error: "Missing required fields" });
+    }
+    const coupon = new Coupon({
+      code: code.trim().toUpperCase(),
+      discount,
+      type,
+      maxUsage,
+      validUntil,
+      status,
+    });
+    await coupon.save();
+    res.status(201).json(coupon);
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ error: "Coupon code already exists" });
+    }
+    res.status(400).json({ error: "Failed to create coupon" });
+  }
+});
+
+// Get all coupons
+app.get("/api/coupons", async (req, res) => {
+  try {
+    const coupons = await Coupon.find().sort({ createdAt: -1 });
+    res.json(coupons);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch coupons" });
+  }
+});
+
+// Get a single coupon by ID
+app.get("/api/coupons/:id", async (req, res) => {
+  try {
+    const coupon = await Coupon.findById(req.params.id);
+    if (!coupon) return res.status(404).json({ error: "Coupon not found" });
+    res.json(coupon);
+  } catch (err) {
+    res.status(400).json({ error: "Failed to fetch coupon" });
+  }
+});
+
+// Update a coupon
+app.put("/api/coupons/:id", async (req, res) => {
+  try {
+    const { code, discount, type, maxUsage, validUntil, status } = req.body;
+    const update = {
+      code: code.trim().toUpperCase(),
+      discount,
+      type,
+      maxUsage,
+      validUntil,
+      status,
+    };
+    const coupon = await Coupon.findByIdAndUpdate(req.params.id, update, {
+      new: true,
+    });
+    if (!coupon) return res.status(404).json({ error: "Coupon not found" });
+    res.json(coupon);
+  } catch (err) {
+    res.status(400).json({ error: "Failed to update coupon" });
+  }
+});
+
+// Delete a coupon
+app.delete("/api/coupons/:id", async (req, res) => {
+  try {
+    await Coupon.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: "Failed to delete coupon" });
+  }
+});
 
 const razorpay = new Razorpay({
   key_id: process.env.RAZORPAY_KEY_ID,
@@ -156,8 +266,16 @@ app.post(
         description,
         category,
         price,
+        isFree,
         status,
         tags,
+        layout,
+        framework,
+        filesIncluded,
+        support,
+        features,
+        requirements,
+        instructions,
         livePreviewUrl,
       } = req.body;
       let templateFileId, previewFileId;
@@ -198,8 +316,31 @@ app.post(
         description,
         category,
         price: Number(price),
+        discountedPrice:
+          req.body.discountedPrice !== undefined &&
+          req.body.discountedPrice !== ""
+            ? Number(req.body.discountedPrice)
+            : undefined,
+        isFree: isFree === "true" || isFree === true,
         status,
         tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+        layout,
+        framework,
+        filesIncluded,
+        support,
+        features: features
+          ? features
+              .split(/,|\n/)
+              .map((f) => f.trim())
+              .filter(Boolean)
+          : [],
+        requirements: requirements
+          ? requirements
+              .split(/,|\n/)
+              .map((r) => r.trim())
+              .filter(Boolean)
+          : [],
+        instructions,
         livePreviewUrl: livePreviewUrl || undefined,
         previewUrl: previewFileUrl,
         fileUrl: templateFileUrl,
@@ -233,7 +374,10 @@ app.get("/api/files/:id", async (req, res) => {
       res.set("Content-Disposition", `inline; filename=\"${file.filename}\"`);
     } else {
       res.set("Content-Type", file.contentType || "application/octet-stream");
-      res.set("Content-Disposition", `attachment; filename=\"${file.filename}\"`);
+      res.set(
+        "Content-Disposition",
+        `attachment; filename=\"${file.filename}\"`
+      );
     }
     gfsBucket.openDownloadStream(fileId).pipe(res);
   } catch (err) {
@@ -255,8 +399,16 @@ app.put(
         description,
         category,
         price,
+        isFree,
         status,
         tags,
+        layout,
+        framework,
+        filesIncluded,
+        support,
+        features,
+        requirements,
+        instructions,
         livePreviewUrl,
       } = req.body;
       let update = {
@@ -264,8 +416,31 @@ app.put(
         description,
         category,
         price: Number(price),
+        discountedPrice:
+          req.body.discountedPrice !== undefined &&
+          req.body.discountedPrice !== ""
+            ? Number(req.body.discountedPrice)
+            : undefined,
+        isFree: isFree === "true" || isFree === true,
         status,
         tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+        layout,
+        framework,
+        filesIncluded,
+        support,
+        features: features
+          ? features
+              .split(/,|\n/)
+              .map((f) => f.trim())
+              .filter(Boolean)
+          : [],
+        requirements: requirements
+          ? requirements
+              .split(/,|\n/)
+              .map((r) => r.trim())
+              .filter(Boolean)
+          : [],
+        instructions,
         livePreviewUrl: livePreviewUrl || undefined,
       };
       if (req.files["templateFile"]) {
@@ -349,10 +524,57 @@ app.get("/api/templates/:id", async (req, res) => {
   }
 });
 
+// Increment coupon usedCount after successful payment
+app.post("/api/coupons/increment", async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ error: "Coupon code required" });
+    const coupon = await Coupon.findOneAndUpdate(
+      { code: code.trim().toUpperCase() },
+      { $inc: { usedCount: 1 } },
+      { new: true }
+    );
+    if (!coupon) return res.status(404).json({ error: "Coupon not found" });
+    res.json({ success: true, usedCount: coupon.usedCount });
+  } catch (err) {
+    res.status(400).json({ error: "Failed to increment coupon usage" });
+  }
+});
+// Validate coupon (check existence, status, expiry, usage limit)
+app.post("/api/coupons/validate", async (req, res) => {
+  try {
+    const { code } = req.body;
+    if (!code) return res.status(400).json({ error: "Coupon code required" });
+    const coupon = await Coupon.findOne({ code: code.trim().toUpperCase() });
+    if (!coupon) return res.status(404).json({ error: "Invalid coupon code" });
+    if (coupon.status !== "active")
+      return res.status(400).json({ error: "Coupon is not active" });
+    if (new Date(coupon.validUntil) < new Date())
+      return res.status(400).json({ error: "Coupon has expired" });
+    if (coupon.usedCount >= coupon.maxUsage)
+      return res
+        .status(400)
+        .json({ error: "Sorry, coupon's usage limit has reached" });
+    // Return coupon details for discount application
+    res.json({
+      code: coupon.code,
+      discount: coupon.discount,
+      type: coupon.type,
+      maxUsage: coupon.maxUsage,
+      usedCount: coupon.usedCount,
+      validUntil: coupon.validUntil,
+      status: coupon.status,
+    });
+  } catch (err) {
+    res.status(400).json({ error: "Failed to validate coupon" });
+  }
+});
+
 // API: Verify Razorpay payment signature
 app.post("/api/verify-payment", async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
+    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
+      req.body;
     const generated_signature = crypto
       .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
       .update(razorpay_order_id + "|" + razorpay_payment_id)
@@ -364,7 +586,9 @@ app.post("/api/verify-payment", async (req, res) => {
       return res.json({ success: false, error: "Signature mismatch" });
     }
   } catch (err) {
-    return res.status(400).json({ success: false, error: "Verification failed" });
+    return res
+      .status(400)
+      .json({ success: false, error: "Verification failed" });
   }
 });
 
