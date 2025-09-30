@@ -1,3 +1,4 @@
+
 /* Modern UI Variables */
 :root {
   --primary: #2563eb;
@@ -28,7 +29,7 @@ body {
 }
 
 .container {
-  max-width: 1200px;
+  max-width: 1600px; /* Increased to fit 4 cards comfortably */
   margin: 0 auto;
   padding: 0 20px;
 }
@@ -179,11 +180,11 @@ header {
   border-color: transparent;
 }
 
-/* Products Grid */
+/* Products Grid - UPDATED FOR 4 CARDS PER ROW */
 .products-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-  gap: 30px;
+  grid-template-columns: repeat(4, 1fr); /* Fixed 4 columns */
+  gap: 25px; /* Slightly reduced gap */
   padding: 0 0 80px;
 }
 
@@ -195,6 +196,9 @@ header {
   box-shadow: var(--card-shadow);
   border: 1px solid var(--border);
   position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* Ensure cards take full height */
 }
 
 .product-card:hover {
@@ -204,12 +208,13 @@ header {
 }
 
 .product-image {
-  height: 220px;
+  height: 200px; /* Slightly reduced height */
   width: 100%;
   background-size: cover;
   background-position: center;
   position: relative;
   overflow: hidden;
+  flex-shrink: 0; /* Prevent image from shrinking */
 }
 
 .product-image::before {
@@ -261,24 +266,32 @@ header {
 }
 
 .product-info {
-  padding: 22px;
+  padding: 20px; /* Slightly reduced padding */
   position: relative;
   z-index: 2;
+  flex-grow: 1; /* Allow info section to grow */
+  display: flex;
+  flex-direction: column;
 }
 
 .product-info h3 {
-  font-size: 20px;
-  margin-bottom: 12px;
+  font-size: 18px; /* Slightly smaller font */
+  margin-bottom: 10px; /* Reduced margin */
   color: var(--light-text);
   font-weight: 700;
+  line-height: 1.3;
 }
 
 .product-info p {
   color: var(--medium-text);
   margin-bottom: 15px;
-  font-size: 15px;
-  min-height: 70px;
-  line-height: 1.7;
+  font-size: 14px; /* Slightly smaller font */
+  line-height: 1.6;
+  flex-grow: 1; /* Allow description to take available space */
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-line-clamp: 3; /* Limit to 3 lines */
+  -webkit-box-orient: vertical;
 }
 
 /* Rating stars */
@@ -286,6 +299,7 @@ header {
   display: flex;
   align-items: center;
   margin-bottom: 15px;
+  flex-shrink: 0; /* Prevent rating from shrinking */
 }
 
 .stars {
@@ -309,7 +323,9 @@ header {
   justify-content: space-between;
   align-items: center;
   border-top: 1px solid var(--border);
-  padding-top: 20px;
+  padding-top: 18px; /* Slightly reduced padding */
+  margin-top: auto; /* Push to bottom of card */
+  flex-shrink: 0; /* Prevent footer from shrinking */
 }
 
 .price-container {
@@ -318,13 +334,13 @@ header {
 }
 
 .product-price {
-  font-size: 22px;
+  font-size: 20px; /* Slightly smaller font */
   font-weight: 700;
   color: var(--primary);
 }
 
 .original-price {
-  font-size: 16px;
+  font-size: 14px; /* Slightly smaller font */
   text-decoration: line-through;
   color: var(--medium-text);
 }
@@ -336,37 +352,39 @@ header {
 .product-actions {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 8px; /* Reduced gap */
 }
 
 .buy-button {
   background: var(--primary);
   color: white;
   border: none;
-  padding: 10px 20px;
+  padding: 8px 16px; /* Reduced padding */
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
   transition: var(--transition);
-  font-size: 14px;
+  font-size: 13px; /* Slightly smaller font */
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px; /* Reduced gap */
+  white-space: nowrap;
 }
 
 .view-details-btn {
   background: transparent;
   color: var(--primary);
   border: 1px solid var(--primary);
-  padding: 10px 20px;
+  padding: 8px 16px; /* Reduced padding */
   border-radius: 6px;
   cursor: pointer;
   font-weight: 600;
   transition: var(--transition);
-  font-size: 14px;
+  font-size: 13px; /* Slightly smaller font */
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px; /* Reduced gap */
+  white-space: nowrap;
 }
 
 .view-details-btn:hover {
@@ -390,7 +408,7 @@ header {
 
 /* Preview button with same color as buy button */
 .preview-btn {
-  padding: 12px 25px;
+  padding: 10px 20px; /* Reduced padding */
   background: var(--primary);
   color: var(--light-text);
   border: none;
@@ -402,6 +420,7 @@ header {
   align-items: center;
   gap: 8px;
   box-shadow: 0 5px 15px rgba(37, 99, 235, 0.3);
+  font-size: 13px; /* Slightly smaller font */
 }
 
 .preview-btn:hover {
@@ -529,16 +548,45 @@ footer {
   to { transform: rotate(360deg); }
 }
 
-/* Responsive Design */
+/* Responsive Design - UPDATED FOR 4-COLUMN LAYOUT */
+@media (max-width: 1600px) {
+  .container {
+    max-width: 1400px;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(4, 1fr); /* Keep 4 columns */
+  }
+}
+
+@media (max-width: 1400px) {
+  .container {
+    max-width: 1200px;
+    padding: 0 30px;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr); /* 3 columns on medium screens */
+  }
+}
+
 @media (max-width: 1100px) {
   .container {
     padding: 0 30px;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(3, 1fr); /* Keep 3 columns */
   }
 }
 
 @media (max-width: 900px) {
   .nav-links {
     gap: 25px;
+  }
+  
+  .products-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on tablets */
   }
 }
 
@@ -571,12 +619,18 @@ footer {
   }
   
   .products-grid {
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    grid-template-columns: repeat(2, 1fr); /* Keep 2 columns */
     gap: 20px;
   }
   
   .product-actions {
     flex-direction: row;
+  }
+}
+
+@media (max-width: 600px) {
+  .products-grid {
+    grid-template-columns: 1fr; /* 1 column on small screens */
   }
 }
 
