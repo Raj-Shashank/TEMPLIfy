@@ -1,3 +1,4 @@
+
 document.addEventListener("DOMContentLoaded", async function () {
   const API_BASE_URL = "https://templify-zhhw.onrender.com";
 
@@ -21,9 +22,35 @@ document.addEventListener("DOMContentLoaded", async function () {
     return starsHtml;
   }
 
+  // Search functionality
+  function initializeSearch() {
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    
+    function handleSearch() {
+      const searchTerm = searchInput.value.trim();
+      if (searchTerm) {
+        localStorage.setItem('searchQuery', searchTerm);
+        window.location.href = 'template.html';
+      }
+    }
+    
+    if (searchButton && searchInput) {
+      searchButton.addEventListener('click', handleSearch);
+      searchInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter') {
+          handleSearch();
+        }
+      });
+    }
+  }
+
   // Fetch templates from backend and render dynamically
   const productsGrid = document.querySelector(".products-grid");
-  if (productsGrid) {
+  
+  async function loadTemplates() {
+    if (!productsGrid) return;
+
     // Show loading spinner while fetching
     productsGrid.innerHTML = `
       <div class="loading-spinner">
@@ -31,33 +58,44 @@ document.addEventListener("DOMContentLoaded", async function () {
         <p>Loading premium templates...</p>
       </div>
     `;
+    
     try {
       const res = await fetch(`${API_BASE_URL}/api/templates`);
       const templates = await res.json();
+      
       if (templates.length === 0) {
-        productsGrid.innerHTML =
-          '<div class="text-center py-5">No templates available at the moment.</div>';
+        productsGrid.innerHTML = 
+          '<div class="text-center py-5" style="grid-column: 1 / -1; color: var(--medium-text); font-size: 18px;">No templates available at the moment.</div>';
       } else {
-        // Show only the newest 6 templates
-        const newestTemplates = templates.slice(0, 6);
-        productsGrid.innerHTML = newestTemplates
-          .map((template) => {
-            let priceHtml = "";
-            if (template.isFree) {
-              priceHtml = `<span class="original-price">₹${
-                template.originalPrice || template.price || "999"
-              }</span> <span class="product-price free-price">FREE</span>`;
-            } else if (
-              template.discountedPrice !== undefined &&
-              template.discountedPrice !== null &&
-              template.discountedPrice !== "" &&
-              Number(template.discountedPrice) < Number(template.price)
-            ) {
-              priceHtml = `<span class="original-price">₹${template.price}</span> <span class="product-price discounted">₹${template.discountedPrice}</span>`;
-            } else {
-              priceHtml = `<span class="product-price">₹${template.price}</span>`;
-            }
-            return `
+        renderTemplates(templates.slice(0, 6)); // Show only the newest 6 templates
+      }
+    } catch (err) {
+      productsGrid.innerHTML = 
+        '<div class="text-center py-5" style="grid-column: 1 / -1; color: var(--accent); font-size: 18px;">Failed to load templates. Please try again later.</div>';
+      console.error("Error loading templates:", err);
+    }
+  }
+
+  function renderTemplates(templates) {
+    productsGrid.innerHTML = templates
+      .map((template) => {
+        let priceHtml = "";
+        if (template.isFree) {
+          priceHtml = `<span class="original-price">₹${
+            template.originalPrice || template.price || "999"
+          }</span> <span class="product-price free-price">FREE</span>`;
+        } else if (
+          template.discountedPrice !== undefined &&
+          template.discountedPrice !== null &&
+          template.discountedPrice !== "" &&
+          Number(template.discountedPrice) < Number(template.price)
+        ) {
+          priceHtml = `<span class="original-price">₹${template.price}</span> <span class="product-price discounted">₹${template.discountedPrice}</span>`;
+        } else {
+          priceHtml = `<span class="product-price">₹${template.price}</span>`;
+        }
+        
+        return `
           <div class="product-card">
             <div class="product-image" style="background-image: url('${
               template.previewUrl ||
@@ -87,9 +125,7 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="stars">
                   ${generateStarRating(template.rating || 4.5)}
                 </div>
-                <span class="rating-count">${(template.rating || 4.5).toFixed(
-                  1
-                )}</span>
+                <span class="rating-count">${(template.rating || 4.5).toFixed(1)}</span>
               </div>
               <div class="product-footer">
                 <div class="price-container">
@@ -114,28 +150,25 @@ document.addEventListener("DOMContentLoaded", async function () {
               </div>
             </div>
           </div>
-          `;
-          })
-          .join("");
-      }
-    } catch (err) {
-      productsGrid.innerHTML =
-        '<div class="text-center py-5">Failed to load templates. Please try again later.</div>';
-      console.error("Error loading templates:", err);
-    }
+        `;
+      })
+      .join("");
   }
 
-  // Handle buy button clicks (re-bind after dynamic render)
-  document.querySelectorAll(".products-grid").forEach((grid) => {
-    grid.addEventListener("click", function (e) {
-      if (e.target.classList.contains("buy-button")) {
-        const templateId = e.target.getAttribute("data-id");
-        const templatePrice = e.target.getAttribute("data-price");
-        const templateName = e.target.getAttribute("data-name");
+  // Handle button clicks (re-bind after dynamic render)
+  function initializeEventListeners() {
+    // Handle buy button clicks
+    document.addEventListener("click", function (e) {
+      const buyButton = e.target.closest(".buy-button");
+      const viewDetailsButton = e.target.closest(".view-details-btn");
+      const previewButton = e.target.closest(".preview-btn");
+      
+      if (buyButton) {
+        const templateId = buyButton.getAttribute("data-id");
+        const templatePrice = buyButton.getAttribute("data-price");
+        const templateName = buyButton.getAttribute("data-name");
 
-        // If free template, handle differently
         if (templatePrice == 0) {
-          // For free templates, redirect to detail page or handle download
           window.location.href = `detail.html?id=${templateId}&free=true`;
         } else {
           window.location.href = `payment.html?id=${templateId}&price=${templatePrice}&name=${encodeURIComponent(
@@ -145,43 +178,48 @@ document.addEventListener("DOMContentLoaded", async function () {
       }
 
       // Handle view details button click
-      if (e.target.classList.contains("view-details-btn")) {
-        const templateId = e.target.getAttribute("data-id");
+      if (viewDetailsButton) {
+        const templateId = viewDetailsButton.getAttribute("data-id");
         window.location.href = `detail.html?id=${templateId}`;
       }
 
       // Handle preview button click
-      if (e.target.classList.contains("preview-btn")) {
+      if (previewButton) {
         e.preventDefault();
-        const url = e.target.dataset.preview;
+        const url = previewButton.dataset.preview;
         if (url && url !== "#") window.open(url, "_blank");
       }
     });
-  });
 
-  // Smooth scrolling for anchor links
-  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-    anchor.addEventListener("click", function (e) {
-      e.preventDefault();
-      const targetId = this.getAttribute("href");
-      if (targetId === "#") return;
-      const targetElement = document.querySelector(targetId);
-      if (targetElement) {
-        window.scrollTo({
-          top: targetElement.offsetTop - 80,
-          behavior: "smooth",
-        });
-      }
-    });
-  });
-
-  // Filter buttons functionality
-  document.querySelectorAll(".filter-btn").forEach((button) => {
-    button.addEventListener("click", function () {
-      document.querySelectorAll(".filter-btn").forEach((btn) => {
-        btn.classList.remove("active");
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+      anchor.addEventListener("click", function (e) {
+        e.preventDefault();
+        const targetId = this.getAttribute("href");
+        if (targetId === "#") return;
+        const targetElement = document.querySelector(targetId);
+        if (targetElement) {
+          window.scrollTo({
+            top: targetElement.offsetTop - 80,
+            behavior: "smooth",
+          });
+        }
       });
-      this.classList.add("active");
     });
-  });
+
+    // Filter buttons functionality
+    document.querySelectorAll(".filter-btn").forEach((button) => {
+      button.addEventListener("click", function () {
+        document.querySelectorAll(".filter-btn").forEach((btn) => {
+          btn.classList.remove("active");
+        });
+        this.classList.add("active");
+      });
+    });
+  }
+
+  // Initialize everything
+  initializeSearch();
+  await loadTemplates();
+  initializeEventListeners();
 });
