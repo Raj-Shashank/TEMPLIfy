@@ -19,14 +19,15 @@ function updatePriceDisplay() {
   if (document.getElementById("originalPrice"))
     document.getElementById("originalPrice").textContent =
       isFree || originalPrice === discountedPrice ? "" : `₹${originalPrice}`;
+  const roundedFinalPrice = Math.round(finalPrice * 100) / 100;
   if (document.getElementById("finalPrice"))
     document.getElementById("finalPrice").textContent = isFree
       ? "FREE"
-      : `₹${finalPrice}`;
+      : `₹${roundedFinalPrice}`;
   if (document.getElementById("purchaseDetails"))
     document.getElementById("purchaseDetails").textContent = isFree
       ? `Thank you for downloading ${productName} (FREE)`
-      : `Thank you for purchasing ${productName} (₹${finalPrice})`;
+      : `Thank you for purchasing ${productName} (₹${roundedFinalPrice})`;
   if (
     (isFree || originalPrice === discountedPrice) &&
     document.getElementById("discountBadge")
@@ -152,8 +153,8 @@ if (document.getElementById("rzp-button")) {
       razorpayConfig.prefill.name = nameInput.value.trim();
       razorpayConfig.prefill.email = emailInput.value.trim();
       razorpayConfig.prefill.contact = contactInput.value.trim();
-      // Update amount with coupon discount if applied
-      razorpayConfig.amount = finalPrice * 100;
+      // Update amount with coupon discount if applied, always integer paise
+      razorpayConfig.amount = Math.round(finalPrice * 100);
       razorpayConfig.notes.finalPrice = finalPrice;
       razorpayConfig.notes.product = productName;
       razorpayConfig.notes.price = originalPrice;
