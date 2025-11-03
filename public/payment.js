@@ -11,6 +11,7 @@ let finalPrice = 0;
 let templateFileUrl = null;
 let template = null;
 let appliedCoupon = null;
+let downloadToken = null;
 
 // Set product info (will be updated after fetching template details)
 function updatePriceDisplay() {
@@ -76,8 +77,14 @@ const razorpayConfig = {
   handler: async function (response) {
     document.getElementById("rzp-button").innerHTML =
       '<span class="loading"></span> Verifying Payment...';
-    const verificationSuccess = await verifyPayment(response);
-    if (verificationSuccess) {
+    const verificationResult = await verifyPayment(response);
+    // verificationResult is the parsed JSON from the server
+    if (verificationResult && verificationResult.success) {
+      // if server returned a downloadToken, save it and build the protected download URL
+      if (verificationResult.downloadToken) {
+        downloadToken = verificationResult.downloadToken;
+        templateFileUrl = `${API_BASE_URL}/api/download/${verificationResult.downloadToken}`;
+      }
       // If coupon was applied, increment its usage in backend
       if (appliedCoupon && appliedCoupon.code) {
         try {
@@ -184,19 +191,16 @@ if (document.getElementById("rzp-button")) {
 // Create Razorpay order (replace with actual backend call)
 async function createRazorpayOrder() {
   // Call backend to create real Razorpay order
-  const response = await fetch(
-    "https://templify-zhhw.onrender.com/api/create-razorpay-order",
-    {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        amount: razorpayConfig.amount,
-        currency: razorpayConfig.currency,
-        receipt: `receipt_${templateId}_${Date.now()}`,
-        coupon: appliedCoupon ? appliedCoupon.code : null,
-      }),
-    }
-  );
+  const response = await fetch(`${API_BASE_URL}/api/create-razorpay-order`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({
+      amount: razorpayConfig.amount,
+      currency: razorpayConfig.currency,
+      receipt: `receipt_${templateId}_${Date.now()}`,
+      coupon: appliedCoupon ? appliedCoupon.code : null,
+    }),
+  });
   const data = await response.json();
   return data.orderId;
 }
@@ -206,22 +210,20 @@ async function verifyPayment(paymentResponse) {
   // In production, call your backend to verify
   // Razorpay sends: razorpay_payment_id, razorpay_order_id, razorpay_signature
   try {
-    const response = await fetch(
-      "https://templify-zhhw.onrender.com/api/verify-payment",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          razorpay_payment_id: paymentResponse.razorpay_payment_id,
-          razorpay_order_id: paymentResponse.razorpay_order_id,
-          razorpay_signature: paymentResponse.razorpay_signature,
-        }),
-      }
-    );
+    const response = await fetch(`${API_BASE_URL}/api/verify-payment`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        razorpay_payment_id: paymentResponse.razorpay_payment_id,
+        razorpay_order_id: paymentResponse.razorpay_order_id,
+        razorpay_signature: paymentResponse.razorpay_signature,
+        templateId: templateId,
+      }),
+    });
     const data = await response.json();
-    return data.success === true;
+    return data;
   } catch (err) {
-    return false;
+    return { success: false };
   }
 }
 
@@ -245,13 +247,24 @@ function showPaymentSection() {
 }
 
 function startDownload() {
-  if (!templateFileUrl) {
-    alert("No file available for download.");
+  // Prefer explicit templateFileUrl; fallback to downloadToken if present
+  let finalUrl = templateFileUrl;
+  if (!finalUrl && downloadToken) {
+    finalUrl = `${API_BASE_URL}/api/download/${downloadToken}`;
+    // cache it for future retries
+    templateFileUrl = finalUrl;
+  }
+  if (!finalUrl) {
+    // show clearer UI message instead of simple alert
+    showError(
+      "No downloadable file available. If you just completed payment, please wait a few seconds and try again or contact support."
+    );
     return;
   }
+
   setTimeout(() => {
     const link = document.createElement("a");
-    link.href = templateFileUrl;
+    link.href = finalUrl;
     link.download = `${productName.replace(/\s+/g, "_")}.zip`;
     document.body.appendChild(link);
     link.click();
