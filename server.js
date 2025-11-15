@@ -78,6 +78,7 @@ const TemplateSchema = new mongoose.Schema({
   downloads: { type: Number, default: 0 },
   previewUrl: String, // Optional, for future file upload
   fileUrl: String, // Optional, for future file upload
+  fileId: mongoose.Schema.Types.ObjectId, // GridFS file id for protected download
   livePreviewUrl: String, // Optional, for live preview links
 });
 const Template = mongoose.model("Template", TemplateSchema);
@@ -98,6 +99,19 @@ const CouponSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 const Coupon = mongoose.model("Coupon", CouponSchema);
+// Download token schema (one-time tokens created after successful payment)
+const DownloadTokenSchema = new mongoose.Schema({
+  token: { type: String, required: true, unique: true },
+  templateId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+    ref: "Template",
+  },
+  createdAt: { type: Date, default: Date.now },
+  expiresAt: { type: Date, required: true },
+  usesLeft: { type: Number, default: 3 },
+});
+const DownloadToken = mongoose.model("DownloadToken", DownloadTokenSchema);
 // Coupon API Endpoints
 
 // Create a new coupon
@@ -218,11 +232,18 @@ app.get("/api/templates", async (req, res) => {
       ];
     }
     let templates = await Template.find(query).sort({ createdAt: -1 });
-    // Ensure previewUrl and fileUrl are absolute
+    // Ensure previewUrl is absolute and DO NOT expose fileUrl for paid templates
     templates = templates.map((t) => {
       t = t.toObject();
       t.previewUrl = makeAbsoluteUrl(t.previewUrl);
-      t.fileUrl = makeAbsoluteUrl(t.fileUrl);
+      // Only expose fileUrl for free templates
+      if (t.isFree) {
+        t.fileUrl = makeAbsoluteUrl(t.fileUrl);
+      } else {
+        delete t.fileUrl;
+      }
+      // never expose internal fileId
+      delete t.fileId;
       return t;
     });
     res.json(templates);
@@ -344,6 +365,7 @@ app.post(
         livePreviewUrl: livePreviewUrl || undefined,
         previewUrl: previewFileUrl,
         fileUrl: templateFileUrl,
+        fileId: templateFileId,
         createdAt: new Date(),
         downloads: 0,
       });
@@ -382,6 +404,59 @@ app.get("/api/files/:id", async (req, res) => {
     gfsBucket.openDownloadStream(fileId).pipe(res);
   } catch (err) {
     res.status(404).json({ error: "File not found" });
+  }
+});
+
+// Protected download route: stream file only if valid one-time token provided
+app.get("/api/download/:token", async (req, res) => {
+  try {
+    const tokenStr = req.params.token;
+    const tokenDoc = await DownloadToken.findOne({ token: tokenStr });
+    if (!tokenDoc)
+      return res.status(404).json({ error: "Invalid download token" });
+    if (tokenDoc.usesLeft <= 0)
+      return res
+        .status(403)
+        .json({
+          error:
+            "This download token has already been used the maximum number of times",
+        });
+    if (new Date(tokenDoc.expiresAt) < new Date())
+      return res.status(410).json({ error: "Download token expired" });
+
+    const template = await Template.findById(tokenDoc.templateId);
+    if (!template) return res.status(404).json({ error: "Template not found" });
+    if (!template.fileId)
+      return res.status(404).json({ error: "File not available" });
+
+    const fileId = new ObjectId(template.fileId);
+    const files = await mongoose.connection.db
+      .collection("uploads.files")
+      .find({ _id: fileId })
+      .toArray();
+    if (!files || files.length === 0) {
+      return res.status(404).json({ error: "File not found" });
+    }
+    const file = files[0];
+    const isImage = (file.contentType || "").startsWith("image/");
+    if (isImage) {
+      res.set("Content-Type", file.contentType);
+      res.set("Content-Disposition", `inline; filename="${file.filename}"`);
+    } else {
+      res.set("Content-Type", file.contentType || "application/octet-stream");
+      res.set("Content-Disposition", `attachment; filename="${file.filename}"`);
+    }
+
+    // decrement usesLeft and increment downloads
+    tokenDoc.usesLeft -= 1;
+    await tokenDoc.save();
+    template.downloads = (template.downloads || 0) + 1;
+    await template.save();
+
+    gfsBucket.openDownloadStream(fileId).pipe(res);
+  } catch (err) {
+    console.error("Download error:", err);
+    res.status(500).json({ error: "Failed to process download" });
   }
 });
 
@@ -452,6 +527,7 @@ app.put(
         await new Promise((resolve, reject) => {
           uploadStream.on("finish", () => {
             update.fileUrl = `${BASE_URL}/api/files/${uploadStream.id}`;
+            update.fileId = uploadStream.id;
             resolve();
           });
           uploadStream.on("error", reject);
@@ -516,7 +592,14 @@ app.get("/api/templates/:id", async (req, res) => {
     }
     template = template.toObject();
     template.previewUrl = makeAbsoluteUrl(template.previewUrl);
-    template.fileUrl = makeAbsoluteUrl(template.fileUrl);
+    // Only expose fileUrl for free templates
+    if (template.isFree) {
+      template.fileUrl = makeAbsoluteUrl(template.fileUrl);
+    } else {
+      delete template.fileUrl;
+    }
+    // never expose internal fileId
+    delete template.fileId;
     res.json(template);
   } catch (err) {
     console.error("Error fetching template by id:", err);
@@ -573,14 +656,65 @@ app.post("/api/coupons/validate", async (req, res) => {
 // API: Verify Razorpay payment signature
 app.post("/api/verify-payment", async (req, res) => {
   try {
-    const { razorpay_order_id, razorpay_payment_id, razorpay_signature } =
-      req.body;
+    const {
+      razorpay_order_id,
+      razorpay_payment_id,
+      razorpay_signature,
+      templateId,
+    } = req.body;
     const generated_signature = crypto
       .createHmac("sha256", process.env.RAZORPAY_SECRET_KEY)
       .update(razorpay_order_id + "|" + razorpay_payment_id)
       .digest("hex");
     if (generated_signature === razorpay_signature) {
       // Optionally, you can mark the order as paid in your DB here
+      // If client provided a templateId, create a one-time download token
+      if (templateId) {
+        // validate template id
+        if (!ObjectId.isValid(templateId)) {
+          return res
+            .status(400)
+            .json({ success: false, error: "Invalid templateId" });
+        }
+        const template = await Template.findById(templateId);
+        if (!template)
+          return res
+            .status(404)
+            .json({ success: false, error: "Template not found" });
+        // If template doesn't have fileId (older records), try to extract it from fileUrl
+        if (!template.fileId && template.fileUrl) {
+          const m = String(template.fileUrl).match(
+            /\/api\/files\/([a-fA-F0-9]{24})/
+          );
+          if (m && m[1]) {
+            try {
+              template.fileId = m[1];
+              await template.save();
+            } catch (e) {
+              console.warn(
+                "Failed to save extracted fileId for template",
+                template._id,
+                e
+              );
+            }
+          }
+        }
+        if (template.isFree) {
+          return res.json({
+            success: true,
+            note: "Template is free; no download token required",
+          });
+        }
+        const tokenStr = crypto.randomBytes(24).toString("hex");
+        const expiresAt = new Date(Date.now() + 60 * 60 * 1000); // 1 hour
+        const dt = new DownloadToken({
+          token: tokenStr,
+          templateId: template._id,
+          expiresAt,
+        });
+        await dt.save();
+        return res.json({ success: true, downloadToken: tokenStr, expiresAt });
+      }
       return res.json({ success: true });
     } else {
       return res.json({ success: false, error: "Signature mismatch" });
@@ -589,6 +723,47 @@ app.post("/api/verify-payment", async (req, res) => {
     return res
       .status(400)
       .json({ success: false, error: "Verification failed" });
+  }
+});
+
+// Admin migration endpoint: populate fileId from fileUrl for older templates
+// Protect with ADMIN_SECRET env var passed in header 'x-admin-secret'
+app.post("/api/admin/migrate-fileids", async (req, res) => {
+  try {
+    const adminSecret = process.env.ADMIN_SECRET;
+    if (!adminSecret)
+      return res
+        .status(500)
+        .json({ error: "Admin secret not configured on server" });
+    const provided = req.headers["x-admin-secret"] || req.body.adminSecret;
+    if (provided !== adminSecret)
+      return res.status(401).json({ error: "Unauthorized" });
+
+    const templates = await Template.find({
+      fileId: { $exists: false },
+      fileUrl: { $exists: true, $ne: null },
+    });
+    let updated = 0;
+    for (const t of templates) {
+      const m = String(t.fileUrl).match(/\/api\/files\/([a-fA-F0-9]{24})/);
+      if (m && m[1]) {
+        t.fileId = m[1];
+        try {
+          await t.save();
+          updated++;
+        } catch (e) {
+          console.warn(
+            "Failed saving template during migration",
+            t._id,
+            e.message
+          );
+        }
+      }
+    }
+    res.json({ success: true, inspected: templates.length, updated });
+  } catch (err) {
+    console.error("Migration error:", err);
+    res.status(500).json({ error: "Migration failed" });
   }
 });
 

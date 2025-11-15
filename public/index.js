@@ -1,4 +1,3 @@
-
 document.addEventListener("DOMContentLoaded", async function () {
   const API_BASE_URL = "https://templify-zhhw.onrender.com";
 
@@ -24,21 +23,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Search functionality
   function initializeSearch() {
-    const searchInput = document.getElementById('searchInput');
-    const searchButton = document.getElementById('searchButton');
-    
+    const searchInput = document.getElementById("searchInput");
+    const searchButton = document.getElementById("searchButton");
+
     function handleSearch() {
       const searchTerm = searchInput.value.trim();
       if (searchTerm) {
-        localStorage.setItem('searchQuery', searchTerm);
-        window.location.href = 'template.html';
+        localStorage.setItem("searchQuery", searchTerm);
+        window.location.href = "template.html";
       }
     }
-    
+
     if (searchButton && searchInput) {
-      searchButton.addEventListener('click', handleSearch);
-      searchInput.addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
+      searchButton.addEventListener("click", handleSearch);
+      searchInput.addEventListener("keypress", function (e) {
+        if (e.key === "Enter") {
           handleSearch();
         }
       });
@@ -47,7 +46,7 @@ document.addEventListener("DOMContentLoaded", async function () {
 
   // Fetch templates from backend and render dynamically
   const productsGrid = document.querySelector(".products-grid");
-  
+
   async function loadTemplates() {
     if (!productsGrid) return;
 
@@ -58,19 +57,19 @@ document.addEventListener("DOMContentLoaded", async function () {
         <p>Loading premium templates...</p>
       </div>
     `;
-    
+
     try {
       const res = await fetch(`${API_BASE_URL}/api/templates`);
       const templates = await res.json();
-      
+
       if (templates.length === 0) {
-        productsGrid.innerHTML = 
+        productsGrid.innerHTML =
           '<div class="text-center py-5" style="grid-column: 1 / -1; color: var(--medium-text); font-size: 18px;">No templates available at the moment.</div>';
       } else {
         renderTemplates(templates.slice(0, 6)); // Show only the newest 6 templates
       }
     } catch (err) {
-      productsGrid.innerHTML = 
+      productsGrid.innerHTML =
         '<div class="text-center py-5" style="grid-column: 1 / -1; color: var(--accent); font-size: 18px;">Failed to load templates. Please try again later.</div>';
       console.error("Error loading templates:", err);
     }
@@ -94,7 +93,7 @@ document.addEventListener("DOMContentLoaded", async function () {
         } else {
           priceHtml = `<span class="product-price">₹${template.price}</span>`;
         }
-        
+
         return `
           <div class="product-card">
             <div class="product-image" style="background-image: url('${
@@ -125,7 +124,9 @@ document.addEventListener("DOMContentLoaded", async function () {
                 <div class="stars">
                   ${generateStarRating(template.rating || 4.5)}
                 </div>
-                <span class="rating-count">${(template.rating || 4.5).toFixed(1)}</span>
+                <span class="rating-count">${(template.rating || 4.5).toFixed(
+                  1
+                )}</span>
               </div>
               <div class="product-footer">
                 <div class="price-container">
@@ -162,7 +163,7 @@ document.addEventListener("DOMContentLoaded", async function () {
       const buyButton = e.target.closest(".buy-button");
       const viewDetailsButton = e.target.closest(".view-details-btn");
       const previewButton = e.target.closest(".preview-btn");
-      
+
       if (buyButton) {
         const templateId = buyButton.getAttribute("data-id");
         const templatePrice = buyButton.getAttribute("data-price");
