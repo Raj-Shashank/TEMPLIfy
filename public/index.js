@@ -1,226 +1,371 @@
 document.addEventListener("DOMContentLoaded", async function () {
   const API_BASE_URL = "https://templify-zhhw.onrender.com";
 
-  // Function to generate star rating HTML
-  function generateStarRating(rating) {
-    let starsHtml = "";
-    const fullStars = Math.floor(rating);
-    const hasHalfStar = rating % 1 >= 0.5;
-
-    for (let i = 0; i < fullStars; i++) {
-      starsHtml += '<i class="fas fa-star"></i>';
-    }
-    if (hasHalfStar) {
-      starsHtml += '<i class="fas fa-star-half-alt"></i>';
-    }
-    const emptyStars = 5 - fullStars - (hasHalfStar ? 1 : 0);
-    for (let i = 0; i < emptyStars; i++) {
-      starsHtml += '<i class="far fa-star"></i>';
+  // SCALABLE TEMPLATE SECTION SYSTEM
+  class TemplateSectionManager {
+    constructor() {
+      this.sections = [];
+      this.allTemplates = [];
+      this.cacheKey = "templify_templates_cache";
+      this.cacheTimeKey = "templify_templates_cache_time";
+      this.cacheDuration = 5 * 60 * 1000; // 5 minutes
     }
 
-    return starsHtml;
-  }
+    async initialize() {
+      await this.loadTemplates();
+      this.setupSections();
+      this.setupSearch();
+      this.setupEventListeners();
+    }
 
-  // Search functionality
-  function initializeSearch() {
-    const searchInput = document.getElementById("searchInput");
-    const searchButton = document.getElementById("searchButton");
+    async loadTemplates() {
+      // Try to use cache first
+      let useCache = false;
+      let cachedTemplates = null;
 
-    function handleSearch() {
-      const searchTerm = searchInput.value.trim();
-      if (searchTerm) {
-        localStorage.setItem("searchQuery", searchTerm);
-        window.location.href = "template.html";
+      try {
+        const cacheTime = localStorage.getItem(this.cacheTimeKey);
+        if (cacheTime && Date.now() - Number(cacheTime) < this.cacheDuration) {
+          const cacheData = localStorage.getItem(this.cacheKey);
+          if (cacheData) {
+            cachedTemplates = JSON.parse(cacheData);
+            useCache = true;
+          }
+        }
+      } catch (e) {
+        // Ignore cache errors
+      }
+
+      if (useCache && Array.isArray(cachedTemplates)) {
+        this.allTemplates = cachedTemplates.filter(
+          (t) => (t.status || "").toLowerCase() === "active",
+        );
+        // Fetch fresh data in background
+        this.fetchFreshTemplates();
+        return;
+      }
+
+      // Fetch from API
+      await this.fetchFreshTemplates();
+    }
+
+    async fetchFreshTemplates() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/templates`);
+        const templates = await res.json();
+        this.allTemplates = templates.filter(
+          (t) => (t.status || "").toLowerCase() === "active",
+        );
+        // Cache the data
+        try {
+          localStorage.setItem(this.cacheKey, JSON.stringify(templates));
+          localStorage.setItem(this.cacheTimeKey, Date.now().toString());
+        } catch (e) {}
+      } catch (err) {
+        console.error("Error loading templates:", err);
+        // Show error in all sections
+        this.showErrorInAllSections();
       }
     }
 
-    if (searchButton && searchInput) {
-      searchButton.addEventListener("click", handleSearch);
-      searchInput.addEventListener("keypress", function (e) {
-        if (e.key === "Enter") {
-          handleSearch();
+    showErrorInAllSections() {
+      const sections = ["premiumTemplatesGrid", "newArrivalsGrid"];
+      sections.forEach((sectionId) => {
+        const grid = document.getElementById(sectionId);
+        if (grid) {
+          grid.innerHTML = `
+                <div class="text-center" style="grid-column: 1 / -1; padding: 40px; color: var(--accent);">
+                  Failed to load templates. Please try again later.
+                </div>
+              `;
         }
       });
     }
-  }
 
-  // Fetch templates from backend and render dynamically
-  const productsGrid = document.querySelector(".products-grid");
+    setupSections() {
+      // Define sections with their configurations
+      this.sections = [
+        {
+          id: "premiumTemplatesGrid",
+          name: "Premium Templates",
+          filter: (templates) => {
+            // Get templates with 'premium' badge or top-rated ones
+            const premiumTemplates = templates.filter(
+              (t) => t.badge && t.badge.toLowerCase().includes("premium"),
+            );
 
-  async function loadTemplates() {
-    if (!productsGrid) return;
+            // If less than 3 premium templates, add some featured ones
+            if (premiumTemplates.length < 3) {
+              const featuredTemplates = templates.filter(
+                (t) =>
+                  !premiumTemplates.some((pt) => pt._id === t._id) &&
+                  t.badge &&
+                  t.badge.toLowerCase().includes("featured"),
+              );
+              return [...premiumTemplates, ...featuredTemplates].slice(0, 6);
+            }
 
-    // Show loading spinner while fetching
-    productsGrid.innerHTML = `
-      <div class="loading-spinner">
-        <div class="spinner"></div>
-        <p>Loading premium templates...</p>
-      </div>
-    `;
+            return premiumTemplates.slice(0, 6);
+          },
+          emptyMessage: "No premium templates available at the moment.",
+        },
+        {
+          id: "newArrivalsGrid",
+          name: "New Arrivals",
+          filter: (templates) => {
+            // Sort by creation date (newest first)
+            // If createdAt field doesn't exist, use a fallback
+            const sorted = [...templates].sort((a, b) => {
+              const dateA = a.createdAt ? new Date(a.createdAt) : new Date();
+              const dateB = b.createdAt ? new Date(b.createdAt) : new Date();
+              return dateB - dateA;
+            });
+            return sorted.slice(0, 6);
+          },
+          emptyMessage: "No new arrivals available at the moment.",
+        },
+      ];
 
-    try {
-      const res = await fetch(`${API_BASE_URL}/api/templates`);
-      const templates = await res.json();
+      // Render each section
+      this.sections.forEach((section) => {
+        this.renderSection(section);
+      });
+    }
 
-      if (templates.length === 0) {
-        productsGrid.innerHTML =
-          '<div class="text-center py-5" style="grid-column: 1 / -1; color: var(--medium-text); font-size: 18px;">No templates available at the moment.</div>';
+    renderSection(section) {
+      const grid = document.getElementById(section.id);
+      if (!grid) return;
+
+      // Show loading
+      grid.innerHTML = `
+            <div class="loading-spinner">
+              <div class="spinner"></div>
+              <p>Loading ${section.name.toLowerCase()}...</p>
+            </div>
+          `;
+
+      // Filter templates for this section
+      const filteredTemplates = section.filter(this.allTemplates);
+
+      if (!filteredTemplates || filteredTemplates.length === 0) {
+        grid.innerHTML = `
+              <div class="text-center" style="grid-column: 1 / -1; padding: 40px; color: var(--text-medium);">
+                ${section.emptyMessage}
+              </div>
+            `;
+        return;
+      }
+
+      // Render templates
+      grid.innerHTML = filteredTemplates
+        .map((template) => this.createTemplateCard(template))
+        .join("");
+    }
+
+    createTemplateCard(template) {
+      // Determine template type
+      const templateType = template.type || "HTML Website";
+      const typeName = this.getTemplateTypeName(templateType);
+
+      // Get badge HTML
+      const badgeHTML = this.getBadgeHTML(template);
+
+      // Check for discount
+      const hasDiscount =
+        template.discountedPrice &&
+        template.discountedPrice !== "" &&
+        Number(template.discountedPrice) < Number(template.price);
+
+      const displayPrice = template.isFree
+        ? 0
+        : hasDiscount
+          ? template.discountedPrice
+          : template.price;
+      const originalPrice = template.price;
+
+      // Price HTML
+      let priceHtml = "";
+      if (template.isFree) {
+        priceHtml = `
+              <span class="original-price">₹${originalPrice || "999"}</span> 
+              <span class="template-price free-price">FREE</span>
+            `;
+      } else if (hasDiscount) {
+        priceHtml = `
+              <span class="template-price discounted-price">₹${displayPrice}</span>
+              <span class="original-price">₹${originalPrice}</span>
+            `;
       } else {
-        renderTemplates(templates.slice(0, 6)); // Show only the newest 6 templates
+        priceHtml = `<span class="template-price">₹${displayPrice}</span>`;
       }
-    } catch (err) {
-      productsGrid.innerHTML =
-        '<div class="text-center py-5" style="grid-column: 1 / -1; color: var(--accent); font-size: 18px;">Failed to load templates. Please try again later.</div>';
-      console.error("Error loading templates:", err);
+
+      return `
+            <div class="template-card">
+              <div class="template-image" style="background-image: url('${
+                template.previewUrl ||
+                "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1674&q=80"
+              }')">
+                <!-- Template Type Tag - Left top -->
+                <div class="template-type-tag">
+                  ${typeName}
+                </div>
+                
+                <!-- Status Badge - Right top (New, Popular, etc.) -->
+                ${badgeHTML}
+                
+                <div class="template-overlay">
+                  <button class="preview-btn" data-preview="${
+                    template.livePreviewUrl || template.previewUrl || "#"
+                  }">
+                    <i class="fas fa-eye"></i> Live Preview
+                  </button>
+                </div>
+              </div>
+              <div class="template-info">
+                <h3>${template.name}</h3>
+                <p>${template.description}</p>
+                <div class="template-features">
+                  <ul>
+                    ${
+                      template.features &&
+                      Array.isArray(template.features) &&
+                      template.features.length > 0
+                        ? template.features
+                            .slice(0, 3)
+                            .map((feature) => `<li>${feature}</li>`)
+                            .join("")
+                        : `<li>Responsive Design</li><li>Easy Customization</li><li>Clean Code</li>`
+                    }
+                  </ul>
+                </div>
+                <div class="template-footer">
+                  <div class="price-container">
+                    ${priceHtml}
+                  </div>
+                  <div class="template-actions">
+                    <!-- Details Button -->
+                    <button class="details-button" data-id="${template._id}">
+                      <i class="fas fa-info-circle"></i> Details
+                    </button>
+                    <button class="buy-button ${template.isFree ? "free-button" : ""}" 
+                      data-id="${template._id}"
+                      data-price="${displayPrice}"
+                      data-name="${template.name}">
+                      <i class="fas ${template.isFree ? "fa-download" : "fa-shopping-cart"}"></i> 
+                      ${template.isFree ? "Download" : "Get Template"}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+    }
+
+    getTemplateTypeName(type) {
+      const lowerType = type ? type.toLowerCase() : "html";
+
+      if (lowerType.includes("google")) return "GOOGLE SHEETS";
+      if (lowerType.includes("notion")) return "NOTION";
+      if (lowerType.includes("html") || lowerType.includes("website"))
+        return "HTML WEBSITE";
+      if (lowerType.includes("saas")) return "SaaS PRODUCT";
+
+      return "HTML WEBSITE";
+    }
+
+    getBadgeHTML(template) {
+      if (!template.badge) return "";
+
+      const badgeLower = template.badge.toLowerCase();
+      let badgeClass = "";
+
+      if (badgeLower.includes("new")) badgeClass = "new";
+      else if (badgeLower.includes("popular")) badgeClass = "popular";
+      else if (badgeLower.includes("featured")) badgeClass = "featured";
+      else if (badgeLower.includes("premium")) badgeClass = "premium";
+      else if (badgeLower.includes("trending")) badgeClass = "trending";
+
+      return `<div class="status-badge ${badgeClass}">${template.badge.toUpperCase()}</div>`;
+    }
+
+    setupSearch() {
+      const searchInput = document.getElementById("searchInput");
+      const searchButton = document.getElementById("searchButton");
+
+      const handleSearch = () => {
+        const searchTerm = searchInput.value.trim();
+        if (searchTerm) {
+          localStorage.setItem("searchQuery", searchTerm);
+          window.location.href = "template.html";
+        }
+      };
+
+      if (searchButton && searchInput) {
+        searchButton.addEventListener("click", handleSearch);
+        searchInput.addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            handleSearch();
+          }
+        });
+      }
+    }
+
+    setupEventListeners() {
+      // Handle button clicks using event delegation
+      document.addEventListener("click", (e) => {
+        const buyButton = e.target.closest(".buy-button");
+        const detailsButton = e.target.closest(".details-button");
+        const previewButton = e.target.closest(".preview-btn");
+
+        if (buyButton) {
+          const templateId = buyButton.getAttribute("data-id");
+          const templatePrice = buyButton.getAttribute("data-price");
+          const templateName = buyButton.getAttribute("data-name");
+
+          // Check if template is free
+          const card = buyButton.closest(".template-card");
+          const isFree = card && card.querySelector(".free-price") !== null;
+
+          if (isFree || templatePrice == 0 || templatePrice === "0") {
+            window.location.href = `payment.html?id=${templateId}&price=0&free=true&name=${encodeURIComponent(templateName)}`;
+          } else {
+            window.location.href = `payment.html?id=${templateId}&price=${templatePrice}&name=${encodeURIComponent(
+              templateName,
+            )}`;
+          }
+        }
+
+        if (detailsButton) {
+          const templateId = detailsButton.getAttribute("data-id");
+          window.location.href = `detail.html?id=${templateId}`;
+        }
+
+        if (previewButton) {
+          e.preventDefault();
+          const url = previewButton.dataset.preview;
+          if (url && url !== "#") window.open(url, "_blank");
+        }
+      });
+
+      // Smooth scrolling for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+        anchor.addEventListener("click", function (e) {
+          e.preventDefault();
+          const targetId = this.getAttribute("href");
+          if (targetId === "#") return;
+          const targetElement = document.querySelector(targetId);
+          if (targetElement) {
+            window.scrollTo({
+              top: targetElement.offsetTop - 80,
+              behavior: "smooth",
+            });
+          }
+        });
+      });
     }
   }
 
-  function renderTemplates(templates) {
-    productsGrid.innerHTML = templates
-      .map((template) => {
-        let priceHtml = "";
-        if (template.isFree) {
-          priceHtml = `<span class="original-price">₹${
-            template.originalPrice || template.price || "999"
-          }</span> <span class="product-price free-price">FREE</span>`;
-        } else if (
-          template.discountedPrice !== undefined &&
-          template.discountedPrice !== null &&
-          template.discountedPrice !== "" &&
-          Number(template.discountedPrice) < Number(template.price)
-        ) {
-          priceHtml = `<span class="original-price">₹${template.price}</span> <span class="product-price discounted">₹${template.discountedPrice}</span>`;
-        } else {
-          priceHtml = `<span class="product-price">₹${template.price}</span>`;
-        }
-
-        return `
-          <div class="product-card">
-            <div class="product-image" style="background-image: url('${
-              template.previewUrl ||
-              "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1674&q=80"
-            }')">
-              ${
-                template.status === "active"
-                  ? `<span class="product-badge ${
-                      template.isFree ? "free-badge" : ""
-                    }">${template.isFree ? "Free" : "Active"}</span>`
-                  : ""
-              }
-              <div class="product-overlay">
-                <button class="preview-btn" data-preview="${
-                  template.livePreviewUrl
-                    ? template.livePreviewUrl
-                    : template.previewUrl || "#"
-                }">
-                  <i class="fas fa-eye"></i> Live Preview
-                </button>
-              </div>
-            </div>
-            <div class="product-info">
-              <h3>${template.name}</h3>
-              <p>${template.description}</p>
-              <div class="product-rating">
-                <div class="stars">
-                  ${generateStarRating(template.rating || 4.5)}
-                </div>
-                <span class="rating-count">${(template.rating || 4.5).toFixed(
-                  1
-                )}</span>
-              </div>
-              <div class="product-footer">
-                <div class="price-container">
-                  ${priceHtml}
-                </div>
-                <div class="product-actions">
-                  <button class="view-details-btn" data-id="${template._id}">
-                    <i class="fas fa-info-circle"></i> Details
-                  </button>
-                  <button class="buy-button ${
-                    template.isFree ? "free-button" : ""
-                  }" 
-                    data-id="${template._id}"
-                    data-price="${template.price}"
-                    data-name="${template.name}">
-                    <i class="fas ${
-                      template.isFree ? "fa-download" : "fa-shopping-cart"
-                    }"></i> 
-                    ${template.isFree ? "Download" : "Get Template"}
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
-      })
-      .join("");
-  }
-
-  // Handle button clicks (re-bind after dynamic render)
-  function initializeEventListeners() {
-    // Handle buy button clicks
-    document.addEventListener("click", function (e) {
-      const buyButton = e.target.closest(".buy-button");
-      const viewDetailsButton = e.target.closest(".view-details-btn");
-      const previewButton = e.target.closest(".preview-btn");
-
-      if (buyButton) {
-        const templateId = buyButton.getAttribute("data-id");
-        const templatePrice = buyButton.getAttribute("data-price");
-        const templateName = buyButton.getAttribute("data-name");
-
-        if (templatePrice == 0) {
-          window.location.href = `detail.html?id=${templateId}&free=true`;
-        } else {
-          window.location.href = `payment.html?id=${templateId}&price=${templatePrice}&name=${encodeURIComponent(
-            templateName
-          )}`;
-        }
-      }
-
-      // Handle view details button click
-      if (viewDetailsButton) {
-        const templateId = viewDetailsButton.getAttribute("data-id");
-        window.location.href = `detail.html?id=${templateId}`;
-      }
-
-      // Handle preview button click
-      if (previewButton) {
-        e.preventDefault();
-        const url = previewButton.dataset.preview;
-        if (url && url !== "#") window.open(url, "_blank");
-      }
-    });
-
-    // Smooth scrolling for anchor links
-    document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
-      anchor.addEventListener("click", function (e) {
-        e.preventDefault();
-        const targetId = this.getAttribute("href");
-        if (targetId === "#") return;
-        const targetElement = document.querySelector(targetId);
-        if (targetElement) {
-          window.scrollTo({
-            top: targetElement.offsetTop - 80,
-            behavior: "smooth",
-          });
-        }
-      });
-    });
-
-    // Filter buttons functionality
-    document.querySelectorAll(".filter-btn").forEach((button) => {
-      button.addEventListener("click", function () {
-        document.querySelectorAll(".filter-btn").forEach((btn) => {
-          btn.classList.remove("active");
-        });
-        this.classList.add("active");
-      });
-    });
-  }
-
-  // Initialize everything
-  initializeSearch();
-  await loadTemplates();
-  initializeEventListeners();
+  // Initialize the template section manager
+  const templateManager = new TemplateSectionManager();
+  await templateManager.initialize();
 });
