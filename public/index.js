@@ -74,10 +74,10 @@ document.addEventListener("DOMContentLoaded", async function () {
         const grid = document.getElementById(sectionId);
         if (grid) {
           grid.innerHTML = `
-                <div class="text-center" style="grid-column: 1 / -1; padding: 40px; color: var(--accent);">
-                  Failed to load templates. Please try again later.
-                </div>
-              `;
+                      <div class="text-center" style="grid-column: 1 / -1; padding: 40px; color: var(--accent);">
+                        Failed to load templates. Please try again later.
+                      </div>
+                    `;
         }
       });
     }
@@ -138,21 +138,21 @@ document.addEventListener("DOMContentLoaded", async function () {
 
       // Show loading
       grid.innerHTML = `
-            <div class="loading-spinner">
-              <div class="spinner"></div>
-              <p>Loading ${section.name.toLowerCase()}...</p>
-            </div>
-          `;
+                  <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Loading ${section.name.toLowerCase()}...</p>
+                  </div>
+                `;
 
       // Filter templates for this section
       const filteredTemplates = section.filter(this.allTemplates);
 
       if (!filteredTemplates || filteredTemplates.length === 0) {
         grid.innerHTML = `
-              <div class="text-center" style="grid-column: 1 / -1; padding: 40px; color: var(--text-medium);">
-                ${section.emptyMessage}
-              </div>
-            `;
+                    <div class="text-center" style="grid-column: 1 / -1; padding: 40px; color: var(--text-medium);">
+                      ${section.emptyMessage}
+                    </div>
+                  `;
         return;
       }
 
@@ -187,78 +187,78 @@ document.addEventListener("DOMContentLoaded", async function () {
       let priceHtml = "";
       if (template.isFree) {
         priceHtml = `
-              <span class="original-price">₹${originalPrice || "999"}</span> 
-              <span class="template-price free-price">FREE</span>
-            `;
+                    <span class="original-price">₹${originalPrice || "999"}</span> 
+                    <span class="template-price free-price">FREE</span>
+                  `;
       } else if (hasDiscount) {
         priceHtml = `
-              <span class="template-price discounted-price">₹${displayPrice}</span>
-              <span class="original-price">₹${originalPrice}</span>
-            `;
+                    <span class="template-price discounted-price">₹${displayPrice}</span>
+                    <span class="original-price">₹${originalPrice}</span>
+                  `;
       } else {
         priceHtml = `<span class="template-price">₹${displayPrice}</span>`;
       }
 
       return `
-            <div class="template-card">
-              <div class="template-image" style="background-image: url('${
-                template.previewUrl ||
-                "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1674&q=80"
-              }')">
-                <!-- Template Type Tag - Left top -->
-                <div class="template-type-tag">
-                  ${typeName}
-                </div>
-                
-                <!-- Status Badge - Right top (New, Popular, etc.) -->
-                ${badgeHTML}
-                
-                <div class="template-overlay">
-                  <button class="preview-btn" data-preview="${
-                    template.livePreviewUrl || template.previewUrl || "#"
-                  }">
-                    <i class="fas fa-eye"></i> Live Preview
-                  </button>
-                </div>
-              </div>
-              <div class="template-info">
-                <h3>${template.name}</h3>
-                <p>${template.description}</p>
-                <div class="template-features">
-                  <ul>
-                    ${
-                      template.features &&
-                      Array.isArray(template.features) &&
-                      template.features.length > 0
-                        ? template.features
-                            .slice(0, 3)
-                            .map((feature) => `<li>${feature}</li>`)
-                            .join("")
-                        : `<li>Responsive Design</li><li>Easy Customization</li><li>Clean Code</li>`
-                    }
-                  </ul>
-                </div>
-                <div class="template-footer">
-                  <div class="price-container">
-                    ${priceHtml}
+                  <div class="template-card">
+                    <div class="template-image" style="background-image: url('${
+                      template.previewUrl ||
+                      "https://images.unsplash.com/photo-1551650975-87deedd944c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=1674&q=80"
+                    }')">
+                      <!-- Template Type Tag - Left top -->
+                      <div class="template-type-tag">
+                        ${typeName}
+                      </div>
+                      
+                      <!-- Status Badge - Right top (New, Popular, etc.) -->
+                      ${badgeHTML}
+                      
+                      <div class="template-overlay">
+                        <button class="preview-btn" data-preview="${
+                          template.livePreviewUrl || template.previewUrl || "#"
+                        }">
+                          <i class="fas fa-eye"></i> Live Preview
+                        </button>
+                      </div>
+                    </div>
+                    <div class="template-info">
+                      <h3>${template.name}</h3>
+                      <p>${template.description}</p>
+                      <div class="template-features">
+                        <ul>
+                          ${
+                            template.features &&
+                            Array.isArray(template.features) &&
+                            template.features.length > 0
+                              ? template.features
+                                  .slice(0, 3)
+                                  .map((feature) => `<li>${feature}</li>`)
+                                  .join("")
+                              : `<li>Responsive Design</li><li>Easy Customization</li><li>Clean Code</li>`
+                          }
+                        </ul>
+                      </div>
+                      <div class="template-footer">
+                        <div class="price-container">
+                          ${priceHtml}
+                        </div>
+                        <div class="template-actions">
+                          <!-- Details Button -->
+                          <button class="details-button" data-id="${template._id}">
+                            <i class="fas fa-info-circle"></i> Details
+                          </button>
+                          <button class="buy-button ${template.isFree ? "free-button" : ""}" 
+                            data-id="${template._id}"
+                            data-price="${displayPrice}"
+                            data-name="${template.name}">
+                            <i class="fas ${template.isFree ? "fa-download" : "fa-shopping-cart"}"></i> 
+                            ${template.isFree ? "Download" : "Get Template"}
+                          </button>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                  <div class="template-actions">
-                    <!-- Details Button -->
-                    <button class="details-button" data-id="${template._id}">
-                      <i class="fas fa-info-circle"></i> Details
-                    </button>
-                    <button class="buy-button ${template.isFree ? "free-button" : ""}" 
-                      data-id="${template._id}"
-                      data-price="${displayPrice}"
-                      data-name="${template.name}">
-                      <i class="fas ${template.isFree ? "fa-download" : "fa-shopping-cart"}"></i> 
-                      ${template.isFree ? "Download" : "Get Template"}
-                    </button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          `;
+                `;
     }
 
     getTemplateTypeName(type) {
