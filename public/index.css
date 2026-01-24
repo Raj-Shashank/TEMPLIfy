@@ -943,6 +943,7 @@ footer {
   transition: var(--transition);
   display: inline-block;
   width: 100%;
+  padding-left: 0;
 }
 
 .footer-links a:hover {
@@ -950,18 +951,10 @@ footer {
   transform: translateX(4px);
 }
 
-/* Remove bullet points and ensure proper text alignment */
+/* REMOVED PURPLE DOTS - Clean footer links */
 .footer-links li:before {
-  content: "•";
-  color: var(--primary);
-  margin-right: 8px;
-  font-size: 16px;
-}
-
-/* Remove bullet for contact info */
-.footer-column:last-child .footer-links li:before {
-  content: none;
-  margin-right: 0;
+  content: none !important;
+  display: none !important;
 }
 
 .social-links {
@@ -1373,6 +1366,7 @@ footer {
 
   .footer-links a {
     font-size: 13px;
+    padding-left: 0;
   }
 
   /* Contact column specific */
@@ -1708,6 +1702,7 @@ footer {
 
   .footer-links a {
     font-size: 12px;
+    padding-left: 0;
   }
 
   .social-links {
