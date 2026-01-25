@@ -4,10 +4,10 @@ const templateId = params.get("id");
 const API_BASE_URL = "https://templify-zhhw.onrender.com";
 
 let isFree = false;
-let productName = "Name not found";
-let originalPrice = 0;
-let discountedPrice = 0;
-let finalPrice = 0;
+let productName = "Creative Portfolio Template - Stand Out Online";
+let originalPrice = 199;
+let discountedPrice = 149;
+let finalPrice = 149;
 let templateFileUrl = null;
 let template = null;
 let appliedCoupon = null;
@@ -35,6 +35,30 @@ function updatePriceDisplay() {
   ) {
     document.getElementById("discountBadge").style.display = "none";
   }
+
+  // Apply free template UI changes if needed
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlIsFree =
+    urlParams.get("free") === "true" || urlParams.get("price") === "0";
+  if (isFree || urlIsFree) {
+    const couponSection = document.getElementById("couponSection");
+    if (couponSection) couponSection.style.display = "none";
+
+    document.getElementById("originalPrice").style.display = "none";
+    document.getElementById("discountBadge").style.display = "none";
+
+    if (isFree) {
+      document.getElementById("finalPrice").textContent = "FREE";
+      document.getElementById("finalPrice").style.color =
+        "var(--success-green)";
+    }
+
+    const payBtnIcon = document.getElementById("payBtnIcon");
+    if (payBtnIcon) payBtnIcon.className = "fas fa-download";
+
+    const payBtnText = document.getElementById("payBtnText");
+    if (payBtnText) payBtnText.textContent = "Download";
+  }
 }
 
 // Razorpay configuration
@@ -47,9 +71,10 @@ async function fetchTemplateDetails() {
     const res = await fetch(`${API_BASE_URL}/api/templates/${templateId}`);
     template = await res.json();
     templateFileUrl = template.fileUrl;
-    productName = template.name || "Name not found";
+    productName =
+      template.name || "Creative Portfolio Template - Stand Out Online";
     isFree = !!template.isFree;
-    originalPrice = Number(template.price) || 0;
+    originalPrice = Number(template.price) || 199;
     discountedPrice =
       typeof template.discountedPrice !== "undefined" &&
       template.discountedPrice !== null &&
@@ -59,8 +84,19 @@ async function fetchTemplateDetails() {
         : Number(template.price);
     finalPrice = discountedPrice;
     updatePriceDisplay();
+
+    // Update discount badge if there's a discount
+    const discountBadge = document.getElementById("discountBadge");
+    if (originalPrice > discountedPrice) {
+      const discountPercent = Math.round(
+        ((originalPrice - discountedPrice) / originalPrice) * 100,
+      );
+      discountBadge.textContent = `${discountPercent}% OFF`;
+      discountBadge.style.display = "inline";
+    }
   } catch (err) {
     templateFileUrl = null;
+    console.error("Error fetching template details:", err);
   }
 }
 
@@ -113,7 +149,7 @@ const razorpayConfig = {
     price: originalPrice,
   },
   theme: {
-    color: "#3A7BFF",
+    color: "#2563eb",
   },
 };
 
@@ -257,7 +293,7 @@ function startDownload() {
   if (!finalUrl) {
     // show clearer UI message instead of simple alert
     showError(
-      "No downloadable file available. If you just completed payment, please wait a few seconds and try again or contact support."
+      "No downloadable file available. If you just completed payment, please wait a few seconds and try again or contact support.",
     );
     return;
   }
@@ -282,7 +318,7 @@ if (document.getElementById("downloadBtn"))
     .addEventListener("click", startDownload);
 
 // Coupon System Implementation (disable for free templates)
-if (!isFree && document.getElementById("applyCouponBtn")) {
+if (document.getElementById("applyCouponBtn")) {
   document
     .getElementById("applyCouponBtn")
     .addEventListener("click", applyCoupon);

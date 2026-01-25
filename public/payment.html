@@ -1,12 +1,16 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Complete Payment | DigitalTemplates</title>
+    <title>Complete Payment | TEMPLIfy</title>
     <link
       rel="stylesheet"
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
     />
     <link rel="stylesheet" href="payment.css" />
   </head>
@@ -19,31 +23,35 @@
     <div class="container">
       <!-- Payment Section -->
       <div class="card" id="paymentSection">
-        <h2>Complete Payment</h2>
+        <h2>Complete Your Purchase</h2>
 
         <div class="product-info">
           <i class="fas fa-shopping-cart"></i>
-          <div>
-            <p>Purchasing: <span id="productName"></span></p>
-            <div id="priceContainer">
-              <span class="original-price" id="originalPrice"></span>
-              <span class="price-large" id="finalPrice"></span>
-              <span
-                class="discount-badge"
-                id="discountBadge"
-                style="display: none"
-                >0% OFF</span
-              >
+          <div class="product-details">
+            <div class="product-title">Purchasing:</div>
+            <span class="product-name" id="productName"
+              >Creative Portfolio Template - Stand Out Online</span
+            >
+
+            <div class="price-section">
+              <span class="original-price" id="originalPrice">₹199</span>
+              <span class="price-large" id="finalPrice">₹149</span>
+              <span class="discount-badge" id="discountBadge">25% OFF</span>
             </div>
-            <p style="font-size: 14px; color: #aaa; margin-top: 5px">
-              Secure payment powered by Razorpay
+
+            <p class="secure-note">
+              <i class="fas fa-shield-alt"></i> Secure payment powered by
+              Razorpay
             </p>
           </div>
         </div>
 
-        <!-- Coupon Section (hidden for free templates) -->
+        <!-- Coupon Section -->
         <div class="coupon-section" id="couponSection">
-          <h3 style="font-size: 18px; margin-bottom: 12px">Apply Coupon</h3>
+          <div class="coupon-header">
+            <i class="fas fa-tag"></i>
+            <span>Have a coupon code?</span>
+          </div>
           <div class="coupon-input-group">
             <input
               type="text"
@@ -107,8 +115,12 @@
 
         <div class="purchase-details">
           <p id="purchaseDetails"></p>
-          <p style="margin-top: 10px">
-            <i class="fas fa-envelope"></i> Your receipt has been emailed to you
+          <p style="margin-top: 12px; color: var(--text-secondary)">
+            <i
+              class="fas fa-envelope"
+              style="color: var(--accent-blue); margin-right: 8px"
+            ></i>
+            <!-- Your receipt has been emailed to you -->
           </p>
         </div>
 
@@ -127,7 +139,14 @@
           <i class="fas fa-times-circle"></i>
         </div>
         <h2>Payment Failed</h2>
-        <p id="errorMessage" style="text-align: center; margin: 20px 0">
+        <p
+          id="errorMessage"
+          style="
+            text-align: center;
+            margin: 20px 0;
+            color: var(--text-secondary);
+          "
+        >
           Payment could not be processed
         </p>
 
@@ -138,8 +157,8 @@
     </div>
 
     <div class="footer">
-      <p>© 2023 TEMPLIfy. All rights reserved.</p>
-      <p>
+      <p>© 2026 TEMPLIfy. All rights reserved.</p>
+      <p style="margin-top: 8px">
         Need help? <a href="#">Contact Support</a> |
         <a href="#">Terms of Service</a> | <a href="#">Privacy Policy</a>
       </p>
@@ -148,25 +167,5 @@
     <!-- Razorpay Integration -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
     <script src="payment.js"></script>
-    <script>
-      // UI logic for free template
-      document.addEventListener("DOMContentLoaded", function () {
-        const params = new URLSearchParams(window.location.search);
-        const isFree =
-          params.get("free") === "true" || params.get("price") === "0";
-        if (isFree) {
-          // Hide coupon section
-          const couponSection = document.getElementById("couponSection");
-          if (couponSection) couponSection.style.display = "none";
-          // Show FREE in price
-          document.getElementById("originalPrice").style.display = "none";
-          document.getElementById("discountBadge").style.display = "none";
-          document.getElementById("finalPrice").textContent = "FREE";
-          // Change button to Download
-          document.getElementById("payBtnIcon").className = "fas fa-download";
-          document.getElementById("payBtnText").textContent = "Download";
-        }
-      });
-    </script>
   </body>
 </html>
