@@ -57,7 +57,7 @@ const Item = mongoose.model("Item", ItemSchema);
 const TemplateSchema = new mongoose.Schema({
   name: { type: String, required: true },
   description: { type: String, required: true },
-  category: { type: String, required: true },
+  category: { type: mongoose.Schema.Types.ObjectId, ref: "Category" },
   price: { type: Number, required: true },
   isFree: { type: Boolean, default: false },
   discountedPrice: { type: Number },
@@ -74,12 +74,15 @@ const TemplateSchema = new mongoose.Schema({
   features: [String],
   requirements: [String],
   instructions: { type: String },
+  badges: [String],
+  playlists: [String],
   createdAt: { type: Date, default: Date.now },
   downloads: { type: Number, default: 0 },
   previewUrl: String, // Optional, for future file upload
   fileUrl: String, // Optional, for future file upload
   fileId: mongoose.Schema.Types.ObjectId, // GridFS file id for protected download
   livePreviewUrl: String, // Optional, for live preview links
+  subCategory: { type: mongoose.Schema.Types.ObjectId, ref: "SubCategory" },
 });
 const Template = mongoose.model("Template", TemplateSchema);
 
@@ -112,6 +115,206 @@ const DownloadTokenSchema = new mongoose.Schema({
   usesLeft: { type: Number, default: 3 },
 });
 const DownloadToken = mongoose.model("DownloadToken", DownloadTokenSchema);
+
+// Category Schema and Model
+const CategorySchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  createdAt: { type: Date, default: Date.now },
+});
+const Category = mongoose.model("Category", CategorySchema);
+
+// SubCategory Schema and Model
+const SubCategorySchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  categoryId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Category",
+    required: false,
+  },
+  createdAt: { type: Date, default: Date.now },
+});
+// Create compound unique index: name + categoryId
+SubCategorySchema.index({ name: 1, categoryId: 1 }, { unique: true });
+const SubCategory = mongoose.model("SubCategory", SubCategorySchema);
+
+// Playlist Schema and Model
+const PlaylistSchema = new mongoose.Schema({
+  name: { type: String, required: true, unique: true },
+  description: { type: String },
+  createdAt: { type: Date, default: Date.now },
+});
+const Playlist = mongoose.model("Playlist", PlaylistSchema);
+
+// Category API Endpoints
+
+// Get all categories
+app.get("/api/categories", async (req, res) => {
+  try {
+    const categories = await Category.find().sort({ createdAt: 1 });
+    res.json(categories);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch categories" });
+  }
+});
+
+// Create a new category
+app.post("/api/categories", async (req, res) => {
+  try {
+    const { name } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: "Category name is required" });
+    }
+    const category = new Category({ name: name.trim() });
+    await category.save();
+    res.status(201).json(category);
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ error: "Category already exists" });
+    }
+    res.status(400).json({ error: "Failed to create category" });
+  }
+});
+
+// Delete a category
+app.delete("/api/categories/:id", async (req, res) => {
+  try {
+    await Category.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: "Failed to delete category" });
+  }
+});
+
+// SubCategory API Endpoints
+
+// Get all subcategories
+app.get("/api/subcategories", async (req, res) => {
+  try {
+    const subcategories = await SubCategory.find().sort({ createdAt: 1 });
+    res.json(subcategories);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch subcategories" });
+  }
+});
+
+// Get subcategories by category ID
+app.get("/api/subcategories/by-category/:categoryId", async (req, res) => {
+  try {
+    const subcategories = await SubCategory.find({
+      categoryId: req.params.categoryId,
+    }).sort({ createdAt: 1 });
+    res.json(subcategories);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch subcategories" });
+  }
+});
+
+// Create a new subcategory
+app.post("/api/subcategories", async (req, res) => {
+  try {
+    const { name, categoryId } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: "Subcategory name is required" });
+    }
+    const subcategory = new SubCategory({
+      name: name.trim(),
+      categoryId: categoryId || null,
+    });
+    await subcategory.save();
+    res.status(201).json(subcategory);
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ error: "Subcategory already exists" });
+    }
+    res.status(400).json({ error: "Failed to create subcategory" });
+  }
+});
+
+// Delete a subcategory
+app.delete("/api/subcategories/:id", async (req, res) => {
+  try {
+    await SubCategory.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: "Failed to delete subcategory" });
+  }
+});
+
+// Playlist API Endpoints
+
+// Get all playlists
+app.get("/api/playlists", async (req, res) => {
+  try {
+    const playlists = await Playlist.find().sort({ createdAt: 1 });
+    res.json(playlists);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch playlists" });
+  }
+});
+
+// Create a new playlist
+app.post("/api/playlists", async (req, res) => {
+  try {
+    const { name, description } = req.body;
+    if (!name || !name.trim()) {
+      return res.status(400).json({ error: "Playlist name is required" });
+    }
+    const playlist = new Playlist({ name: name.trim(), description });
+    await playlist.save();
+    res.status(201).json(playlist);
+  } catch (err) {
+    if (err.code === 11000) {
+      return res.status(400).json({ error: "Playlist already exists" });
+    }
+    res.status(400).json({ error: "Failed to create playlist" });
+  }
+});
+
+// Delete a playlist
+app.delete("/api/playlists/:id", async (req, res) => {
+  try {
+    await Playlist.findByIdAndDelete(req.params.id);
+    res.json({ success: true });
+  } catch (err) {
+    res.status(400).json({ error: "Failed to delete playlist" });
+  }
+});
+
+// Get templates by playlist
+app.get("/api/templates/playlist/:playlistName", async (req, res) => {
+  try {
+    const { playlistName } = req.params;
+    const templates = await Template.find({
+      playlists: playlistName,
+      status: "active",
+    }).sort({ createdAt: -1 });
+
+    // Make URLs absolute and normalize arrays
+    const result = templates.map((t) => {
+      t = t.toObject();
+      // Ensure playlists and badges are always arrays
+      if (!Array.isArray(t.playlists)) {
+        t.playlists = t.playlists ? [t.playlists] : [];
+      }
+      if (!Array.isArray(t.badges)) {
+        t.badges = t.badges ? [t.badges] : [];
+      }
+      t.previewUrl = makeAbsoluteUrl(t.previewUrl);
+      if (t.isFree) {
+        t.fileUrl = makeAbsoluteUrl(t.fileUrl);
+      } else {
+        delete t.fileUrl;
+      }
+      delete t.fileId;
+      return t;
+    });
+
+    res.json(result);
+  } catch (err) {
+    res.status(500).json({ error: "Failed to fetch templates" });
+  }
+});
+
 // Coupon API Endpoints
 
 // Create a new coupon
@@ -235,6 +438,13 @@ app.get("/api/templates", async (req, res) => {
     // Ensure previewUrl is absolute and DO NOT expose fileUrl for paid templates
     templates = templates.map((t) => {
       t = t.toObject();
+      // Ensure playlists and badges are always arrays
+      if (!Array.isArray(t.playlists)) {
+        t.playlists = t.playlists ? [t.playlists] : [];
+      }
+      if (!Array.isArray(t.badges)) {
+        t.badges = t.badges ? [t.badges] : [];
+      }
       t.previewUrl = makeAbsoluteUrl(t.previewUrl);
       // Only expose fileUrl for free templates
       if (t.isFree) {
@@ -273,6 +483,29 @@ app.delete("/api/templates/:id", async (req, res) => {
   }
 });
 
+// API: Update template category and subcategory
+app.patch("/api/templates/:id", async (req, res) => {
+  try {
+    console.log("PATCH /api/templates/:id called with ID:", req.params.id);
+    console.log("PATCH body:", req.body);
+    const { category, subCategory } = req.body;
+    const updatedTemplate = await Template.findByIdAndUpdate(
+      req.params.id,
+      { category, subCategory },
+      { new: true },
+    );
+    console.log("Template updated via PATCH. New values:", {
+      id: updatedTemplate._id,
+      category: updatedTemplate.category,
+      subCategory: updatedTemplate.subCategory,
+    });
+    res.json(updatedTemplate);
+  } catch (err) {
+    console.error("PATCH error:", err);
+    res.status(400).json({ error: "Failed to update template" });
+  }
+});
+
 // API: Upload template with files (store in GridFS)
 app.post(
   "/api/templates/upload",
@@ -286,6 +519,7 @@ app.post(
         name,
         description,
         category,
+        subCategory,
         price,
         isFree,
         status,
@@ -298,6 +532,8 @@ app.post(
         requirements,
         instructions,
         livePreviewUrl,
+        badges,
+        playlists,
       } = req.body;
       let templateFileId, previewFileId;
       let templateFileUrl, previewFileUrl;
@@ -336,6 +572,7 @@ app.post(
         name,
         description,
         category,
+        subCategory,
         price: Number(price),
         discountedPrice:
           req.body.discountedPrice !== undefined &&
@@ -345,6 +582,18 @@ app.post(
         isFree: isFree === "true" || isFree === true,
         status,
         tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+        badges: badges
+          ? badges
+              .split(",")
+              .map((b) => b.trim())
+              .filter(Boolean)
+          : [],
+        playlists: playlists
+          ? playlists
+              .split(",")
+              .map((p) => p.trim())
+              .filter(Boolean)
+          : [],
         layout,
         framework,
         filesIncluded,
@@ -374,7 +623,7 @@ app.post(
     } catch (err) {
       res.status(400).json({ error: "Failed to upload template" });
     }
-  }
+  },
 );
 
 // API: Serve files from GridFS (with inline or attachment option)
@@ -398,7 +647,7 @@ app.get("/api/files/:id", async (req, res) => {
       res.set("Content-Type", file.contentType || "application/octet-stream");
       res.set(
         "Content-Disposition",
-        `attachment; filename=\"${file.filename}\"`
+        `attachment; filename=\"${file.filename}\"`,
       );
     }
     gfsBucket.openDownloadStream(fileId).pipe(res);
@@ -415,12 +664,10 @@ app.get("/api/download/:token", async (req, res) => {
     if (!tokenDoc)
       return res.status(404).json({ error: "Invalid download token" });
     if (tokenDoc.usesLeft <= 0)
-      return res
-        .status(403)
-        .json({
-          error:
-            "This download token has already been used the maximum number of times",
-        });
+      return res.status(403).json({
+        error:
+          "This download token has already been used the maximum number of times",
+      });
     if (new Date(tokenDoc.expiresAt) < new Date())
       return res.status(410).json({ error: "Download token expired" });
 
@@ -473,6 +720,7 @@ app.put(
         name,
         description,
         category,
+        subCategory,
         price,
         isFree,
         status,
@@ -485,11 +733,15 @@ app.put(
         requirements,
         instructions,
         livePreviewUrl,
+        badges,
+        playlists,
       } = req.body;
+
       let update = {
         name,
         description,
         category,
+        subCategory,
         price: Number(price),
         discountedPrice:
           req.body.discountedPrice !== undefined &&
@@ -498,7 +750,27 @@ app.put(
             : undefined,
         isFree: isFree === "true" || isFree === true,
         status,
-        tags: tags ? tags.split(",").map((t) => t.trim()) : [],
+        tags:
+          tags && tags.trim()
+            ? tags
+                .split(",")
+                .map((t) => t.trim())
+                .filter(Boolean)
+            : [],
+        badges:
+          badges && badges.trim()
+            ? badges
+                .split(",")
+                .map((b) => b.trim())
+                .filter(Boolean)
+            : [],
+        playlists:
+          playlists && playlists.trim()
+            ? playlists
+                .split(",")
+                .map((p) => p.trim())
+                .filter(Boolean)
+            : [],
         layout,
         framework,
         filesIncluded,
@@ -515,7 +787,8 @@ app.put(
               .map((r) => r.trim())
               .filter(Boolean)
           : [],
-        instructions,
+        instructions:
+          instructions && instructions.trim() ? instructions : undefined,
         livePreviewUrl: livePreviewUrl || undefined,
       };
       if (req.files["templateFile"]) {
@@ -556,7 +829,7 @@ app.put(
     } catch (err) {
       res.status(400).json({ error: "Failed to update template" });
     }
-  }
+  },
 );
 
 // API: Create Razorpay order
@@ -591,6 +864,14 @@ app.get("/api/templates/:id", async (req, res) => {
       return res.status(404).json({ error: "Template not found" });
     }
     template = template.toObject();
+    // Ensure playlists is always an array
+    if (!Array.isArray(template.playlists)) {
+      template.playlists = template.playlists ? [template.playlists] : [];
+    }
+    // Ensure badges is always an array
+    if (!Array.isArray(template.badges)) {
+      template.badges = template.badges ? [template.badges] : [];
+    }
     template.previewUrl = makeAbsoluteUrl(template.previewUrl);
     // Only expose fileUrl for free templates
     if (template.isFree) {
@@ -615,7 +896,7 @@ app.post("/api/coupons/increment", async (req, res) => {
     const coupon = await Coupon.findOneAndUpdate(
       { code: code.trim().toUpperCase() },
       { $inc: { usedCount: 1 } },
-      { new: true }
+      { new: true },
     );
     if (!coupon) return res.status(404).json({ error: "Coupon not found" });
     res.json({ success: true, usedCount: coupon.usedCount });
@@ -684,7 +965,7 @@ app.post("/api/verify-payment", async (req, res) => {
         // If template doesn't have fileId (older records), try to extract it from fileUrl
         if (!template.fileId && template.fileUrl) {
           const m = String(template.fileUrl).match(
-            /\/api\/files\/([a-fA-F0-9]{24})/
+            /\/api\/files\/([a-fA-F0-9]{24})/,
           );
           if (m && m[1]) {
             try {
@@ -694,7 +975,7 @@ app.post("/api/verify-payment", async (req, res) => {
               console.warn(
                 "Failed to save extracted fileId for template",
                 template._id,
-                e
+                e,
               );
             }
           }
@@ -755,7 +1036,7 @@ app.post("/api/admin/migrate-fileids", async (req, res) => {
           console.warn(
             "Failed saving template during migration",
             t._id,
-            e.message
+            e.message,
           );
         }
       }

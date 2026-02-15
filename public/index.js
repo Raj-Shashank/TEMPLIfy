@@ -69,7 +69,13 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     showErrorInAllSections() {
-      const sections = ["premiumTemplatesGrid", "newArrivalsGrid"];
+      const sections = [
+        "premiumTemplatesGrid",
+        "trendingNowGrid",
+        "bestSellersGrid",
+        "newArrivalsGrid",
+        "editorPicksGrid",
+      ];
       sections.forEach((sectionId) => {
         const grid = document.getElementById(sectionId);
         if (grid) {
@@ -83,38 +89,31 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     setupSections() {
-      // Define sections with their configurations
+      // Define sections with their configurations - now using playlists
       this.sections = [
         {
           id: "premiumTemplatesGrid",
           name: "Premium Templates",
-          filter: (templates) => {
-            // Get templates with 'premium' badge or top-rated ones
-            const premiumTemplates = templates.filter(
-              (t) => t.badge && t.badge.toLowerCase().includes("premium"),
-            );
-
-            // If less than 3 premium templates, add some featured ones
-            if (premiumTemplates.length < 3) {
-              const featuredTemplates = templates.filter(
-                (t) =>
-                  !premiumTemplates.some((pt) => pt._id === t._id) &&
-                  t.badge &&
-                  t.badge.toLowerCase().includes("featured"),
-              );
-              return [...premiumTemplates, ...featuredTemplates].slice(0, 6);
-            }
-
-            return premiumTemplates.slice(0, 6);
-          },
+          playlistName: "premium_products",
           emptyMessage: "No premium templates available at the moment.",
+        },
+        {
+          id: "trendingNowGrid",
+          name: "Trending Now",
+          playlistName: "trending_now",
+          emptyMessage: "No trending templates available at the moment.",
+        },
+        {
+          id: "bestSellersGrid",
+          name: "Best Sellers",
+          playlistName: "best_sellers",
+          emptyMessage: "No best sellers available at the moment.",
         },
         {
           id: "newArrivalsGrid",
           name: "New Arrivals",
           filter: (templates) => {
             // Sort by creation date (newest first)
-            // If createdAt field doesn't exist, use a fallback
             const sorted = [...templates].sort((a, b) => {
               const dateA = a.createdAt ? new Date(a.createdAt) : new Date();
               const dateB = b.createdAt ? new Date(b.createdAt) : new Date();
@@ -124,6 +123,12 @@ document.addEventListener("DOMContentLoaded", async function () {
           },
           emptyMessage: "No new arrivals available at the moment.",
         },
+        {
+          id: "editorPicksGrid",
+          name: "Editor's Picks",
+          playlistName: "editor_picks",
+          emptyMessage: "No editor picks available at the moment.",
+        },
       ];
 
       // Render each section
@@ -132,9 +137,12 @@ document.addEventListener("DOMContentLoaded", async function () {
       });
     }
 
-    renderSection(section) {
+    async renderSection(section) {
       const grid = document.getElementById(section.id);
       if (!grid) return;
+
+      // Find the parent section element
+      const sectionElement = grid.closest("section");
 
       // Show loading
       grid.innerHTML = `
@@ -144,16 +152,34 @@ document.addEventListener("DOMContentLoaded", async function () {
                   </div>
                 `;
 
-      // Filter templates for this section
-      const filteredTemplates = section.filter(this.allTemplates);
+      let filteredTemplates = [];
+
+      // If section has a playlist name, fetch from playlist API
+      if (section.playlistName) {
+        try {
+          const res = await fetch(
+            `${API_BASE_URL}/api/templates/playlist/${section.playlistName}`,
+          );
+          filteredTemplates = await res.json();
+        } catch (err) {
+          console.error(`Error loading playlist ${section.playlistName}:`, err);
+        }
+      } else if (section.filter) {
+        // Otherwise use the filter function
+        filteredTemplates = section.filter(this.allTemplates);
+      }
 
       if (!filteredTemplates || filteredTemplates.length === 0) {
-        grid.innerHTML = `
-                    <div class="text-center" style="grid-column: 1 / -1; padding: 40px; color: var(--text-medium);">
-                      ${section.emptyMessage}
-                    </div>
-                  `;
+        // Hide the entire section if no templates
+        if (sectionElement) {
+          sectionElement.style.display = "none";
+        }
         return;
+      }
+
+      // Show section if it has templates
+      if (sectionElement) {
+        sectionElement.style.display = "block";
       }
 
       // Render templates
@@ -166,9 +192,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       // Determine template type
       const templateType = template.type || "HTML Website";
       const typeName = this.getTemplateTypeName(templateType);
-
-      // Get badge HTML
-      const badgeHTML = this.getBadgeHTML(template);
 
       // Check for discount
       const hasDiscount =
@@ -209,9 +232,6 @@ document.addEventListener("DOMContentLoaded", async function () {
                       <div class="template-type-tag">
                         ${typeName}
                       </div>
-                      
-                      <!-- Status Badge - Right top (New, Popular, etc.) -->
-                      ${badgeHTML}
                       
                       <div class="template-overlay">
                         <button class="preview-btn" data-preview="${
@@ -271,21 +291,6 @@ document.addEventListener("DOMContentLoaded", async function () {
       if (lowerType.includes("saas")) return "SaaS PRODUCT";
 
       return "HTML WEBSITE";
-    }
-
-    getBadgeHTML(template) {
-      if (!template.badge) return "";
-
-      const badgeLower = template.badge.toLowerCase();
-      let badgeClass = "";
-
-      if (badgeLower.includes("new")) badgeClass = "new";
-      else if (badgeLower.includes("popular")) badgeClass = "popular";
-      else if (badgeLower.includes("featured")) badgeClass = "featured";
-      else if (badgeLower.includes("premium")) badgeClass = "premium";
-      else if (badgeLower.includes("trending")) badgeClass = "trending";
-
-      return `<div class="status-badge ${badgeClass}">${template.badge.toUpperCase()}</div>`;
     }
 
     setupSearch() {

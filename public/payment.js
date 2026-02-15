@@ -257,7 +257,7 @@ function startDownload() {
   if (!finalUrl) {
     // show clearer UI message instead of simple alert
     showError(
-      "No downloadable file available. If you just completed payment, please wait a few seconds and try again or contact support."
+      "No downloadable file available. If you just completed payment, please wait a few seconds and try again or contact support.",
     );
     return;
   }
