@@ -497,46 +497,7 @@ header {
   white-space: nowrap;
 }
 
-/* STATUS BADGE - Right top */
-.status-badge {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  color: white;
-  padding: 6px 12px;
-  border-radius: 6px;
-  font-size: 11px;
-  font-weight: 700;
-  z-index: 2;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
-  backdrop-filter: blur(4px);
-  max-width: 120px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-/* Different colors for different status badges */
-.status-badge.new {
-  background: rgba(236, 72, 153, 0.95);
-}
-
-.status-badge.popular {
-  background: rgba(239, 68, 68, 0.95);
-}
-
-.status-badge.featured {
-  background: rgba(124, 58, 237, 0.95);
-}
-
-.status-badge.premium {
-  background: rgba(245, 158, 11, 0.95);
-}
-
-.status-badge.trending {
-  background: rgba(16, 185, 129, 0.95);
-}
+/* STATUS BADGE - Removed from homepage, only shown on templates page */
 
 .template-overlay {
   position: absolute;

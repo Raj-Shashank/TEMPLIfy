@@ -1,6 +1,33 @@
 const API_BASE_URL = "https://templify-zhhw.onrender.com";
 
+// Helper function to convert category ObjectId to name
+let categoriesCache = [];
+
+async function loadCategoriesForName() {
+  try {
+    const res = await fetch(`${API_BASE_URL}/api/categories`);
+    if (res.ok) {
+      categoriesCache = await res.json();
+    }
+  } catch (err) {
+    console.error("Error loading categories:", err);
+  }
+}
+
+function getCategoryName(categoryId) {
+  if (!categoryId) return null;
+  // If it's already a name (string that's not an ObjectId), return it
+  if (typeof categoryId === "string" && !categoryId.match(/^[0-9a-f]{24}$/i)) {
+    return categoryId;
+  }
+  // Look up by ObjectId
+  const category = categoriesCache.find((cat) => cat._id === categoryId);
+  return category ? category.name : null;
+}
+
 document.addEventListener("DOMContentLoaded", async function () {
+  // Load categories first for name conversion
+  await loadCategoriesForName();
   const container = document.getElementById("template-detail-container");
   const params = new URLSearchParams(window.location.search);
   const id = params.get("id");
@@ -193,8 +220,8 @@ function renderTemplateDetail(template) {
     name: template.name || "Unnamed Template",
     description: template.description || "No description available.",
     usageInstructions:
-      template.usageInstructions || "No usage instructions provided.",
-    category: template.category || "General",
+      template.instructions || "No usage instructions provided.",
+    category: getCategoryName(template.category) || "General",
     framework: template.framework || "Not specified",
     layout: template.layout || "Responsive",
     status: template.status || "Published",

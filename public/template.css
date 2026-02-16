@@ -362,10 +362,45 @@ header {
   font-weight: 600;
   letter-spacing: 0.5px;
   z-index: 3;
+  display: block;
+  margin-bottom: 4px;
+}
+
+/* Stack multiple badges vertically */
+.product-image > .product-badge:nth-of-type(1) {
+  top: 12px;
+}
+
+.product-image > .product-badge:nth-of-type(2) {
+  top: 38px;
+}
+
+.product-image > .product-badge:nth-of-type(3) {
+  top: 64px;
+}
+
+.product-badge.new {
+  background: rgba(236, 72, 153, 0.95);
+}
+
+.product-badge.popular {
+  background: rgba(239, 68, 68, 0.95);
+}
+
+.product-badge.featured {
+  background: rgba(124, 58, 237, 0.95);
+}
+
+.product-badge.premium {
+  background: rgba(245, 158, 11, 0.95);
+}
+
+.product-badge.trending {
+  background: rgba(16, 185, 129, 0.95);
 }
 
 .product-badge.free {
-  background: var(--success);
+  background: rgba(34, 197, 94, 0.95);
 }
 
 .preview-btn {
