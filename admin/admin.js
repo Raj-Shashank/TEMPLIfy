@@ -896,8 +896,11 @@ document
       document.getElementById("templateInstructions").value,
     );
 
-    const templateFile = document.getElementById("templateFile").files[0];
-    const previewFile = document.getElementById("templatePreview").files[0];
+    const templateFileInput = document.getElementById("editTemplateFile");
+    const previewFileInput = document.getElementById("templatePreview");
+
+    const templateFile = templateFileInput?.files[0];
+    const previewFile = previewFileInput?.files[0];
 
     if (templateFile) formData.append("templateFile", templateFile);
     if (previewFile) formData.append("previewFile", previewFile);
