@@ -51,7 +51,7 @@ input {
   --footer-muted: rgba(255, 255, 255, 0.18);
   --footer-heading: rgba(255, 255, 255, 0.18);
   --scrollbar-thumb: #2a2a30;
-  --nav-bg: rgba(7, 7, 11, 0.9);
+  --nav-bg: rgba(7, 7, 11, 0.62);
   --noise-opacity: 0.028;
   --card-shadow: 0 28px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--bd);
   --hero-grid-color: rgba(255, 255, 255, 0.025);
@@ -64,6 +64,15 @@ input {
   --B: "Hanken Grotesk", sans-serif;
   --E: cubic-bezier(0.16, 1, 0.3, 1);
   --nav-height: 60px;
+
+  /* ===== glass tokens (dark) ===== */
+  --glass-bg: rgba(18, 18, 23, 0.5);
+  --glass-bg-soft: rgba(18, 18, 23, 0.32);
+  --glass-border: rgba(255, 255, 255, 0.1);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --glass-blur: blur(18px) saturate(160%);
+  --glass-blur-lg: blur(26px) saturate(180%);
+  --glass-blur-sm: blur(10px) saturate(140%);
 }
 [data-theme="light"] {
   --bg: #fafaf7;
@@ -82,7 +91,7 @@ input {
   --footer-muted: rgba(0, 0, 0, 0.28);
   --footer-heading: rgba(0, 0, 0, 0.28);
   --scrollbar-thumb: #d0d0c8;
-  --nav-bg: rgba(250, 250, 247, 0.92);
+  --nav-bg: rgba(250, 250, 247, 0.6);
   --noise-opacity: 0.022;
   --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.07), 0 0 0 1px var(--bd);
   --hero-grid-color: rgba(0, 0, 0, 0.028);
@@ -91,6 +100,15 @@ input {
   --chip-bg: rgba(0, 0, 0, 0.025);
   --soc-bg: rgba(0, 0, 0, 0.04);
   --ticker-bg: #ffffff;
+
+  /* ===== glass tokens (light) ===== */
+  --glass-bg: rgba(255, 255, 255, 0.55);
+  --glass-bg-soft: rgba(255, 255, 255, 0.38);
+  --glass-border: rgba(255, 255, 255, 0.6);
+  --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.8);
+  --glass-blur: blur(18px) saturate(160%);
+  --glass-blur-lg: blur(26px) saturate(180%);
+  --glass-blur-sm: blur(10px) saturate(140%);
 }
 
 ::-webkit-scrollbar {
@@ -102,6 +120,24 @@ input {
 ::-webkit-scrollbar-thumb {
   background: var(--scrollbar-thumb);
   border-radius: 8px;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: -10%;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 15% 15%, var(--ac2) 0%, transparent 42%),
+    radial-gradient(circle at 88% 12%, var(--ac2) 0%, transparent 40%),
+    radial-gradient(circle at 50% 92%, var(--ac2) 0%, transparent 45%);
+  filter: blur(70px);
+  opacity: 0.35;
+  transition: opacity 0.4s var(--E);
+}
+[data-theme="light"] body::before {
+  opacity: 0.6;
 }
 
 body::after {
@@ -157,8 +193,10 @@ nav {
   justify-content: space-between;
   padding: 0 3.5rem;
   background: var(--nav-bg);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--bd);
+  backdrop-filter: var(--glass-blur-lg);
+  -webkit-backdrop-filter: var(--glass-blur-lg);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight);
   transition:
     border-color 0.3s,
     background 0.4s var(--E);
@@ -230,7 +268,9 @@ nav {
   width: 36px;
   height: 36px;
   border-radius: 50%;
-  background: transparent;
+  background: var(--glass-bg-soft);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
   border: 1px solid var(--bd2);
   cursor: pointer;
   font-size: 1rem;
@@ -303,8 +343,10 @@ nav {
   left: 0;
   right: 0;
   background: var(--nav-bg);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--bd);
+  backdrop-filter: var(--glass-blur-lg);
+  -webkit-backdrop-filter: var(--glass-blur-lg);
+  border-bottom: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight);
   padding: 1.2rem 1.5rem 1.8rem;
   z-index: 499;
   flex-direction: column;
@@ -363,6 +405,8 @@ nav {
   align-items: center;
   gap: 0.6rem;
   background: var(--ac2);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
   border: 1px solid var(--bd2);
   border-radius: 40px;
   padding: 0.4rem 1.2rem;
@@ -399,6 +443,8 @@ nav {
 }
 .type-badge {
   background: var(--chip-bg);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
   border: 1px solid var(--bd2);
   border-radius: 40px;
   padding: 0.5rem 1.2rem;
@@ -426,15 +472,20 @@ nav {
 }
 .search-bar {
   display: flex;
-  background: var(--input-bg);
+  background: var(--glass-bg-soft);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border: 1px solid var(--bd2);
   border-radius: 60px;
   overflow: hidden;
   transition: var(--transition);
+  box-shadow: var(--glass-highlight);
 }
 .search-bar:focus-within {
   border-color: var(--ac);
-  box-shadow: 0 0 0 3px var(--ac2);
+  box-shadow:
+    var(--glass-highlight),
+    0 0 0 3px var(--ac2);
 }
 .search-input {
   flex: 1;
@@ -554,14 +605,17 @@ nav {
   gap: 1.8rem;
 }
 .template-card {
-  background: var(--s1);
-  border: 1px solid var(--bd2);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border: 1px solid var(--glass-border);
   border-radius: 16px;
   overflow: hidden;
   transition:
     transform 0.3s var(--E),
-    box-shadow 0.3s;
-  box-shadow: var(--card-shadow);
+    box-shadow 0.3s,
+    border-color 0.3s;
+  box-shadow: var(--glass-highlight), var(--card-shadow);
   display: flex;
   flex-direction: column;
 }
@@ -580,8 +634,9 @@ nav {
   position: absolute;
   top: 12px;
   left: 12px;
-  background: rgba(0, 0, 0, 0.7);
-  backdrop-filter: blur(4px);
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(8px) saturate(160%);
+  -webkit-backdrop-filter: blur(8px) saturate(160%);
   color: var(--ac);
   padding: 4px 10px;
   border-radius: 20px;
@@ -589,12 +644,15 @@ nav {
   font-weight: 800;
   letter-spacing: 0.08em;
   text-transform: uppercase;
+  border: 1px solid rgba(255, 255, 255, 0.12);
   z-index: 2;
 }
 .template-overlay {
   position: absolute;
   inset: 0;
-  background: rgba(0, 0, 0, 0.75);
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px) saturate(150%);
+  -webkit-backdrop-filter: blur(6px) saturate(150%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -649,14 +707,14 @@ nav {
   left: 2px;
 }
 .template-footer {
-  border-top: 1px solid var(--bd);
+  border-top: 1px solid var(--glass-border);
   padding: 1rem 1.2rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-wrap: wrap;
   gap: 10px;
-  background: var(--s1);
+  background: var(--glass-bg-soft);
 }
 .price-container {
   display: flex;
@@ -695,7 +753,9 @@ nav {
   transform: translateY(-1px);
 }
 .details-button {
-  background: transparent;
+  background: var(--glass-bg-soft);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
   border: 1px solid var(--bd2);
   color: var(--tx);
 }
@@ -717,15 +777,18 @@ nav {
   margin: 0 auto;
 }
 .testimonial-card {
-  background: var(--s1);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border-radius: 20px;
   padding: 1.5rem;
-  border: 1px solid var(--bd);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight);
   transition: var(--transition);
 }
 .testimonial-card:hover {
   transform: translateY(-4px);
-  box-shadow: var(--card-shadow);
+  box-shadow: var(--glass-highlight), var(--card-shadow);
 }
 .testimonial-text {
   font-size: 0.85rem;
@@ -750,8 +813,11 @@ nav {
   color: var(--ac);
 }
 footer {
-  background: var(--bg);
-  border-top: 1px solid var(--bd);
+  background: var(--glass-bg-soft);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  border-top: 1px solid var(--glass-border);
+  box-shadow: var(--glass-highlight);
   padding: 3rem 2rem 2rem;
 }
 .footer-grid {
@@ -792,7 +858,10 @@ footer {
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--soc-bg);
+  background: var(--glass-bg-soft);
+  backdrop-filter: var(--glass-blur-sm);
+  -webkit-backdrop-filter: var(--glass-blur-sm);
+  border: 1px solid var(--bd2);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -867,11 +936,18 @@ footer {
     grid-template-columns: 1fr;
   }
   .footer-grid {
-    grid-template-columns: 1fr;
-    text-align: center;
+    grid-template-columns: repeat(4, minmax(150px, 1fr));
+    gap: 1.4rem;
+    text-align: left;
+    overflow-x: auto;
+    padding-bottom: 0.5rem;
+    scrollbar-width: thin;
+  }
+  .footer-grid > div:first-child p {
+    max-width: none;
   }
   .social-links {
-    justify-content: center;
+    justify-content: flex-start;
   }
   .search-bar {
     flex-direction: column;
