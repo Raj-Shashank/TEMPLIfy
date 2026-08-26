@@ -53,30 +53,34 @@
 
       :root {
         --bg: #07070b;
-        --s1: #0d0d12;
-        --s2: #121217;
-        --s3: #18181e;
-        --bd: rgba(255, 255, 255, 0.06);
-        --bd2: rgba(255, 255, 255, 0.11);
+        --s1: rgba(255, 255, 255, 0.035);
+        --s2: rgba(255, 255, 255, 0.055);
+        --s3: rgba(255, 255, 255, 0.07);
+        --bd: rgba(255, 255, 255, 0.07);
+        --bd2: rgba(255, 255, 255, 0.14);
         --ac: #bbff00;
         --ac2: rgba(187, 255, 0, 0.1);
         --tx: #f0ede6;
         --mu: #47474b;
         --mi: #838380;
-        --hover-bg: rgba(255, 255, 255, 0.013);
-        --input-bg: rgba(255, 255, 255, 0.04);
+        --hover-bg: rgba(255, 255, 255, 0.022);
+        --input-bg: rgba(255, 255, 255, 0.045);
         --footer-muted: rgba(255, 255, 255, 0.18);
         --footer-heading: rgba(255, 255, 255, 0.18);
         --scrollbar-thumb: #2a2a30;
-        --nav-bg: rgba(7, 7, 11, 0.9);
+        --nav-bg: rgba(7, 7, 11, 0.55);
         --noise-opacity: 0.028;
-        --card-shadow: 0 28px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--bd);
+        --card-shadow:
+          0 28px 70px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--bd),
+          inset 0 1px 0 rgba(255, 255, 255, 0.06);
         --hero-grid-color: rgba(255, 255, 255, 0.025);
         --btn-ghost-hover-bg: rgba(255, 255, 255, 0.03);
         --btn-ghost-hover-border: rgba(255, 255, 255, 0.25);
-        --chip-bg: rgba(255, 255, 255, 0.03);
-        --soc-bg: rgba(255, 255, 255, 0.04);
-        --ticker-bg: #0d0d12;
+        --chip-bg: rgba(255, 255, 255, 0.04);
+        --soc-bg: rgba(255, 255, 255, 0.05);
+        --ticker-bg: rgba(255, 255, 255, 0.03);
+        --glass-blur: 18px;
+        --glass-sat: 150%;
         --D: "Bebas Neue", sans-serif;
         --B: "Hanken Grotesk", sans-serif;
         --E: cubic-bezier(0.16, 1, 0.3, 1);
@@ -84,30 +88,34 @@
       }
       [data-theme="light"] {
         --bg: #fafaf7;
-        --s1: #ffffff;
-        --s2: #f3f3ee;
-        --s3: #ebebe5;
-        --bd: rgba(0, 0, 0, 0.07);
-        --bd2: rgba(0, 0, 0, 0.11);
+        --s1: rgba(255, 255, 255, 0.5);
+        --s2: rgba(255, 255, 255, 0.62);
+        --s3: rgba(255, 255, 255, 0.75);
+        --bd: rgba(0, 0, 0, 0.08);
+        --bd2: rgba(0, 0, 0, 0.12);
         --ac: #1a73e8;
         --ac2: rgba(26, 115, 232, 0.1);
         --tx: #1a1a16;
         --mu: #5c5c55;
         --mi: #7a7a72;
-        --hover-bg: rgba(0, 0, 0, 0.018);
-        --input-bg: rgba(0, 0, 0, 0.035);
+        --hover-bg: rgba(255, 255, 255, 0.35);
+        --input-bg: rgba(255, 255, 255, 0.45);
         --footer-muted: rgba(0, 0, 0, 0.28);
         --footer-heading: rgba(0, 0, 0, 0.28);
         --scrollbar-thumb: #d0d0c8;
-        --nav-bg: rgba(250, 250, 247, 0.92);
+        --nav-bg: rgba(255, 255, 255, 0.55);
         --noise-opacity: 0.022;
-        --card-shadow: 0 4px 24px rgba(0, 0, 0, 0.07), 0 0 0 1px var(--bd);
+        --card-shadow:
+          0 8px 32px rgba(0, 0, 0, 0.06), 0 0 0 1px var(--bd),
+          inset 0 1px 0 rgba(255, 255, 255, 0.5);
         --hero-grid-color: rgba(0, 0, 0, 0.028);
-        --btn-ghost-hover-bg: rgba(0, 0, 0, 0.03);
+        --btn-ghost-hover-bg: rgba(255, 255, 255, 0.35);
         --btn-ghost-hover-border: rgba(0, 0, 0, 0.22);
-        --chip-bg: rgba(0, 0, 0, 0.025);
-        --soc-bg: rgba(0, 0, 0, 0.04);
-        --ticker-bg: #ffffff;
+        --chip-bg: rgba(255, 255, 255, 0.45);
+        --soc-bg: rgba(255, 255, 255, 0.45);
+        --ticker-bg: rgba(255, 255, 255, 0.4);
+        --glass-blur: 16px;
+        --glass-sat: 160%;
       }
 
       ::-webkit-scrollbar {
@@ -184,8 +192,9 @@
         justify-content: space-between;
         padding: 0 3.5rem;
         background: var(--nav-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
         border-bottom: 1px solid var(--bd);
         transition:
           border-color 0.3s,
@@ -343,8 +352,9 @@
         left: 0;
         right: 0;
         background: var(--nav-bg);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
         border-bottom: 1px solid var(--bd);
         padding: 1.2rem 1.5rem 1.8rem;
         z-index: 499;
@@ -390,7 +400,7 @@
         min-height: 100vh;
         display: grid;
         grid-template-columns: 55% 45%;
-        align-items: center;
+        align-items: start;
         padding: 7rem 3.5rem 5rem;
         gap: 2.5rem;
         position: relative;
@@ -526,46 +536,75 @@
       .hright {
         position: relative;
         height: 490px;
+        margin-top: clamp(2rem, 9vw, 5.5rem);
+        display: flex;
+        align-items: center;
+        justify-content: center;
         animation: slideIn 0.9s var(--E) 0.55s both;
       }
-      .dcard {
+      .hright::before {
+        content: "";
         position: absolute;
+        inset: -8%;
+        background: radial-gradient(
+          circle at 50% 42%,
+          var(--ac2),
+          transparent 62%
+        );
+        filter: blur(46px);
+        opacity: 0.9;
+        pointer-events: none;
+        z-index: 0;
+      }
+      .dstage {
+        position: relative;
+        z-index: 1;
+      }
+      .dcard {
+        position: relative;
         background: var(--s1);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
         border: 1px solid var(--bd2);
-        border-radius: 11px;
+        border-radius: 14px;
         overflow: hidden;
         box-shadow: var(--card-shadow);
         transition: transform 0.5s var(--E);
       }
       .dc-main {
-        width: 355px;
-        top: 0;
+        width: 370px;
+      }
+      .hright:hover .dc-main {
+        transform: translateY(-5px);
+      }
+      .dc-main::after {
+        content: "";
+        position: absolute;
         left: 0;
-        z-index: 3;
+        right: 0;
+        top: -45%;
+        height: 45%;
+        background: linear-gradient(
+          180deg,
+          transparent,
+          var(--ac2) 45%,
+          transparent 92%
+        );
+        opacity: 0.65;
+        animation: scan 6s ease-in-out infinite;
+        pointer-events: none;
       }
-      .dc-b1 {
-        width: 310px;
-        top: 22px;
-        left: 55px;
-        z-index: 1;
-        transform: rotate(3.5deg);
-        opacity: 0.45;
-        background: var(--s2);
-      }
-      .dc-b2 {
-        width: 295px;
-        top: 28px;
-        right: 5px;
-        z-index: 2;
-        transform: rotate(-2.2deg);
-        opacity: 0.6;
-        background: var(--s1);
-      }
-      .hright:hover .dc-b1 {
-        transform: rotate(5.5deg) translate(10px, 6px);
-      }
-      .hright:hover .dc-b2 {
-        transform: rotate(-4deg) translate(-6px, 9px);
+      @keyframes scan {
+        0% {
+          top: -45%;
+        }
+        50% {
+          top: 100%;
+        }
+        100% {
+          top: 100%;
+        }
       }
       .dbar {
         background: var(--s2);
@@ -596,7 +635,7 @@
         text-align: center;
         font-size: 0.64rem;
         font-family: monospace;
-        color: var(--mu);
+        color: var(--mi);
       }
       .dbody {
         padding: 1.4rem 1.5rem;
@@ -617,7 +656,7 @@
       }
       .drole {
         font-size: 0.7rem;
-        color: var(--mu);
+        color: var(--mi);
         margin-bottom: 1rem;
       }
       .ddiv {
@@ -653,10 +692,178 @@
         border: 1px solid rgba(187, 255, 0, 0.18);
       }
 
+      /* hero card — tool grid */
+      .dgrid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 0.55rem;
+        margin-bottom: 1.2rem;
+      }
+      .dtile {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.32rem;
+        padding: 0.65rem 0.6rem;
+        border: 1px solid var(--bd);
+        border-radius: 8px;
+        background: var(--hover-bg);
+        transition:
+          border-color 0.22s,
+          background 0.22s,
+          transform 0.22s var(--E);
+        animation: fadeUp 0.6s var(--E) both;
+      }
+      .dtile:nth-child(1) {
+        animation-delay: 1.1s;
+      }
+      .dtile:nth-child(2) {
+        animation-delay: 1.18s;
+      }
+      .dtile:nth-child(3) {
+        animation-delay: 1.26s;
+      }
+      .dtile:nth-child(4) {
+        animation-delay: 1.34s;
+      }
+      .dtile:nth-child(5) {
+        animation-delay: 1.42s;
+      }
+      .dtile:nth-child(6) {
+        animation-delay: 1.5s;
+      }
+      .dtile:hover {
+        border-color: var(--bd2);
+        transform: translateY(-2px);
+      }
+      .dtile-ic {
+        font-size: 1.05rem;
+        line-height: 1;
+      }
+      .dtile-lb {
+        font-size: 0.6rem;
+        font-weight: 700;
+        letter-spacing: 0.02em;
+        color: var(--mi);
+      }
+      .dtile-dot {
+        position: absolute;
+        top: 0.55rem;
+        right: 0.55rem;
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+      }
+      .dtc-corp {
+        background: var(--ac);
+      }
+      .dtc-free {
+        background: #34d399;
+      }
+      .dtc-create {
+        background: #c084fc;
+      }
+      .dtile-active {
+        border-color: var(--bd2);
+        background: var(--ac2);
+      }
+      .dtile-active .dtile-lb {
+        color: var(--tx);
+      }
+
+      /* hero card — inline CTA */
+      .dcta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        margin-top: 1.2rem;
+        background: var(--ac);
+        color: #000;
+        font-weight: 800;
+        font-size: 0.76rem;
+        letter-spacing: 0.01em;
+        padding: 0.68rem 1rem;
+        border-radius: 6px;
+        transition:
+          opacity 0.18s,
+          transform 0.15s var(--E);
+      }
+      .dcta:hover {
+        opacity: 0.85;
+        transform: translateY(-1px);
+      }
+
+      /* hero card — floating trust badges */
+      .dbadge {
+        position: absolute;
+        z-index: 4;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.4rem;
+        background: var(--s3);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
+        border: 1px solid var(--bd2);
+        box-shadow: var(--card-shadow);
+        color: var(--tx);
+        font-size: 0.66rem;
+        font-weight: 700;
+        padding: 0.5rem 0.9rem;
+        border-radius: 30px;
+        animation: fadeUp 0.7s var(--E) both;
+      }
+      .dbadge-top {
+        top: -14px;
+        right: -14px;
+        animation-delay: 1.35s;
+      }
+      .dbadge-bottom {
+        bottom: -14px;
+        left: -14px;
+        animation-delay: 1.5s;
+      }
+      .dbadge-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 6px rgba(52, 211, 153, 0.6);
+        flex-shrink: 0;
+      }
+
+      /* hero card — footer status strip */
+      .dfooter {
+        display: flex;
+        align-items: center;
+        gap: 0.45rem;
+        margin-top: 1.1rem;
+        padding-top: 0.9rem;
+        border-top: 1px solid var(--bd);
+        font-size: 0.63rem;
+        font-weight: 500;
+        letter-spacing: 0.01em;
+        color: var(--mi);
+      }
+      .dfoot-dot {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: #34d399;
+        box-shadow: 0 0 6px rgba(52, 211, 153, 0.55);
+        animation: blink 2s infinite;
+        flex-shrink: 0;
+      }
+
       .ticker {
         border-top: 1px solid var(--bd);
         border-bottom: 1px solid var(--bd);
         background: var(--ticker-bg);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
         overflow: hidden;
         padding: 0.8rem 0;
       }
@@ -944,6 +1151,9 @@
         padding: 0.38rem 0.7rem;
         border-radius: 4px;
         background: var(--chip-bg);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
         border: 1px solid var(--bd2);
         color: var(--mi);
       }
@@ -960,13 +1170,18 @@
       .prcell {
         padding: 2.2rem 1.8rem;
         border-right: 1px solid var(--bd);
-        transition: background 0.22s;
+        transition:
+          background 0.22s,
+          backdrop-filter 0.22s;
       }
       .prcell:last-child {
         border-right: none;
       }
       .prcell:hover {
         background: var(--s1);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
       }
       .prn {
         font-family: var(--D);
@@ -994,6 +1209,9 @@
       /* coming soon / roadmap (unchanged) */
       .coming {
         background: var(--s1);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
       }
       .clayout {
         display: grid;
@@ -1051,6 +1269,9 @@
       .wlinp {
         flex: 1;
         background: var(--input-bg);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
         border: 1px solid var(--bd2);
         border-radius: 5px;
         padding: 0.75rem 1rem;
@@ -1070,10 +1291,16 @@
         border: 1px solid var(--bd);
         border-radius: 8px;
         background: var(--hover-bg);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
         display: flex;
         align-items: flex-start;
         gap: 0.9rem;
         position: relative;
+        transition:
+          border-color 0.18s,
+          background 0.18s;
       }
       .cf:hover {
         border-color: var(--bd2);
@@ -1120,13 +1347,18 @@
       .tcell {
         padding: 2rem;
         border-right: 1px solid var(--bd);
-        transition: background 0.22s;
+        transition:
+          background 0.22s,
+          backdrop-filter 0.22s;
       }
       .tcell:last-child {
         border-right: none;
       }
       .tcell:hover {
         background: var(--s1);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
       }
       .tstars {
         display: flex;
@@ -1166,6 +1398,9 @@
         height: 31px;
         border-radius: 50%;
         background: var(--s3);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
         border: 1px solid var(--bd2);
         display: flex;
         align-items: center;
@@ -1196,16 +1431,24 @@
         padding: 2.4rem 2rem;
         border-right: 1px solid var(--bd);
         position: relative;
-        transition: background 0.22s;
+        transition:
+          background 0.22s,
+          backdrop-filter 0.22s;
       }
       .pcell:last-child {
         border-right: none;
       }
       .pcell:hover {
         background: var(--s1);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
       }
       .pcell.pop {
         background: var(--s2);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
       }
       .poptag {
         position: absolute;
@@ -1447,6 +1690,9 @@
         height: 30px;
         border-radius: 5px;
         background: var(--soc-bg);
+        backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+        -webkit-backdrop-filter: blur(var(--glass-blur))
+          saturate(var(--glass-sat));
         border: 1px solid var(--bd);
         display: flex;
         align-items: center;
@@ -1497,14 +1743,6 @@
         }
         .dc-main {
           width: 300px;
-        }
-        .dc-b1 {
-          width: 265px;
-          left: 40px;
-        }
-        .dc-b2 {
-          width: 250px;
-          right: 0;
         }
         .hright {
           height: 420px;
@@ -1871,52 +2109,59 @@
         </div>
       </div>
       <div class="hright">
-        <div class="dcard dc-b2">
-          <div class="dbar">
-            <div class="ddots"><span></span><span></span><span></span></div>
-          </div>
-          <div class="dbody">
-            <div class="dl"></div>
-            <div class="dl w70"></div>
-            <div class="dl w80"></div>
-          </div>
-        </div>
-        <div class="dcard dc-b1">
-          <div class="dbar">
-            <div class="ddots"><span></span><span></span><span></span></div>
-          </div>
-          <div class="dbody">
-            <div class="dtag">Contract</div>
-            <div class="dname">Service Agreement</div>
-            <div class="dl"></div>
-            <div class="dl w70"></div>
-            <div class="dl w80"></div>
-          </div>
-        </div>
-        <div class="dcard dc-main">
-          <div class="dbar">
-            <div class="ddots"><span></span><span></span><span></span></div>
-            <div class="durl">app.provault.io/resume</div>
-          </div>
-          <div class="dbody">
-            <div class="dtag">Resume</div>
-            <div class="dname">Senior Product Designer</div>
-            <div class="drole">Sneha Patel · Mumbai</div>
-            <div class="ddiv"></div>
-            <div class="dl la"></div>
-            <div class="dl"></div>
-            <div class="dl w70"></div>
-            <div class="dl w80"></div>
-            <div class="dl w55"></div>
-            <div class="dchips">
-              <span class="dchip">ATS-Ready</span
-              ><span
-                class="dchip"
-                style="background: rgba(52, 211, 153, 0.08); color: #34d399"
-                >PDF Export</span
-              >
+        <div class="dstage">
+          <div class="dcard dc-main">
+            <div class="dbar">
+              <div class="ddots"><span></span><span></span><span></span></div>
+              <div class="durl">app.provault.io</div>
+            </div>
+            <div class="dbody">
+              <div class="dtag">All-In-One Suite</div>
+              <div class="dname">Every Document, One Platform</div>
+              <div class="drole">Corporate · Freelance · Creator</div>
+              <div class="ddiv"></div>
+              <div class="dgrid">
+                <div class="dtile">
+                  <span class="dtile-ic">📄</span>
+                  <span class="dtile-lb">Resume</span>
+                  <span class="dtile-dot dtc-corp"></span>
+                </div>
+                <div class="dtile">
+                  <span class="dtile-ic">✉️</span>
+                  <span class="dtile-lb">Cover Letter</span>
+                  <span class="dtile-dot dtc-corp"></span>
+                </div>
+                <div class="dtile">
+                  <span class="dtile-ic">💼</span>
+                  <span class="dtile-lb">LinkedIn</span>
+                  <span class="dtile-dot dtc-corp"></span>
+                </div>
+                <div class="dtile">
+                  <span class="dtile-ic">📝</span>
+                  <span class="dtile-lb">Contract</span>
+                  <span class="dtile-dot dtc-free"></span>
+                </div>
+                <div class="dtile">
+                  <span class="dtile-ic">🧾</span>
+                  <span class="dtile-lb">Invoice</span>
+                  <span class="dtile-dot dtc-free"></span>
+                </div>
+                <div class="dtile dtile-active">
+                  <span class="dtile-ic">🎬</span>
+                  <span class="dtile-lb">Media Kit</span>
+                  <span class="dtile-dot dtc-create"></span>
+                </div>
+              </div>
+              <a href="main.html" class="dcta">Explore All Tools ↓</a>
+              <div class="dfooter">
+                <span class="dfoot-dot"></span>Auto-saved · Synced to cloud
+              </div>
             </div>
           </div>
+          <div class="dbadge dbadge-top">
+            <span class="dbadge-dot"></span>6 tools · 1 platform
+          </div>
+          <div class="dbadge dbadge-bottom">★ 4.7 · 250+ users</div>
         </div>
       </div>
     </section>
