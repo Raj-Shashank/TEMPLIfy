@@ -23,6 +23,14 @@
         --gray-200: #e5e7eb;
         --success: #10b981;
         --border-radius: 12px;
+
+        /* ===== glass tokens ===== */
+        --glass-bg: rgba(255, 255, 255, 0.5);
+        --glass-bg-strong: rgba(255, 255, 255, 0.62);
+        --glass-bg-soft: rgba(255, 255, 255, 0.38);
+        --glass-border: rgba(255, 255, 255, 0.7);
+        --glass-highlight: inset 0 1px 0 rgba(255, 255, 255, 0.85);
+        --glass-blur: blur(18px) saturate(160%);
       }
 
       * {
@@ -31,11 +39,35 @@
         box-sizing: border-box;
       }
 
+      html {
+        scroll-behavior: smooth;
+      }
+
       body {
         font-family: "Inter", sans-serif;
-        background: var(--light);
+        background:
+          radial-gradient(
+            circle at 12% 8%,
+            rgba(37, 99, 235, 0.07) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 90% 10%,
+            rgba(16, 185, 129, 0.06) 0%,
+            transparent 38%
+          ),
+          radial-gradient(
+            circle at 50% 100%,
+            rgba(37, 99, 235, 0.06) 0%,
+            transparent 45%
+          ),
+          var(--light);
+        background-attachment: fixed;
         color: var(--primary);
         line-height: 1.6;
+        -webkit-font-smoothing: antialiased;
+        -webkit-overflow-scrolling: touch;
+        overflow-x: hidden;
       }
 
       .container {
@@ -47,11 +79,18 @@
 
       /* Header - Mobile Optimized */
       .detail-header {
-        background: var(--white);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
         padding: 20px;
         border-radius: var(--border-radius);
         margin-bottom: 20px;
-        border: 1px solid var(--gray-200);
+        border: 1px solid var(--glass-border);
+        box-shadow:
+          var(--glass-highlight),
+          0 8px 30px rgba(0, 0, 0, 0.04);
+        transform: translateZ(0);
+        will-change: backdrop-filter;
       }
 
       .header-top {
@@ -164,7 +203,7 @@
         gap: 12px;
         margin-top: 16px;
         padding-top: 16px;
-        border-top: 1px solid var(--gray-200);
+        border-top: 1px solid var(--glass-border);
       }
 
       .meta-item {
@@ -226,6 +265,7 @@
         background: var(--gray-100);
         border-radius: var(--border-radius);
         overflow: hidden;
+        border: 1px solid var(--glass-border);
       }
 
       @media (min-width: 768px) {
@@ -248,10 +288,17 @@
 
       /* Content Cards */
       .content-card {
-        background: var(--white);
+        background: var(--glass-bg);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
         border-radius: var(--border-radius);
         padding: 20px;
-        border: 1px solid var(--gray-200);
+        border: 1px solid var(--glass-border);
+        box-shadow:
+          var(--glass-highlight),
+          0 8px 30px rgba(0, 0, 0, 0.04);
+        transform: translateZ(0);
+        will-change: backdrop-filter;
       }
 
       @media (min-width: 768px) {
@@ -285,7 +332,7 @@
       .description-section {
         margin-top: 16px;
         padding-top: 16px;
-        border-top: 1px solid var(--gray-200);
+        border-top: 1px solid var(--glass-border);
       }
 
       .description-title {
@@ -328,7 +375,8 @@
         align-items: flex-start;
         gap: 10px;
         padding: 12px;
-        background: var(--gray-100);
+        background: var(--glass-bg-soft);
+        border: 1px solid var(--glass-border);
         border-radius: 8px;
       }
 
@@ -354,7 +402,8 @@
       }
 
       .detail-item {
-        background: var(--gray-100);
+        background: var(--glass-bg-soft);
+        border: 1px solid var(--glass-border);
         padding: 16px;
         border-radius: 8px;
       }
@@ -382,8 +431,8 @@
 
       .requirement-tag,
       .browser-tag {
-        background: var(--white);
-        border: 1px solid var(--gray-200);
+        background: var(--glass-bg-soft);
+        border: 1px solid var(--glass-border);
         padding: 6px 10px;
         border-radius: 6px;
         font-size: 12px;
@@ -403,10 +452,17 @@
       }
 
       .purchase-card {
-        background: var(--white);
+        background: var(--glass-bg-strong);
+        backdrop-filter: var(--glass-blur);
+        -webkit-backdrop-filter: var(--glass-blur);
         border-radius: var(--border-radius);
         padding: 20px;
-        border: 1px solid var(--gray-200);
+        border: 1px solid var(--glass-border);
+        box-shadow:
+          var(--glass-highlight),
+          0 8px 30px rgba(0, 0, 0, 0.04);
+        transform: translateZ(0);
+        will-change: backdrop-filter;
       }
 
       @media (min-width: 768px) {
@@ -427,7 +483,7 @@
         text-align: center;
         margin-bottom: 20px;
         padding-bottom: 20px;
-        border-bottom: 1px solid var(--gray-200);
+        border-bottom: 1px solid var(--glass-border);
       }
 
       .price-amount {
@@ -484,7 +540,10 @@
         align-items: center;
         justify-content: center;
         gap: 10px;
-        transition: all 0.2s;
+        transition:
+          transform 0.2s,
+          box-shadow 0.2s,
+          background 0.2s;
         border: none;
         cursor: pointer;
         font-family: inherit;
@@ -522,7 +581,7 @@
         display: flex;
         justify-content: space-between;
         padding: 10px 0;
-        border-bottom: 1px solid var(--gray-200);
+        border-bottom: 1px solid var(--glass-border);
         font-size: 14px;
       }
 
@@ -546,7 +605,7 @@
       /* Playlists */
       .playlist-container {
         padding-top: 16px;
-        border-top: 1px solid var(--gray-200);
+        border-top: 1px solid var(--glass-border);
       }
 
       .playlist-tags {
@@ -572,7 +631,7 @@
         margin-top: 32px;
         color: var(--secondary);
         font-size: 13px;
-        border-top: 1px solid var(--gray-200);
+        border-top: 1px solid var(--glass-border);
       }
 
       /* Loading */
@@ -620,6 +679,25 @@
           padding-left: max(16px, env(safe-area-inset-left));
           padding-right: max(16px, env(safe-area-inset-right));
           padding-bottom: max(16px, env(safe-area-inset-bottom));
+        }
+      }
+
+      /* ===== Mobile scroll performance ===== */
+      @media (max-width: 768px) {
+        :root {
+          --glass-blur: blur(10px) saturate(140%);
+        }
+        .purchase-card {
+          position: static;
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        html {
+          scroll-behavior: auto;
+        }
+        .btn:hover {
+          transform: none;
         }
       }
     </style>
