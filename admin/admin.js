@@ -26,7 +26,7 @@
 })();
 
 // ========== API & GLOBALS ==========
-const API_BASE_URL = "https://templifyy.vercel.app//api";
+const API_BASE_URL = "https://templifyy.vercel.app/api";
 let categories = [],
   subcategories = [],
   selectedCategoryId = null,

@@ -1,5 +1,5 @@
 document.addEventListener("DOMContentLoaded", async function () {
-  const API_BASE_URL = "https://templifyy.vercel.app/";
+  const API_BASE_URL = "https://templifyy.vercel.app";
 
   // SCALABLE TEMPLATE SECTION SYSTEM
   class TemplateSectionManager {

@@ -6,7 +6,7 @@ let selectedCategoryId = "all"; // Track selected category
 let selectedSubcategories = []; // Track selected subcategories
 
 // API Configuration
-const API_BASE_URL = "https://templifyy.vercel.app//api";
+const API_BASE_URL = "https://templifyy.vercel.app/api";
 
 // Function to clear the templates cache
 function clearTemplatesCache() {

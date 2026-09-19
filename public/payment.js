@@ -1,7 +1,7 @@
 // Get product details from URL
 const params = new URLSearchParams(window.location.search);
 const templateId = params.get("id");
-const API_BASE_URL = "https://templifyy.vercel.app/";
+const API_BASE_URL = "https://templifyy.vercel.app";
 
 let isFree = false;
 let productName = "Creative Portfolio Template - Stand Out Online";
