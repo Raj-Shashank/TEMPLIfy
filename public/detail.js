@@ -1,4 +1,4 @@
-const API_BASE_URL = "https://templify-zhhw.onrender.com";
+const API_BASE_URL = "https://templifyy.vercel.app/";
 
 // Helper function to convert category ObjectId to name
 let categoriesCache = [];
