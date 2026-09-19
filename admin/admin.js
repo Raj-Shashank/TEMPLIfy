@@ -26,7 +26,7 @@
 })();
 
 // ========== API & GLOBALS ==========
-const API_BASE_URL = "https://templifyy.vercel.app/api";
+const API_BASE_URL = "https://templify-zhhw.onrender.com/api";
 let categories = [],
   subcategories = [],
   selectedCategoryId = null,
@@ -677,6 +677,14 @@ async function deleteCoupon(id) {
 
 // Save new template
 document.getElementById("saveTemplateBtn").onclick = async () => {
+  const isFree = document.getElementById("templateIsFree").checked;
+  const priceValue = Number(document.getElementById("templatePrice").value);
+
+  if (!isFree && (!Number.isFinite(priceValue) || priceValue <= 0)) {
+    alert("Paid templates must have a price greater than 0.");
+    return;
+  }
+
   const formData = new FormData();
   formData.append("name", document.getElementById("templateName").value);
   formData.append(
@@ -697,7 +705,7 @@ document.getElementById("saveTemplateBtn").onclick = async () => {
   }
   formData.append("category", catId);
   formData.append("subCategory", subId);
-  formData.append("isFree", document.getElementById("templateIsFree").checked);
+  formData.append("isFree", isFree);
   formData.append("price", document.getElementById("templatePrice").value);
   formData.append("status", document.getElementById("templateStatus").value);
   formData.append("tags", document.getElementById("templateTags").value);
