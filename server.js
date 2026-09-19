@@ -28,6 +28,15 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json());
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
+// Health check endpoint for deployment monitoring
+app.get("/", (req, res) => {
+  res.status(200).json({
+    status: "ok",
+    message: "Backend server is healthy",
+    timestamp: new Date().toISOString(),
+  });
+});
+
 // Setup GridFS
 let gfsBucket;
 mongoose.connection.once("open", () => {
