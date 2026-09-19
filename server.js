@@ -352,9 +352,9 @@ app.get("/api/templates/playlist/:playlistName", async (req, res) => {
       if (!Array.isArray(t.badges)) {
         t.badges = t.badges ? [t.badges] : [];
       }
-      t.previewUrl = makeAbsoluteUrl(t.previewUrl);
+      t.previewUrl = makeAbsoluteUrl(t.previewUrl, req);
       if (t.isFree) {
-        t.fileUrl = makeAbsoluteUrl(t.fileUrl);
+        t.fileUrl = makeAbsoluteUrl(t.fileUrl, req);
       } else {
         delete t.fileUrl;
       }
@@ -453,14 +453,45 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
 
-// Set BASE_URL for file links
+// Set BASE_URL for file links, but prefer the current request host so URLs stay valid after deploy migrations.
 const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
+function getServerBaseUrl(req = null) {
+  if (process.env.BASE_URL) return process.env.BASE_URL;
+  if (req) return `${req.protocol}://${req.get("host")}`;
+  return BASE_URL;
+}
+
+function validateTemplatePricing(isFreeValue, priceValue) {
+  const isFree = isFreeValue === "true" || isFreeValue === true;
+  const parsedPrice = Number(priceValue);
+
+  if (!isFree && (!Number.isFinite(parsedPrice) || parsedPrice <= 0)) {
+    return "Paid templates must have a price greater than 0";
+  }
+
+  return null;
+}
+
 // Helper function to make URLs absolute
-function makeAbsoluteUrl(url) {
+function makeAbsoluteUrl(url, req = null) {
   if (!url) return url;
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
-  return `${BASE_URL}${url}`;
+  return `${getServerBaseUrl(req)}${url}`;
+}
+
+function resolveTemplateFileId(template) {
+  if (!template) return null;
+  if (template.fileId) return String(template.fileId);
+
+  const candidates = [template.fileUrl, template.previewUrl].filter(Boolean);
+  for (const candidate of candidates) {
+    const match = String(candidate).match(/\/api\/files\/([a-fA-F0-9]{24})/);
+    if (match && match[1]) {
+      return match[1];
+    }
+  }
+  return null;
 }
 
 // Example API Routes
@@ -498,10 +529,10 @@ app.get("/api/templates", async (req, res) => {
       if (!Array.isArray(t.badges)) {
         t.badges = t.badges ? [t.badges] : [];
       }
-      t.previewUrl = makeAbsoluteUrl(t.previewUrl);
+      t.previewUrl = makeAbsoluteUrl(t.previewUrl, req);
       // Only expose fileUrl for free templates
       if (t.isFree) {
-        t.fileUrl = makeAbsoluteUrl(t.fileUrl);
+        t.fileUrl = makeAbsoluteUrl(t.fileUrl, req);
       } else {
         delete t.fileUrl;
       }
@@ -588,9 +619,16 @@ app.post(
         badges,
         playlists,
       } = req.body;
+
+      const pricingError = validateTemplatePricing(isFree, price);
+      if (pricingError) {
+        return res.status(400).json({ error: pricingError });
+      }
+
       let templateFileId, previewFileId;
       let templateFileUrl, previewFileUrl;
       // Save files to GridFS and get their IDs
+      const serverBaseUrl = getServerBaseUrl(req);
       if (req.files["templateFile"]) {
         const file = req.files["templateFile"][0];
         const uploadStream = gfsBucket.openUploadStream(file.originalname, {
@@ -600,7 +638,7 @@ app.post(
         await new Promise((resolve, reject) => {
           uploadStream.on("finish", () => {
             templateFileId = uploadStream.id;
-            templateFileUrl = `${BASE_URL}/api/files/${templateFileId}`;
+            templateFileUrl = `${serverBaseUrl}/api/files/${templateFileId}`;
             resolve();
           });
           uploadStream.on("error", reject);
@@ -615,7 +653,7 @@ app.post(
         await new Promise((resolve, reject) => {
           uploadStream.on("finish", () => {
             previewFileId = uploadStream.id;
-            previewFileUrl = `${BASE_URL}/api/files/${previewFileId}`;
+            previewFileUrl = `${serverBaseUrl}/api/files/${previewFileId}`;
             resolve();
           });
           uploadStream.on("error", reject);
@@ -790,6 +828,11 @@ app.put(
         playlists,
       } = req.body;
 
+      const pricingError = validateTemplatePricing(isFree, price);
+      if (pricingError) {
+        return res.status(400).json({ error: pricingError });
+      }
+
       let update = {
         name,
         description,
@@ -844,6 +887,7 @@ app.put(
           instructions && instructions.trim() ? instructions : undefined,
         livePreviewUrl: livePreviewUrl || undefined,
       };
+      const serverBaseUrl = getServerBaseUrl(req);
       if (req.files["templateFile"]) {
         const file = req.files["templateFile"][0];
         const uploadStream = gfsBucket.openUploadStream(file.originalname, {
@@ -852,7 +896,7 @@ app.put(
         uploadStream.end(file.buffer);
         await new Promise((resolve, reject) => {
           uploadStream.on("finish", () => {
-            update.fileUrl = `${BASE_URL}/api/files/${uploadStream.id}`;
+            update.fileUrl = `${serverBaseUrl}/api/files/${uploadStream.id}`;
             update.fileId = uploadStream.id;
             resolve();
           });
@@ -867,7 +911,7 @@ app.put(
         uploadStream.end(file.buffer);
         await new Promise((resolve, reject) => {
           uploadStream.on("finish", () => {
-            update.previewUrl = `${BASE_URL}/api/files/${uploadStream.id}`;
+            update.previewUrl = `${serverBaseUrl}/api/files/${uploadStream.id}`;
             resolve();
           });
           uploadStream.on("error", reject);
@@ -925,10 +969,10 @@ app.get("/api/templates/:id", async (req, res) => {
     if (!Array.isArray(template.badges)) {
       template.badges = template.badges ? [template.badges] : [];
     }
-    template.previewUrl = makeAbsoluteUrl(template.previewUrl);
+    template.previewUrl = makeAbsoluteUrl(template.previewUrl, req);
     // Only expose fileUrl for free templates
     if (template.isFree) {
-      template.fileUrl = makeAbsoluteUrl(template.fileUrl);
+      template.fileUrl = makeAbsoluteUrl(template.fileUrl, req);
     } else {
       delete template.fileUrl;
     }
@@ -1015,22 +1059,18 @@ app.post("/api/verify-payment", async (req, res) => {
           return res
             .status(404)
             .json({ success: false, error: "Template not found" });
-        // If template doesn't have fileId (older records), try to extract it from fileUrl
-        if (!template.fileId && template.fileUrl) {
-          const m = String(template.fileUrl).match(
-            /\/api\/files\/([a-fA-F0-9]{24})/,
-          );
-          if (m && m[1]) {
-            try {
-              template.fileId = m[1];
-              await template.save();
-            } catch (e) {
-              console.warn(
-                "Failed to save extracted fileId for template",
-                template._id,
-                e,
-              );
-            }
+        // If template doesn't have fileId (older records), try to extract it from fileUrl/previewUrl.
+        const legacyFileId = resolveTemplateFileId(template);
+        if (!template.fileId && legacyFileId) {
+          try {
+            template.fileId = legacyFileId;
+            await template.save();
+          } catch (e) {
+            console.warn(
+              "Failed to save extracted fileId for template",
+              template._id,
+              e,
+            );
           }
         }
         if (template.isFree) {

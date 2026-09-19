@@ -6,16 +6,34 @@ document.addEventListener("DOMContentLoaded", async function () {
     constructor() {
       this.sections = [];
       this.allTemplates = [];
+      this.categoryMap = {};
       this.cacheKey = "templify_templates_cache";
       this.cacheTimeKey = "templify_templates_cache_time";
       this.cacheDuration = 5 * 60 * 1000; // 5 minutes
     }
 
     async initialize() {
+      await this.loadCategories();
       await this.loadTemplates();
       this.setupSections();
       this.setupSearch();
       this.setupEventListeners();
+    }
+
+    async loadCategories() {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/categories`);
+        const categories = await res.json();
+
+        this.categoryMap = {};
+        categories.forEach((category) => {
+          if (category && category._id) {
+            this.categoryMap[category._id] = category.name;
+          }
+        });
+      } catch (err) {
+        console.error("Error loading categories:", err);
+      }
     }
 
     async loadTemplates() {
@@ -181,9 +199,8 @@ document.addEventListener("DOMContentLoaded", async function () {
     }
 
     createTemplateCard(template) {
-      // Determine template type
-      const templateType = template.type || "HTML Website";
-      const typeName = this.getTemplateTypeName(templateType);
+      // Determine template type from the real category name when available
+      const typeName = this.getTemplateTypeName(template);
 
       // Check for discount
       const hasDiscount =
@@ -273,16 +290,16 @@ document.addEventListener("DOMContentLoaded", async function () {
                 `;
     }
 
-    getTemplateTypeName(type) {
-      const lowerType = type ? type.toLowerCase() : "html";
+    getTemplateTypeName(template) {
+      const categoryName =
+        typeof template?.category === "string"
+          ? this.categoryMap[template.category] || ""
+          : template?.category?.name || "";
 
-      if (lowerType.includes("google")) return "GOOGLE SHEETS";
-      if (lowerType.includes("notion")) return "NOTION";
-      if (lowerType.includes("html") || lowerType.includes("website"))
-        return "HTML WEBSITE";
-      if (lowerType.includes("saas")) return "SaaS PRODUCT";
+      const rawType = (categoryName || "HTML Website").trim();
+      if (categoryName) return categoryName.toUpperCase();
 
-      return "HTML WEBSITE";
+      return "TEMPLATE";
     }
 
     setupSearch() {
