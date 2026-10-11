@@ -453,13 +453,22 @@ const razorpay = new Razorpay({
   key_secret: process.env.RAZORPAY_SECRET_KEY,
 });
 
-// Set BASE_URL for file links, but prefer the current request host so URLs stay valid after deploy migrations.
+// BASE_URL is used to resolve relative legacy URLs; uploaded file URLs use the request host by default.
 const BASE_URL = process.env.BASE_URL || "http://localhost:3000";
 
 function getServerBaseUrl(req = null) {
   if (process.env.BASE_URL) return process.env.BASE_URL;
   if (req) return `${req.protocol}://${req.get("host")}`;
   return BASE_URL;
+}
+
+function getFileBaseUrl(req) {
+  if (process.env.FILE_BASE_URL) {
+    return process.env.FILE_BASE_URL.replace(/\/$/, "");
+  }
+  const protocol = req.get("x-forwarded-proto")?.split(",")[0] || req.protocol;
+  const host = req.get("x-forwarded-host") || req.get("host");
+  return `${protocol}://${host}`;
 }
 
 function validateTemplatePricing(isFreeValue, priceValue) {
@@ -482,16 +491,13 @@ function makeAbsoluteUrl(url, req = null) {
 
 function resolveTemplateFileId(template) {
   if (!template) return null;
-  if (template.fileId) return String(template.fileId);
-
-  const candidates = [template.fileUrl, template.previewUrl].filter(Boolean);
-  for (const candidate of candidates) {
-    const match = String(candidate).match(/\/api\/files\/([a-fA-F0-9]{24})/);
-    if (match && match[1]) {
-      return match[1];
-    }
-  }
-  return null;
+  const match = String(template.fileUrl || "").match(
+    /\/api\/files\/([a-fA-F0-9]{24})/,
+  );
+  if (match && match[1]) return match[1];
+  return template.fileId && ObjectId.isValid(template.fileId)
+    ? String(template.fileId)
+    : null;
 }
 
 // Example API Routes
@@ -628,7 +634,7 @@ app.post(
       let templateFileId, previewFileId;
       let templateFileUrl, previewFileUrl;
       // Save files to GridFS and get their IDs
-      const serverBaseUrl = getServerBaseUrl(req);
+      const fileBaseUrl = getFileBaseUrl(req);
       if (req.files["templateFile"]) {
         const file = req.files["templateFile"][0];
         const uploadStream = gfsBucket.openUploadStream(file.originalname, {
@@ -638,7 +644,7 @@ app.post(
         await new Promise((resolve, reject) => {
           uploadStream.on("finish", () => {
             templateFileId = uploadStream.id;
-            templateFileUrl = `${serverBaseUrl}/api/files/${templateFileId}`;
+            templateFileUrl = `${fileBaseUrl}/api/files/${templateFileId}`;
             resolve();
           });
           uploadStream.on("error", reject);
@@ -653,7 +659,7 @@ app.post(
         await new Promise((resolve, reject) => {
           uploadStream.on("finish", () => {
             previewFileId = uploadStream.id;
-            previewFileUrl = `${serverBaseUrl}/api/files/${previewFileId}`;
+            previewFileUrl = `${fileBaseUrl}/api/files/${previewFileId}`;
             resolve();
           });
           uploadStream.on("error", reject);
@@ -764,10 +770,11 @@ app.get("/api/download/:token", async (req, res) => {
 
     const template = await Template.findById(tokenDoc.templateId);
     if (!template) return res.status(404).json({ error: "Template not found" });
-    if (!template.fileId)
+    const resolvedFileId = resolveTemplateFileId(template);
+    if (!resolvedFileId)
       return res.status(404).json({ error: "File not available" });
 
-    const fileId = new ObjectId(template.fileId);
+    const fileId = new ObjectId(resolvedFileId);
     const files = await mongoose.connection.db
       .collection("uploads.files")
       .find({ _id: fileId })
@@ -788,6 +795,9 @@ app.get("/api/download/:token", async (req, res) => {
     // decrement usesLeft and increment downloads
     tokenDoc.usesLeft -= 1;
     await tokenDoc.save();
+    if (String(template.fileId) !== resolvedFileId) {
+      template.fileId = resolvedFileId;
+    }
     template.downloads = (template.downloads || 0) + 1;
     await template.save();
 
@@ -887,7 +897,7 @@ app.put(
           instructions && instructions.trim() ? instructions : undefined,
         livePreviewUrl: livePreviewUrl || undefined,
       };
-      const serverBaseUrl = getServerBaseUrl(req);
+      const fileBaseUrl = getFileBaseUrl(req);
       if (req.files["templateFile"]) {
         const file = req.files["templateFile"][0];
         const uploadStream = gfsBucket.openUploadStream(file.originalname, {
@@ -896,7 +906,7 @@ app.put(
         uploadStream.end(file.buffer);
         await new Promise((resolve, reject) => {
           uploadStream.on("finish", () => {
-            update.fileUrl = `${serverBaseUrl}/api/files/${uploadStream.id}`;
+            update.fileUrl = `${fileBaseUrl}/api/files/${uploadStream.id}`;
             update.fileId = uploadStream.id;
             resolve();
           });
@@ -911,7 +921,7 @@ app.put(
         uploadStream.end(file.buffer);
         await new Promise((resolve, reject) => {
           uploadStream.on("finish", () => {
-            update.previewUrl = `${serverBaseUrl}/api/files/${uploadStream.id}`;
+            update.previewUrl = `${fileBaseUrl}/api/files/${uploadStream.id}`;
             resolve();
           });
           uploadStream.on("error", reject);
@@ -1059,9 +1069,9 @@ app.post("/api/verify-payment", async (req, res) => {
           return res
             .status(404)
             .json({ success: false, error: "Template not found" });
-        // If template doesn't have fileId (older records), try to extract it from fileUrl/previewUrl.
+        // fileUrl is the canonical source; never use previewUrl for downloads.
         const legacyFileId = resolveTemplateFileId(template);
-        if (!template.fileId && legacyFileId) {
+        if (legacyFileId && String(template.fileId) !== legacyFileId) {
           try {
             template.fileId = legacyFileId;
             await template.save();
@@ -1114,13 +1124,12 @@ app.post("/api/admin/migrate-fileids", async (req, res) => {
       return res.status(401).json({ error: "Unauthorized" });
 
     const templates = await Template.find({
-      fileId: { $exists: false },
       fileUrl: { $exists: true, $ne: null },
     });
     let updated = 0;
     for (const t of templates) {
       const m = String(t.fileUrl).match(/\/api\/files\/([a-fA-F0-9]{24})/);
-      if (m && m[1]) {
+      if (m && m[1] && String(t.fileId) !== m[1]) {
         t.fileId = m[1];
         try {
           await t.save();
