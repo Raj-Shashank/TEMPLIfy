@@ -751,7 +751,7 @@ document.getElementById("saveTemplateBtn").onclick = async () => {
     "instructions",
     document.getElementById("templateInstructions").value,
   );
-  const file = document.getElementById("editTemplateFile").files[0];
+  const file = document.getElementById("templateFile").files[0];
   const preview = document.getElementById("templatePreview").files[0];
   if (file) formData.append("templateFile", file);
   if (preview) formData.append("previewFile", preview);
